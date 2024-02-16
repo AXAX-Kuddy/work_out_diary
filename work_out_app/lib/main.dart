@@ -36,11 +36,19 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   int pageNum = 0;
 
+  void changePage(int selectPage) {
+    setState(() {
+      pageNum = selectPage;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: [
-        const HomeScreen(),
+        HomeScreen(
+          changePage: changePage,
+        ),
         const PlanningScreen(),
         const WorkOutScreen(),
         const DotsPointScreen(),
