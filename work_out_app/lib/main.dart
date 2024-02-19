@@ -1,5 +1,6 @@
 //기본
 import 'package:flutter/material.dart';
+
 import 'package:work_out_app/widgets/base_page.dart';
 import 'package:work_out_app/palette.dart' as palette;
 
@@ -10,6 +11,8 @@ import 'package:work_out_app/screens/work_out_screen.dart';
 import 'package:work_out_app/screens/dots_point_screen.dart';
 
 //패키지들
+import 'package:provider/provider.dart';
+import 'package:work_out_app/store.dart' as provider;
 
 //아이콘
 import 'package:line_icons/line_icons.dart';
@@ -17,11 +20,21 @@ import 'package:line_icons/line_icon.dart';
 
 void main() {
   runApp(
-    MaterialApp(
-      theme: ThemeData(
-        fontFamily: "Pretendard",
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (context) => provider.Store(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => provider.WorkOutListStore(),
+        ),
+      ],
+      child: MaterialApp(
+        theme: ThemeData(
+          fontFamily: "Pretendard",
+        ),
+        home: const MyApp(),
       ),
-      home: const MyApp(),
     ),
   );
 }
@@ -34,31 +47,19 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  int pageNum = 0;
-
-  void changePage(int selectPage) {
-    setState(() {
-      pageNum = selectPage;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: [
-        HomeScreen(
-          changePage: changePage,
-        ),
+        const HomeScreen(),
         const PlanningScreen(),
         const WorkOutScreen(),
         const DotsPointScreen(),
-      ][pageNum],
+      ][context.watch<provider.Store>().pageNum],
       bottomNavigationBar: BottomNavigationBar(
-        currentIndex: pageNum,
+        currentIndex: context.watch<provider.Store>().pageNum,
         onTap: (pageIndex) {
-          setState(() {
-            pageNum = pageIndex;
-          });
+          context.read<provider.Store>().changePage(pageIndex);
         },
         backgroundColor: palette.bgFadeColor,
         selectedItemColor: Colors.white,

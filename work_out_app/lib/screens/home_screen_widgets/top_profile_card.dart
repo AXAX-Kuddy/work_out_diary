@@ -11,7 +11,7 @@ class ProfileCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return WidgetsBox(
       backgroundColor: palette.cardColorYelGreen,
-      crossAxisAlignment: CrossAxisAlignment.center,
+      verticalAxis: CrossAxisAlignment.center,
       inputContent: [
         const Text(
           "유저 이름",
