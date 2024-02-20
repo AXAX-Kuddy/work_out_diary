@@ -57,9 +57,9 @@ class _SelectWorkOutState extends State<SelectWorkOut> {
 }
 
 class SelectBox extends StatefulWidget {
-  String workOutName;
+  final String workOutName;
 
-  SelectBox({
+  const SelectBox({
     super.key,
     required this.workOutName,
   });
