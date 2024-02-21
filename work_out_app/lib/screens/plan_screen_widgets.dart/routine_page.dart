@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:work_out_app/screens/plan_screen_widgets.dart/select_work_out_page.dart';
 import 'package:work_out_app/widgets/base_page.dart';
 import 'package:work_out_app/widgets/widget_box.dart';
 import 'package:work_out_app/palette.dart' as palette;
+import 'package:provider/provider.dart';
+import 'package:work_out_app/store.dart' as provider;
 
 class RoutinePage extends StatelessWidget {
   const RoutinePage({super.key});
@@ -27,17 +30,38 @@ class RoutinePage extends StatelessWidget {
         ),
         WidgetsBox(
           backgroundColor: palette.bgColor,
-          height: 40,
+          width: MediaQuery.of(context).size.width,
           horizontalAxis: MainAxisAlignment.start,
-          inputContent: const [
-            Text(
-              "1주차",
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
+          inputContent: [
+            Expanded(
+              child: Column(
+                children: [
+                  const Text(
+                    "1주차",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  ListView.separated(
+                    itemBuilder: (BuildContext context, int index) {
+                      return Row(
+                        children: [
+                          Text('item $index'),
+                        ],
+                      );
+                    },
+                    separatorBuilder: (BuildContext context, int index) =>
+                        const Divider(),
+                    itemCount: context
+                        .read<provider.UserProgramListStore>()
+                        .userSelectWorkOut
+                        .length,
+                  )
+                ],
               ),
-            ),
+            )
           ],
         ),
         TextButton(

@@ -60,7 +60,7 @@ class PlanningScreen extends StatelessWidget {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => const RoutinePage(),
+                builder: (context) => RoutinePage(),
               ),
             );
           },

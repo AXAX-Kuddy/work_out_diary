@@ -4,9 +4,12 @@ import 'package:work_out_app/widgets/widget_box.dart';
 import 'package:work_out_app/palette.dart' as palette;
 import 'package:provider/provider.dart';
 import 'package:work_out_app/store.dart' as provider;
+import 'package:animated_snack_bar/animated_snack_bar.dart';
 
 class SelectWorkOut extends StatefulWidget {
-  const SelectWorkOut({super.key});
+  const SelectWorkOut({
+    super.key,
+  });
 
   @override
   State<SelectWorkOut> createState() => _SelectWorkOutState();
@@ -14,6 +17,7 @@ class SelectWorkOut extends StatefulWidget {
 
 class _SelectWorkOutState extends State<SelectWorkOut> {
   List? workOutList;
+  DateTime? lastBackPressed;
 
   @override
   void didChangeDependencies() {
@@ -23,35 +27,77 @@ class _SelectWorkOutState extends State<SelectWorkOut> {
 
   @override
   Widget build(BuildContext context) {
-    return BasePage(
-      inputContent: [
-        WidgetsBox(
-          backgroundColor: palette.bgColor,
-          inputContent: const [
-            Text(
-              "Select Your Work-Out",
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 32,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ],
-        ),
-        Expanded(
-          child: ListView.separated(
-            itemBuilder: (BuildContext context, int index) {
-              return SelectBox(
-                workOutName: workOutList?[index] ?? "불러오지 못함",
+    return WillPopScope(
+      onWillPop: () async {
+        DateTime now = DateTime.now();
+        if (lastBackPressed == null ||
+            now.difference(lastBackPressed!) > const Duration(seconds: 2)) {
+          lastBackPressed = now;
+          AnimatedSnackBar(
+            mobileSnackBarPosition: MobileSnackBarPosition.bottom,
+            duration: const Duration(seconds: 4),
+            builder: ((context) {
+              return MaterialAnimatedSnackBar(
+                titleText: "뒤로가면 모든 선택 항목이 초기화 됩니다.",
+                messageText: "한번 더 누르면 뒤로 갑니다.",
+                type: AnimatedSnackBarType.info,
+                backgroundColor: palette.cardColorYelGreen,
+                foregroundColor: Colors.black,
+                titleTextStyle: const TextStyle(
+                  color: Colors.black,
+                ),
+                messageTextStyle: const TextStyle(
+                  color: Colors.black,
+                ),
+                borderRadius: BorderRadius.circular(40),
               );
-            },
-            separatorBuilder: (BuildContext context, int index) {
-              return const Divider();
-            },
-            itemCount: workOutList?.length ?? 1,
+            }),
+          ).show(context);
+          setState(() {
+            context
+                .read<provider.UserProgramListStore>()
+                .managedWorkOutList(command: "reset");
+          });
+          return Future.value(false);
+        }
+        return Future.value(true);
+      },
+      child: BasePage(
+        inputContent: [
+          WidgetsBox(
+            backgroundColor: palette.bgColor,
+            inputContent: const [
+              Text(
+                "Select Your Work-Out",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 32,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
           ),
-        ),
-      ],
+          Expanded(
+            child: ListView.separated(
+              itemBuilder: (BuildContext context, int index) {
+                return SelectBox(
+                  workOutName: workOutList?[index] ?? "불러오지 못함",
+                );
+              },
+              separatorBuilder: (BuildContext context, int index) {
+                return const Divider();
+              },
+              itemCount: workOutList?.length ?? 1,
+            ),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: const Text("운동 추가하기"),
+          )
+        ],
+      ),
     );
   }
 }
@@ -73,6 +119,9 @@ class _SelectBoxState extends State<SelectBox> {
 
   @override
   Widget build(BuildContext context) {
+    var managedWorkOutList =
+        context.watch<provider.UserProgramListStore>().managedWorkOutList;
+
     return Row(
       children: [
         Text(
@@ -83,9 +132,23 @@ class _SelectBoxState extends State<SelectBox> {
         ),
         Checkbox(
           value: _checker,
-          onChanged: (value) => setState(() {
-            _checker = value!;
-          }),
+          onChanged: (value) {
+            setState(() {
+              _checker = value!;
+              if (value) {
+                managedWorkOutList(input: widget.workOutName, command: "add");
+                print(context
+                    .read<provider.UserProgramListStore>()
+                    .userSelectWorkOut);
+              } else if (value == false) {
+                managedWorkOutList(
+                    input: widget.workOutName, command: "remove");
+                print(context
+                    .read<provider.UserProgramListStore>()
+                    .userSelectWorkOut);
+              }
+            });
+          },
         ),
       ],
     );

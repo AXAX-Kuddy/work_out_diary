@@ -31,7 +31,7 @@ class ProfileCard extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  "100",
+                  "100.5",
                   style: TextStyle(
                     fontSize: 18,
                   ),
@@ -51,7 +51,7 @@ class ProfileCard extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  "100",
+                  "100.5",
                   style: TextStyle(
                     fontSize: 18,
                   ),
@@ -71,7 +71,7 @@ class ProfileCard extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  "100",
+                  "100.5",
                   style: TextStyle(
                     fontSize: 18,
                   ),

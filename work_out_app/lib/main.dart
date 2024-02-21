@@ -28,6 +28,9 @@ void main() {
         ChangeNotifierProvider(
           create: (context) => provider.WorkOutListStore(),
         ),
+        ChangeNotifierProvider(
+          create: (context) => provider.UserProgramListStore(),
+        )
       ],
       child: MaterialApp(
         theme: ThemeData(
