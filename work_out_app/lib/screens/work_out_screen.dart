@@ -8,7 +8,7 @@ class WorkOutScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const BasePage(
-      inputContent: [
+      children: [
         Text(
           "워크아웃 페이지임",
           style: TextStyle(

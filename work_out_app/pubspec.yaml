@@ -38,6 +38,7 @@ dependencies:
   line_icons: ^2.0.3
   provider: ^6.1.1
   animated_snack_bar: ^0.4.0
+  roundcheckbox: ^2.0.5
 
 dev_dependencies:
   flutter_test:

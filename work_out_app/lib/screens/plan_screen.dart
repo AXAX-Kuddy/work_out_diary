@@ -16,7 +16,7 @@ class PlanningScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BasePage(
-      inputContent: [
+      children: [
         WidgetsBox(
           height: 90,
           backgroundColor: palette.bgColor,

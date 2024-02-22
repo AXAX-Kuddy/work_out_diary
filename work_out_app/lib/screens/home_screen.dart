@@ -18,7 +18,7 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BasePage(
-      inputContent: [
+      children: [
         const ProfileCard(),
         const SizedBox(
           height: 15,

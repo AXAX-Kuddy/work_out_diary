@@ -8,7 +8,7 @@ class DotsPointScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const BasePage(
-      inputContent: [
+      children: [
         Text(
           "닷츠포인트 페이지임",
           style: TextStyle(

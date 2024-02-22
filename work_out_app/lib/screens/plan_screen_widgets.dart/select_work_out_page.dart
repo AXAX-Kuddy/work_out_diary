@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:line_icons/line_icon.dart';
+import 'package:line_icons/line_icons.dart';
 import 'package:work_out_app/widgets/base_page.dart';
 import 'package:work_out_app/widgets/widget_box.dart';
 import 'package:work_out_app/palette.dart' as palette;
 import 'package:provider/provider.dart';
 import 'package:work_out_app/store.dart' as provider;
 import 'package:animated_snack_bar/animated_snack_bar.dart';
+import 'package:roundcheckbox/roundcheckbox.dart';
 
 class SelectWorkOut extends StatefulWidget {
   const SelectWorkOut({
@@ -41,6 +44,7 @@ class _SelectWorkOutState extends State<SelectWorkOut> {
                 titleText: "뒤로가면 모든 선택 항목이 초기화 됩니다.",
                 messageText: "한번 더 누르면 뒤로 갑니다.",
                 type: AnimatedSnackBarType.info,
+                iconData: LineIcons.check,
                 backgroundColor: palette.cardColorYelGreen,
                 foregroundColor: Colors.black,
                 titleTextStyle: const TextStyle(
@@ -63,9 +67,10 @@ class _SelectWorkOutState extends State<SelectWorkOut> {
         return Future.value(true);
       },
       child: BasePage(
-        inputContent: [
+        children: [
           WidgetsBox(
             backgroundColor: palette.bgColor,
+            height: 50,
             inputContent: const [
               Text(
                 "Select Your Work-Out",
@@ -92,6 +97,9 @@ class _SelectWorkOutState extends State<SelectWorkOut> {
           ),
           TextButton(
             onPressed: () {
+              print(context
+                  .read<provider.UserProgramListStore>()
+                  .userSelectWorkOut);
               Navigator.pop(context);
             },
             child: const Text("운동 추가하기"),
@@ -115,42 +123,61 @@ class SelectBox extends StatefulWidget {
 }
 
 class _SelectBoxState extends State<SelectBox> {
-  bool _checker = false;
+  bool checker = false;
 
   @override
   Widget build(BuildContext context) {
     var managedWorkOutList =
         context.watch<provider.UserProgramListStore>().managedWorkOutList;
 
-    return Row(
-      children: [
-        Text(
-          widget.workOutName,
-          style: const TextStyle(
-            color: Colors.white,
+    return GestureDetector(
+      onTap: () {
+        if (checker == false) {
+          checker = true;
+          managedWorkOutList(
+            input: widget.workOutName,
+            command: "add",
+          );
+          // print(
+          //     context.read<provider.UserProgramListStore>().userSelectWorkOut);
+          // print(checker);
+        } else if (checker == true) {
+          checker = false;
+          managedWorkOutList(
+            input: widget.workOutName,
+            command: "remove",
+          );
+          // print(
+          //     context.read<provider.UserProgramListStore>().userSelectWorkOut);
+          // print(checker);
+        }
+      },
+      child: Container(
+        height: 60,
+        padding: const EdgeInsets.all(15),
+        decoration: BoxDecoration(
+          border: Border.all(
+            color: checker ? palette.cardColorYelGreen : palette.cardColorWhite,
           ),
+          borderRadius: BorderRadius.circular(22),
         ),
-        Checkbox(
-          value: _checker,
-          onChanged: (value) {
-            setState(() {
-              _checker = value!;
-              if (value) {
-                managedWorkOutList(input: widget.workOutName, command: "add");
-                print(context
-                    .read<provider.UserProgramListStore>()
-                    .userSelectWorkOut);
-              } else if (value == false) {
-                managedWorkOutList(
-                    input: widget.workOutName, command: "remove");
-                print(context
-                    .read<provider.UserProgramListStore>()
-                    .userSelectWorkOut);
-              }
-            });
-          },
+        child: Row(
+          children: [
+            Text(
+              widget.workOutName,
+              style: const TextStyle(
+                fontSize: 18,
+                color: Colors.white,
+              ),
+            ),
+            const Spacer(),
+            Icon(
+              checker ? LineIcons.check : LineIcons.circle,
+              color: Colors.white,
+            )
+          ],
         ),
-      ],
+      ),
     );
   }
 }

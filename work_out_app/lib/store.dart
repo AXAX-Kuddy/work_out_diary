@@ -52,5 +52,7 @@ class UserProgramListStore extends ChangeNotifier {
     } else if (command == "reset") {
       userSelectWorkOut = [];
     }
+    notifyListeners();
   }
+
 }

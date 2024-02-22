@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:work_out_app/palette.dart' as palette;
 
 class BasePage extends StatelessWidget {
-  final List<Widget> inputContent;
+  final List<Widget> children;
 
   const BasePage({
     super.key,
-    required this.inputContent,
+    required this.children,
   });
 
   @override
@@ -25,7 +25,7 @@ class BasePage extends StatelessWidget {
               const SizedBox(
                 height: 30,
               ),
-              ...inputContent
+              ...children
               
             ],
           ),
