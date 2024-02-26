@@ -10,8 +10,12 @@ import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:roundcheckbox/roundcheckbox.dart';
 
 class SelectWorkOut extends StatefulWidget {
-  const SelectWorkOut({
+  List workouts;
+  Function onWorkoutChanged;
+  SelectWorkOut({
     super.key,
+    required this.workouts,
+    required this.onWorkoutChanged,
   });
 
   @override
@@ -58,9 +62,7 @@ class _SelectWorkOutState extends State<SelectWorkOut> {
             }),
           ).show(context);
           setState(() {
-            context
-                .read<provider.UserProgramListStore>()
-                .managedWorkOutList(command: "reset");
+            widget.workouts = [];
           });
           return Future.value(false);
         }
@@ -87,6 +89,7 @@ class _SelectWorkOutState extends State<SelectWorkOut> {
               itemBuilder: (BuildContext context, int index) {
                 return SelectBox(
                   workOutName: workOutList?[index] ?? "불러오지 못함",
+                  workouts: widget.workouts,
                 );
               },
               separatorBuilder: (BuildContext context, int index) {
@@ -97,13 +100,11 @@ class _SelectWorkOutState extends State<SelectWorkOut> {
           ),
           TextButton(
             onPressed: () {
-              print(context
-                  .read<provider.UserProgramListStore>()
-                  .userSelectWorkOut);
               Navigator.pop(context);
+              widget.onWorkoutChanged(widget.workouts);
             },
             child: const Text("운동 추가하기"),
-          )
+          ),
         ],
       ),
     );
@@ -112,10 +113,12 @@ class _SelectWorkOutState extends State<SelectWorkOut> {
 
 class SelectBox extends StatefulWidget {
   final String workOutName;
+  List workouts;
 
-  const SelectBox({
+  SelectBox({
     super.key,
     required this.workOutName,
+    required this.workouts,
   });
 
   @override
@@ -127,29 +130,18 @@ class _SelectBoxState extends State<SelectBox> {
 
   @override
   Widget build(BuildContext context) {
-    var managedWorkOutList =
-        context.watch<provider.UserProgramListStore>().managedWorkOutList;
-
     return GestureDetector(
       onTap: () {
         if (checker == false) {
           checker = true;
-          managedWorkOutList(
-            input: widget.workOutName,
-            command: "add",
-          );
-          // print(
-          //     context.read<provider.UserProgramListStore>().userSelectWorkOut);
-          // print(checker);
+          setState(() {
+            widget.workouts.add(widget.workOutName);
+          });
         } else if (checker == true) {
           checker = false;
-          managedWorkOutList(
-            input: widget.workOutName,
-            command: "remove",
-          );
-          // print(
-          //     context.read<provider.UserProgramListStore>().userSelectWorkOut);
-          // print(checker);
+          setState(() {
+            widget.workouts.remove(widget.workOutName);
+          });
         }
       },
       child: Container(
@@ -173,7 +165,8 @@ class _SelectBoxState extends State<SelectBox> {
             const Spacer(),
             Icon(
               checker ? LineIcons.check : LineIcons.circle,
-              color: Colors.white,
+              color:
+                  checker ? palette.cardColorYelGreen : palette.cardColorWhite,
             )
           ],
         ),

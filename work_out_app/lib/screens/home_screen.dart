@@ -47,6 +47,7 @@ class HomeScreen extends StatelessWidget {
           height: 15,
         ),
         const TodayWorkOutCard(),
+        
       ],
     );
   }

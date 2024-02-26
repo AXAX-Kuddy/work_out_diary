@@ -26,7 +26,6 @@ class BasePage extends StatelessWidget {
                 height: 30,
               ),
               ...children
-              
             ],
           ),
         ),

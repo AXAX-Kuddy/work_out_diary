@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:work_out_app/palette.dart' as palette;
 
 class WidgetsBox extends StatelessWidget {
   final Color backgroundColor;
@@ -8,6 +7,7 @@ class WidgetsBox extends StatelessWidget {
   final List<Widget> inputContent;
   final MainAxisAlignment horizontalAxis;
   final CrossAxisAlignment verticalAxis;
+  final Border? border;
 
   const WidgetsBox({
     super.key,
@@ -17,6 +17,7 @@ class WidgetsBox extends StatelessWidget {
     required this.inputContent,
     this.horizontalAxis = MainAxisAlignment.spaceEvenly,
     this.verticalAxis = CrossAxisAlignment.start,
+    this.border,
   });
 
   @override
@@ -26,6 +27,7 @@ class WidgetsBox extends StatelessWidget {
       width: width,
       decoration: BoxDecoration(
         color: backgroundColor,
+        border: border,
         borderRadius: BorderRadius.circular(15),
       ),
       child: Padding(

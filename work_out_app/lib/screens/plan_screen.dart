@@ -9,6 +9,7 @@ import 'package:work_out_app/widgets/wide_button.dart';
 import 'package:work_out_app/widgets/widget_box.dart';
 import 'package:provider/provider.dart';
 import 'package:work_out_app/store.dart' as provider;
+import 'package:go_router/go_router.dart';
 
 class PlanningScreen extends StatelessWidget {
   const PlanningScreen({super.key});
@@ -57,12 +58,7 @@ class PlanningScreen extends StatelessWidget {
         ),
         WideButton(
           onTapUpFunction: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => RoutinePage(),
-              ),
-            );
+            context.push("/createProgram");
           },
           height: 80,
           inputContent: const [
