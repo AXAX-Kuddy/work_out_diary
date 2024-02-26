@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:work_out_app/screens/plan_screen_widgets.dart/select_work_out_page.dart';
 import 'package:work_out_app/screens/plan_screen_widgets.dart/week_in_dayli_page.dart';
@@ -50,7 +51,7 @@ class _RoutinePageState extends State<RoutinePage> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    userProgram = context.watch<provider.UserProgramListStore>().program;
+    userProgram = context.watch<provider.UserProgramListStore>().program; //provider에 저장함
   }
 
   @override
@@ -101,6 +102,8 @@ class _RoutinePageState extends State<RoutinePage> {
   }
 }
 
+
+
 class ProgramWeek extends StatefulWidget {
   final String weekly;
   List userProgram;
@@ -118,6 +121,17 @@ class ProgramWeek extends StatefulWidget {
   State<ProgramWeek> createState() => _ProgramWeekState();
 }
 
+class CustomDataClass {
+  final List userProgram;
+  final String weekKey;
+  final int weekNum;
+
+  CustomDataClass({
+    required this.userProgram,
+    required this.weekKey,
+    required this.weekNum,
+  });
+}
 class _ProgramWeekState extends State<ProgramWeek> {
   @override
   Widget build(BuildContext context) {
@@ -226,3 +240,5 @@ class _ProgramWeekState extends State<ProgramWeek> {
     });
   }
 }
+
+
