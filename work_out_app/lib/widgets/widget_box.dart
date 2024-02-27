@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class WidgetsBox extends StatelessWidget {
   final Color backgroundColor;
-  final double height;
+  final double? height;
   final double? width;
   final List<Widget> inputContent;
   final MainAxisAlignment horizontalAxis;
@@ -12,7 +12,7 @@ class WidgetsBox extends StatelessWidget {
   const WidgetsBox({
     super.key,
     this.backgroundColor = Colors.white,
-    this.height = 100,
+    this.height,
     this.width,
     required this.inputContent,
     this.horizontalAxis = MainAxisAlignment.spaceEvenly,

@@ -56,9 +56,6 @@ class _RoutinePageState extends State<RoutinePage> {
 
   @override
   Widget build(BuildContext context) {
-    //유저가 선택한 운동 목록 갱신용
-    var userProgramList =
-        context.watch<provider.UserProgramListStore>().userSelectWorkOut;
 
     return BasePage(
       children: [

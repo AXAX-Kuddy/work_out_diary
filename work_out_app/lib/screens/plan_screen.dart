@@ -58,7 +58,12 @@ class PlanningScreen extends StatelessWidget {
         ),
         WideButton(
           onTapUpFunction: () {
-            context.push("/createProgram");
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const RoutinePage(),
+              ),
+            );
           },
           height: 80,
           inputContent: const [
