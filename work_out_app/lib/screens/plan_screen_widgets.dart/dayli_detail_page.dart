@@ -3,6 +3,9 @@ import 'package:flutter/services.dart';
 import 'package:work_out_app/widgets/base_page.dart';
 import 'package:work_out_app/widgets/widget_box.dart';
 import 'package:work_out_app/palette.dart' as palette;
+import 'package:dropdown_button2/dropdown_button2.dart';
+import 'package:line_icons/line_icons.dart';
+import 'package:line_icons/line_icon.dart';
 
 class DailyDetail extends StatefulWidget {
   final int dayNum;
@@ -26,7 +29,7 @@ class _DailyDetailState extends State<DailyDetail> {
     _focusNodes = List.generate(widget.workouts.length, (index) => FocusNode());
     for (var node in _focusNodes) {
       node.addListener(() {
-        setState(() {}); // 포커스 상태가 변경될 때마다 UI를 업데이트합니다.
+        setState(() {});
       });
     }
   }
@@ -37,6 +40,19 @@ class _DailyDetailState extends State<DailyDetail> {
       node.dispose();
     }
     super.dispose();
+  }
+
+  void addSets(setNum) {
+    widget.workouts.add(
+      {
+        "$setNum세트": [
+          {
+            "중량": "",
+            "RPE": "",
+          },
+        ],
+      },
+    );
   }
 
   @override
@@ -80,12 +96,12 @@ class _DailyDetailState extends State<DailyDetail> {
                       const Divider(
                         // color: palette.cardColorWhite,
                         thickness: 1,
-                        height: 30,
+                        height: 10,
                       ),
-                      InputField(
+                      RpeInput(
                         focusNode: _focusNodes[index],
                         label: "타겟 RPE",
-                        maxLength: 3,
+                        workouts: widget.workouts,
                       ),
                     ],
                   )
@@ -104,27 +120,42 @@ class _DailyDetailState extends State<DailyDetail> {
   }
 }
 
-class InputField extends StatefulWidget {
+class RpeInput extends StatefulWidget {
   final FocusNode focusNode;
-
   final String label;
-  final int? maxLength;
+  List workouts;
 
-  const InputField({
+  RpeInput({
     Key? key,
     required this.focusNode,
     required this.label,
-    this.maxLength,
+    required this.workouts,
   }) : super(key: key);
 
   @override
-  State<InputField> createState() => _InputFieldState();
+  State<RpeInput> createState() => _RpeInputState();
 }
 
-class _InputFieldState extends State<InputField> {
+class _RpeInputState extends State<RpeInput> {
+  List<String> rpeList = [
+    "5",
+    "5.5",
+    "6",
+    "6.5",
+    "7",
+    "7.5",
+    "8",
+    "8.5",
+    "9",
+    "9.5",
+    "10"
+  ];
+  String? selectValue;
+
   @override
   Widget build(BuildContext context) {
     return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text(
           widget.label,
@@ -136,36 +167,82 @@ class _InputFieldState extends State<InputField> {
         const SizedBox(
           width: 5,
         ),
-        Container(
-          width: 80,
-          height: 50,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(15),
-            border: Border.all(
-              color: widget.focusNode.hasFocus
-                  ? palette.cardColorYelGreen
-                  : Colors.transparent,
+        // Container(
+        //   width: 85,
+        //   height: 50,
+        //   decoration: BoxDecoration(
+        //     borderRadius: BorderRadius.circular(15),
+        //     border: Border.all(
+        //       color: widget.focusNode.hasFocus
+        //           ? palette.cardColorYelGreen
+        //           : Colors.transparent,
+        //     ),
+        //     color: widget.focusNode.hasFocus
+        //         ? palette.bgColor
+        //         : palette.bgFadeColor,
+        //   ),
+        //   child:
+        DropdownButtonHideUnderline(
+          child: DropdownButton2<String>(
+            isExpanded: true,
+            items: rpeList
+                .map((String item) => DropdownMenuItem<String>(
+                      value: item,
+                      child: Text(
+                        item,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ))
+                .toList(),
+            value: selectValue,
+            onChanged: (value) {
+              setState(() {
+                selectValue = value;
+              });
+              print(widget.workouts);
+            },
+            buttonStyleData: ButtonStyleData(
+              height: 50,
+              width: 80,
+              padding: const EdgeInsets.only(left: 14, right: 14),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(14),
+                color: palette.bgFadeColor,
+              ),
+              elevation: 2,
             ),
-            color: widget.focusNode.hasFocus
-                ? palette.bgColor
-                : palette.bgFadeColor,
-          ),
-          child: TextField(
-            onChanged: (value) {},
-            focusNode: widget.focusNode,
-            decoration: const InputDecoration(
-              border: InputBorder.none,
-              counterText: '',
-              contentPadding: EdgeInsets.symmetric(horizontal: 10),
+            iconStyleData: IconStyleData(
+              icon: const LineIcon.angleRight(),
+              iconSize: 14,
+              iconEnabledColor: palette.cardColorWhite,
+              iconDisabledColor: Colors.grey,
             ),
-            textAlign: TextAlign.center,
-            maxLength: widget.maxLength,
-            maxLengthEnforcement: MaxLengthEnforcement.enforced,
-            style: TextStyle(
-              color: palette.cardColorWhite,
+            dropdownStyleData: DropdownStyleData(
+              maxHeight: 200,
+              width: 200,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(14),
+                color: palette.bgColor,
+              ),
+              offset: const Offset(-20, 0),
+              scrollbarTheme: ScrollbarThemeData(
+                radius: const Radius.circular(40),
+                thickness: MaterialStateProperty.all(6),
+                thumbVisibility: MaterialStateProperty.all(true),
+              ),
+            ),
+            menuItemStyleData: const MenuItemStyleData(
+              height: 40,
+              padding: EdgeInsets.only(left: 14, right: 14),
             ),
           ),
         ),
+        // ),
       ],
     );
   }
