@@ -22,13 +22,16 @@ class RoutinePage extends StatefulWidget {
 class _RoutinePageState extends State<RoutinePage> {
   var userProgram = [];
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    userProgram =
+        context.watch<provider.UserProgramListStore>().programs; //provider에 저장함
+  }
+
   void addWeeks() {
     setState(() {
-      userProgram.add(
-        {
-          "${userProgram.length + 1}주차": [],
-        },
-      );
+      
     });
   }
 
@@ -49,14 +52,7 @@ class _RoutinePageState extends State<RoutinePage> {
   }
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    userProgram = context.watch<provider.UserProgramListStore>().program; //provider에 저장함
-  }
-
-  @override
   Widget build(BuildContext context) {
-
     return BasePage(
       children: [
         WidgetsBox(
@@ -91,6 +87,7 @@ class _RoutinePageState extends State<RoutinePage> {
           onPressed: () {
             addWeeks();
             print(userProgram);
+            // context.watch<provider.UserProgramListStore>().addUserProgram();
           },
           child: const Text("+주차 추가"),
         ),
@@ -98,8 +95,6 @@ class _RoutinePageState extends State<RoutinePage> {
     );
   }
 }
-
-
 
 class ProgramWeek extends StatefulWidget {
   final String weekly;
@@ -129,6 +124,7 @@ class CustomDataClass {
     required this.weekNum,
   });
 }
+
 class _ProgramWeekState extends State<ProgramWeek> {
   @override
   Widget build(BuildContext context) {
@@ -237,5 +233,3 @@ class _ProgramWeekState extends State<ProgramWeek> {
     });
   }
 }
-
-
