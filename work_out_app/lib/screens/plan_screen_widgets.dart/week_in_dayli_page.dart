@@ -14,13 +14,11 @@ import 'package:go_router/go_router.dart';
 class DayliPage extends StatefulWidget {
   final List userProgram;
   final int weekNum;
-  final String weekKey;
 
   const DayliPage({
     super.key,
     required this.userProgram,
     required this.weekNum,
-    required this.weekKey,
   });
 
   @override
@@ -29,34 +27,34 @@ class DayliPage extends StatefulWidget {
 
 class _DayliPageState extends State<DayliPage> {
   var dayliNum = 0;
-  late List dayliWorkouts;
+  var dayliWorkouts;
+  var weekInstance;
 
   @override
-  void initState() {
-    super.initState();
-    dayliWorkouts = widget.userProgram[widget.weekNum][widget.weekKey];
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    var programInstance = context
+        .read<provider.UserProgramListStore>()
+        .getProgram(widget.weekNum);
+    weekInstance = programInstance.getWeek(widget.weekNum);
+    dayliWorkouts = weekInstance.days;
   }
 
-  void addDayli() {
+  void addDayli(int index) {
     setState(() {
-      dayliWorkouts.add({"${dayliWorkouts.length + 1}일차": []});
+      provider.Day newDay = provider.Day(
+        dayIndex: index,
+      );
+      weekInstance.addDay(newDay);
     });
   }
 
-  void deleteDay(index) {
+  void deleteDay(int index) {
     if (dayliWorkouts.isNotEmpty && index < dayliWorkouts.length) {
+      var day = weekInstance.getDay(index);
       setState(() {
-        dayliWorkouts.removeAt(index);
+        weekInstance.removeDay(day);
       });
-
-      for (int i = index; i < dayliWorkouts.length; i++) {
-        var dayli = dayliWorkouts[i];
-        var oldKey = dayli.keys.first;
-        var newKey = "${i + 1}일차";
-        var workouts = dayli[oldKey];
-
-        dayliWorkouts[i] = {newKey: workouts};
-      }
     }
   }
 
@@ -82,22 +80,105 @@ class _DayliPageState extends State<DayliPage> {
           child: ListView.builder(
             itemCount: dayliWorkouts.length,
             itemBuilder: (BuildContext context, int index) {
-              var dayliKey = dayliWorkouts[index].keys.first;
-              var workouts = dayliWorkouts[index][dayliKey];
-              var dayNum = index;
-              return DayliRoutine(
-                dayli: dayliKey,
-                deleteDay: deleteDay,
-                workouts: workouts,
-                dayNum: dayNum,
-                userProgram: widget.userProgram,
+              return LayoutBuilder(
+                builder: (context, constraints) {
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => DailyDetail(
+                            dayNum: index,
+                            workouts: dayliWorkouts,
+                          ),
+                        ),
+                      );
+                    },
+                    child: WidgetsBox(
+                      backgroundColor: palette.bgColor,
+                      border: Border.all(
+                        color: palette.cardColorGray,
+                      ),
+                      height: 250,
+                      inputContent: [
+                        Expanded(
+                          child: Column(
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    "${index + 1}일차",
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(
+                                width: constraints.maxWidth,
+                                height: 150,
+                                child: ListView.builder(
+                                  itemCount: 1,
+                                  itemBuilder:
+                                      (BuildContext context, int index) {
+                                    if (dayliWorkouts.isEmpty) {
+                                      return TextButton(
+                                        onPressed: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: ((context) {
+                                              return SelectWorkOut(
+                                                workouts: dayliWorkouts,
+                                                onWorkoutChanged: () {},
+                                              );
+                                            })),
+                                          );
+                                          print(dayliWorkouts);
+                                        },
+                                        child: Text(
+                                          "여기를 눌러서 운동을 추가하세요!",
+                                          style: TextStyle(
+                                            color: palette.cardColorWhite,
+                                          ),
+                                        ),
+                                      );
+                                    } else {
+                                      return Text(
+                                        "${dayliWorkouts[index]}",
+                                        style: TextStyle(
+                                          color: palette.cardColorWhite,
+                                        ),
+                                      );
+                                    }
+                                  },
+                                ),
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  deleteDay(index);
+                                },
+                                child: const Text(
+                                  "일차 삭제하기",
+                                ),
+                              )
+                            ],
+                          ),
+                        )
+                      ],
+                    ),
+                  );
+                },
               );
             },
           ),
         ),
         TextButton(
           onPressed: () {
-            addDayli();
+            addDayli(dayliWorkouts.length + 1);
             print(dayliWorkouts);
             print(widget.userProgram);
           },
@@ -106,132 +187,6 @@ class _DayliPageState extends State<DayliPage> {
           ),
         )
       ],
-    );
-  }
-}
-
-class DayliRoutine extends StatefulWidget {
-  final String dayli;
-  final List workouts;
-  final Function deleteDay;
-  final int dayNum;
-  final List userProgram;
-
-  const DayliRoutine({
-    super.key,
-    required this.dayli,
-    required this.deleteDay,
-    required this.workouts,
-    required this.dayNum,
-    required this.userProgram,
-  });
-
-  @override
-  State<DayliRoutine> createState() => _DayliRoutineState();
-}
-
-class _DayliRoutineState extends State<DayliRoutine> {
-  void onWorkoutChanged(List updatedWorkouts) {
-    setState(() {
-      updatedWorkouts;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        return GestureDetector(
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) =>  DailyDetail (
-                  dayNum : widget.dayNum,
-                  workouts : widget.workouts,
-                ),
-              ),
-            );
-          },
-          child: WidgetsBox(
-            backgroundColor: palette.bgColor,
-            border: Border.all(
-              color: palette.cardColorGray,
-            ),
-            height: 250,
-            inputContent: [
-              Expanded(
-                child: Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          widget.dayli,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(
-                      width: constraints.maxWidth,
-                      height: 150,
-                      child: ListView.builder(
-                        itemCount: widget.workouts.isNotEmpty
-                            ? widget.workouts.length
-                            : 1,
-                        itemBuilder: (BuildContext context, int index) {
-                          if (widget.workouts.isEmpty) {
-                            return TextButton(
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(builder: ((context) {
-                                    return SelectWorkOut(
-                                      workouts: widget.workouts,
-                                      onWorkoutChanged: onWorkoutChanged,
-                                    );
-                                  })),
-                                );
-                                print(widget.workouts);
-                              },
-                              child: Text(
-                                "여기를 눌러서 운동을 추가하세요!",
-                                style: TextStyle(
-                                  color: palette.cardColorWhite,
-                                ),
-                              ),
-                            );
-                          } else {
-                            return Text(
-                              "${widget.workouts[index]}",
-                              style: TextStyle(
-                                color: palette.cardColorWhite,
-                              ),
-                            );
-                          }
-                        },
-                      ),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        widget.deleteDay(widget.dayNum);
-                        print(widget.userProgram);
-                      },
-                      child: const Text(
-                        "일차 삭제하기",
-                      ),
-                    )
-                  ],
-                ),
-              )
-            ],
-          ),
-        );
-      },
     );
   }
 }

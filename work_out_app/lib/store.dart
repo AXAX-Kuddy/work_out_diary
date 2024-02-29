@@ -3,6 +3,13 @@ import 'package:flutter/material.dart';
 class Store extends ChangeNotifier {
   int pageNum = 0;
 
+  String userName = "User";
+  List<double> userSBD = [
+    100.5,
+    100.5,
+    100.5,
+  ];
+
   void changePage(int selectPage) {
     pageNum = selectPage;
     notifyListeners();
@@ -22,6 +29,8 @@ class WorkOutListStore extends ChangeNotifier {
 class UserProgramListStore extends ChangeNotifier {
   ///selectWorkOut 페이지에서 유저가 선택한 운동을 여기에 보관합니다.
   List userSelectWorkOut = [];
+
+  ///사용자가 생성 및 받아온 루틴들은 모두 이곳에 보관함.
   List programs = [];
 
   void addProgram(Program program) {
@@ -40,26 +49,38 @@ class UserProgramListStore extends ChangeNotifier {
 }
 
 class Program {
-  List<Week> weeks = [];
+  String programName;
+  late List<Week>? weeks;
+
+  Program({
+    required this.programName,
+    List<Week>? weeks,
+  }) : weeks = weeks ?? [];
 
   void addWeek(Week week) {
-    weeks.add(week);
+    weeks?.add(week);
   }
 
   void removeWeek(Week week) {
-    weeks.remove(week);
+    weeks?.remove(week);
   }
 
   Week getWeek(int index) {
-    return weeks[index];
+    return weeks![index];
+  }
+
+  void editProgramName(String editName) {
+    programName = editName;
   }
 }
 
 class Week {
-  int weekIndex;
+  late int weekIndex;
   List<Day> days = [];
 
-  Week(this.weekIndex);
+  Week({
+    this.weekIndex = 1,
+  });
 
   void addDay(Day day) {
     days.add(day);
@@ -78,7 +99,9 @@ class Day {
   int dayIndex;
   List<Workout> workouts = [];
 
-  Day(this.dayIndex);
+  Day({
+    this.dayIndex = 1,
+  });
 
   void addWorkout(Workout workout) {
     workouts.add(workout);

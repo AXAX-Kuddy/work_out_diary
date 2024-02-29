@@ -14,6 +14,25 @@ import 'package:go_router/go_router.dart';
 class PlanningScreen extends StatelessWidget {
   const PlanningScreen({super.key});
 
+  void createNewRoutine(BuildContext context) {
+    String userName = context.read<provider.Store>().userName;
+
+    provider.Program newProgram = provider.Program(
+      programName: "$userName의 프로그램",
+    );
+    context.read<provider.UserProgramListStore>().addProgram(newProgram);
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) =>  RoutinePage(
+          programInstance : newProgram,
+        ),
+      ),
+    );
+    print(
+        context.read<provider.UserProgramListStore>().programs[0].programName);
+  }
+
   @override
   Widget build(BuildContext context) {
     return BasePage(
@@ -58,12 +77,7 @@ class PlanningScreen extends StatelessWidget {
         ),
         WideButton(
           onTapUpFunction: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const RoutinePage(),
-              ),
-            );
+            createNewRoutine(context);
           },
           height: 80,
           inputContent: const [
