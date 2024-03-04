@@ -56,6 +56,9 @@ class _DayliPageState extends State<DayliPage> {
       });
     }
   }
+  void onChangedList(){
+    
+  }
 
   @override
   Widget build(BuildContext context) {

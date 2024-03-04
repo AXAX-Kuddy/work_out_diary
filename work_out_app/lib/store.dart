@@ -95,7 +95,7 @@ class Week {
   }
 }
 
-class Day {
+class Day   {
   int dayIndex;
   List<Workout> workouts = [];
 
