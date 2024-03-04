@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:line_icons/line_icon.dart';
 import 'package:line_icons/line_icons.dart';
+import 'package:work_out_app/test.dart';
 import 'package:work_out_app/widgets/base_page.dart';
 import 'package:work_out_app/widgets/widget_box.dart';
 import 'package:work_out_app/palette.dart' as palette;
@@ -10,12 +11,13 @@ import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:roundcheckbox/roundcheckbox.dart';
 
 class SelectWorkOut extends StatefulWidget {
-  List workouts;
-  Function onWorkoutChanged;
+  var workouts;
+  var dayNum;
+
   SelectWorkOut({
     super.key,
     required this.workouts,
-    required this.onWorkoutChanged,
+    required this.dayNum,
   });
 
   @override
@@ -88,8 +90,10 @@ class _SelectWorkOutState extends State<SelectWorkOut> {
             child: ListView.separated(
               itemBuilder: (BuildContext context, int index) {
                 return SelectBox(
-                  workOutName: workOutList?[index] ?? "불러오지 못함",
+                  workoutName: workOutList?[index] ?? "불러오지 못함",
                   workouts: widget.workouts,
+                  index: index,
+                  dayNum: widget.dayNum,
                 );
               },
               separatorBuilder: (BuildContext context, int index) {
@@ -101,7 +105,6 @@ class _SelectWorkOutState extends State<SelectWorkOut> {
           TextButton(
             onPressed: () {
               Navigator.pop(context);
-              widget.onWorkoutChanged(widget.workouts);
             },
             child: const Text("운동 추가하기"),
           ),
@@ -112,13 +115,18 @@ class _SelectWorkOutState extends State<SelectWorkOut> {
 }
 
 class SelectBox extends StatefulWidget {
-  final String workOutName;
-  List workouts;
+  final String workoutName;
+  final dayNum;
+
+  var workouts;
+  var index;
 
   SelectBox({
     super.key,
-    required this.workOutName,
+    required this.workoutName,
     required this.workouts,
+    required this.index,
+    required this.dayNum,
   });
 
   @override
@@ -127,6 +135,29 @@ class SelectBox extends StatefulWidget {
 
 class _SelectBoxState extends State<SelectBox> {
   bool checker = false;
+  var dayInstance;
+
+  @override
+  void didChangeDependencies() {
+    dayInstance = widget.workouts[widget.dayNum];
+  }
+
+  void addWorkout(String name) {
+    setState(() {
+      provider.Workout newWorkout = provider.Workout(name);
+      dayInstance.addWorkout(newWorkout);
+    });
+  }
+
+  void deleteWorkout(int index) {
+    if (dayInstance.workouts.isNotEmpty &&
+        index < dayInstance.workouts.length) {
+      setState(() {
+        var workout = dayInstance.getWorkout(index);
+        dayInstance.removeWorkout(workout);
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -134,14 +165,12 @@ class _SelectBoxState extends State<SelectBox> {
       onTap: () {
         if (checker == false) {
           checker = true;
-          setState(() {
-            widget.workouts.add(widget.workOutName);
-          });
+          addWorkout(widget.workoutName);
+          print(dayInstance.workouts);
         } else if (checker == true) {
           checker = false;
-          setState(() {
-            widget.workouts.remove(widget.workOutName);
-          });
+          deleteWorkout(widget.index);
+          print(dayInstance.workouts);
         }
       },
       child: Container(
@@ -156,7 +185,7 @@ class _SelectBoxState extends State<SelectBox> {
         child: Row(
           children: [
             Text(
-              widget.workOutName,
+              widget.workoutName,
               style: const TextStyle(
                 fontSize: 18,
                 color: Colors.white,

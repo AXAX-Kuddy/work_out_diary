@@ -26,16 +26,13 @@ class RoutinePage extends StatefulWidget {
 }
 
 class _RoutinePageState extends State<RoutinePage> {
-  var userProgram;
+  var weeks;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-
-    var programInstance =
-        context.read<provider.UserProgramListStore>().getProgram(0);
-    userProgram = widget.programInstance.weeks;
-    print(userProgram);
+    weeks = widget.programInstance.weeks;
+    print(weeks);
   }
 
   void addWeeks(int index) {
@@ -48,13 +45,12 @@ class _RoutinePageState extends State<RoutinePage> {
   }
 
   void deleteWeek(int index) {
-    if (userProgram.isNotEmpty && index < userProgram.length) {
+    if (weeks.isNotEmpty && index < weeks.length) {
       setState(() {
-        userProgram.removeAt(index);
+        weeks.removeAt(index);
       });
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -76,7 +72,7 @@ class _RoutinePageState extends State<RoutinePage> {
         ),
         Expanded(
           child: ListView.builder(
-            itemCount: userProgram.length,
+            itemCount: weeks.length,
             itemBuilder: (BuildContext context, int index) {
               return LayoutBuilder(
                   builder: (BuildContext context, BoxConstraints constraints) {
@@ -106,7 +102,7 @@ class _RoutinePageState extends State<RoutinePage> {
                               IconButton(
                                 onPressed: () {
                                   deleteWeek(index);
-                                  print(userProgram);
+                                  print(weeks);
                                 },
                                 icon: const Icon(
                                   LineIcons.trash,
@@ -123,7 +119,8 @@ class _RoutinePageState extends State<RoutinePage> {
                             context,
                             MaterialPageRoute(
                               builder: (context) => DayliPage(
-                                userProgram: userProgram,
+                                programInstance : widget.programInstance,
+                                weeks: weeks,
                                 weekNum: index,
                               ),
                             ),
@@ -186,8 +183,8 @@ class _RoutinePageState extends State<RoutinePage> {
         ),
         TextButton(
           onPressed: () {
-            addWeeks(userProgram.length + 1);
-            print(userProgram);
+            addWeeks(weeks.length);
+            print(weeks);
           },
           child: const Text("+주차 추가"),
         ),

@@ -9,7 +9,7 @@ import 'package:line_icons/line_icon.dart';
 
 class DailyDetail extends StatefulWidget {
   final int dayNum;
-  final List workouts;
+  final workouts;
   const DailyDetail({
     super.key,
     required this.dayNum,
@@ -86,7 +86,7 @@ class _DailyDetailState extends State<DailyDetail> {
                   Column(
                     children: [
                       Text(
-                        "${widget.workouts[index]}",
+                        "${widget.workouts[index].name}",
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,

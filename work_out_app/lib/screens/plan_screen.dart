@@ -29,8 +29,6 @@ class PlanningScreen extends StatelessWidget {
         ),
       ),
     );
-    print(
-        context.read<provider.UserProgramListStore>().programs[0].programName);
   }
 
   @override
