@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:line_icons/line_icon.dart';
 import 'package:line_icons/line_icons.dart';
@@ -10,22 +11,29 @@ import 'package:work_out_app/widgets/widget_box.dart';
 import 'package:provider/provider.dart';
 import 'package:work_out_app/store.dart' as provider;
 import 'package:go_router/go_router.dart';
+import 'package:work_out_app/make_program.dart' as maked;
 
-class PlanningScreen extends StatelessWidget {
+class PlanningScreen extends StatefulWidget {
   const PlanningScreen({super.key});
+
+  @override
+  State<PlanningScreen> createState() => _PlanningScreenState();
+}
+
+class _PlanningScreenState extends State<PlanningScreen> {
 
   void createNewRoutine(BuildContext context) {
     String userName = context.read<provider.Store>().userName;
 
-    provider.Program newProgram = provider.Program(
+    maked.Program newProgram = maked.Program(
       programName: "$userName의 프로그램",
     );
     context.read<provider.UserProgramListStore>().addProgram(newProgram);
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) =>  RoutinePage(
-          programInstance : newProgram,
+        builder: (context) => RoutinePage(
+          programInstance: newProgram,
         ),
       ),
     );

@@ -10,6 +10,7 @@ import 'package:line_icons/line_icons.dart';
 import 'package:provider/provider.dart';
 import 'package:work_out_app/store.dart' as provider;
 import 'package:go_router/go_router.dart';
+import 'package:work_out_app/make_program.dart' as maked;
 
 class DayliPage extends StatefulWidget {
   var programInstance;
@@ -41,7 +42,7 @@ class _DayliPageState extends State<DayliPage> {
 
   void addDay(int index) {
     setState(() {
-      provider.Day newDay = provider.Day(
+      maked.Day newDay = maked.Day(
         dayIndex: index,
       );
       weekInstance.addDay(newDay);
@@ -50,14 +51,17 @@ class _DayliPageState extends State<DayliPage> {
 
   void deleteDay(int index) {
     if (day.isNotEmpty && index < day.length) {
-      var day = weekInstance.getDay(index);
+      var getDay = weekInstance.getDay(index);
       setState(() {
-        weekInstance.removeDay(day);
+        weekInstance.removeDay(getDay);
       });
     }
   }
-  void onChangedList(){
-    
+
+  void changedListner() {
+    setState(() {
+      day;
+    });
   }
 
   @override
@@ -84,97 +88,98 @@ class _DayliPageState extends State<DayliPage> {
             itemBuilder: (BuildContext context, int index) {
               return LayoutBuilder(
                 builder: (context, constraints) {
-                  return GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => DailyDetail(
-                            dayNum: index,
-                            workouts: day[widget.weekNum].workouts,
-                          ),
-                        ),
-                      );
-                    },
-                    child: WidgetsBox(
-                      backgroundColor: palette.bgColor,
-                      border: Border.all(
-                        color: palette.cardColorGray,
-                      ),
-                      height: 250,
-                      inputContent: [
-                        Expanded(
-                          child: Column(
-                            children: [
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    "${index + 1}일차",
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                  return WidgetsBox(
+                    backgroundColor: palette.bgColor,
+                    border: Border.all(
+                      color: palette.cardColorGray,
+                    ),
+                    height: 250,
+                    inputContent: [
+                      Expanded(
+                        child: Column(
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  "${index + 1}일차",
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
                                   ),
-                                ],
-                              ),
-                              SizedBox(
-                                width: constraints.maxWidth,
-                                height: 150,
-                                child: ListView.builder(
-                                  itemCount: 1,
-                                  itemBuilder:
-                                      (BuildContext context, int index) {
-                                    if (day[widget.weekNum].workouts.isEmpty) {
-                                      return TextButton(
-                                        onPressed: () {
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: ((context) {
-                                              return SelectWorkOut(
-                                                dayNum: index,
-                                                workouts: day,
-                                              );
-                                            })),
-                                          );
-                                          print(day);
-                                        },
-                                        child: Text(
-                                          "여기를 눌러서 운동을 추가하세요!",
-                                          style: TextStyle(
-                                            color: palette.cardColorWhite,
-                                          ),
-                                        ),
-                                      );
-                                    } else {
-                                      return Text(
-                                        day[widget.weekNum]
-                                                .workouts[index]
-                                                .name ??
-                                            "운동 이름 없음",
+                                ),
+                              ],
+                            ),
+                            SizedBox(
+                              width: constraints.maxWidth,
+                              height: 150,
+                              child: ListView.builder(
+                                itemCount: day[widget.weekNum].workouts.isEmpty
+                                    ? 1
+                                    : day[widget.weekNum].workouts.length,
+                                itemBuilder: (BuildContext context, int index) {
+                                  if (day[widget.weekNum].workouts.isEmpty) {
+                                    return TextButton(
+                                      onPressed: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: ((context) {
+                                            return SelectWorkOut(
+                                              changedListner: changedListner,
+                                              dayNum: index,
+                                              dayInstance: day,
+                                            );
+                                          })),
+                                        );
+                                      },
+                                      child: Text(
+                                        "여기를 눌러서 운동을 추가하세요!",
                                         style: TextStyle(
                                           color: palette.cardColorWhite,
                                         ),
-                                      );
-                                    }
-                                  },
-                                ),
-                              ),
-                              TextButton(
-                                onPressed: () {
-                                  deleteDay(index);
+                                      ),
+                                    );
+                                  } else {
+                                    return GestureDetector(
+                                      onTap: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => DailyDetail(
+                                              dayNum: index,
+                                              workouts:
+                                                  day[widget.weekNum].workouts,
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                      child: Text(
+                                        day[widget.weekNum]
+                                            .workouts[index]
+                                            .name,
+                                        style: TextStyle(
+                                          color: palette.cardColorWhite,
+                                        ),
+                                      ),
+                                    );
+                                  }
                                 },
-                                child: const Text(
-                                  "일차 삭제하기",
-                                ),
-                              )
-                            ],
-                          ),
-                        )
-                      ],
-                    ),
+                              ),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                deleteDay(index);
+                              },
+                              child: const Text(
+                                "일차 삭제하기",
+                              ),
+                            )
+                          ],
+                        ),
+                      )
+                    ],
                   );
                 },
               );
@@ -184,8 +189,6 @@ class _DayliPageState extends State<DayliPage> {
         TextButton(
           onPressed: () {
             addDay(day.length);
-            print(day);
-            print(widget.weeks);
           },
           child: const Text(
             "일차 추가하기",

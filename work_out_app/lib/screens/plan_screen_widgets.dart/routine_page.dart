@@ -12,6 +12,7 @@ import 'package:provider/provider.dart';
 import 'package:work_out_app/store.dart' as provider;
 import 'package:line_icons/line_icon.dart';
 import 'package:line_icons/line_icons.dart';
+import 'package:work_out_app/make_program.dart' as maked;
 
 class RoutinePage extends StatefulWidget {
   final programInstance;
@@ -37,7 +38,7 @@ class _RoutinePageState extends State<RoutinePage> {
 
   void addWeeks(int index) {
     setState(() {
-      provider.Week newWeek = provider.Week(
+      maked.Week newWeek = maked.Week(
         weekIndex: index,
       );
       widget.programInstance.addWeek(newWeek);
@@ -102,7 +103,6 @@ class _RoutinePageState extends State<RoutinePage> {
                               IconButton(
                                 onPressed: () {
                                   deleteWeek(index);
-                                  print(weeks);
                                 },
                                 icon: const Icon(
                                   LineIcons.trash,
@@ -119,7 +119,7 @@ class _RoutinePageState extends State<RoutinePage> {
                             context,
                             MaterialPageRoute(
                               builder: (context) => DayliPage(
-                                programInstance : widget.programInstance,
+                                programInstance: widget.programInstance,
                                 weeks: weeks,
                                 weekNum: index,
                               ),

@@ -32,7 +32,7 @@ void main() {
         ),
         ChangeNotifierProvider(
           create: (context) => provider.UserProgramListStore(),
-        )
+        ),
       ],
       child: MaterialApp(
         theme: ThemeData(

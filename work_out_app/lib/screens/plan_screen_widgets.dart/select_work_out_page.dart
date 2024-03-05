@@ -9,15 +9,18 @@ import 'package:provider/provider.dart';
 import 'package:work_out_app/store.dart' as provider;
 import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:roundcheckbox/roundcheckbox.dart';
+import 'package:work_out_app/make_program.dart' as maked;
 
 class SelectWorkOut extends StatefulWidget {
-  var workouts;
+  final Function changedListner;
+  var dayInstance;
   var dayNum;
 
   SelectWorkOut({
     super.key,
-    required this.workouts,
+    required this.dayInstance,
     required this.dayNum,
+    required this.changedListner,
   });
 
   @override
@@ -64,7 +67,7 @@ class _SelectWorkOutState extends State<SelectWorkOut> {
             }),
           ).show(context);
           setState(() {
-            widget.workouts = [];
+            widget.dayInstance.workouts = [];
           });
           return Future.value(false);
         }
@@ -91,7 +94,7 @@ class _SelectWorkOutState extends State<SelectWorkOut> {
               itemBuilder: (BuildContext context, int index) {
                 return SelectBox(
                   workoutName: workOutList?[index] ?? "불러오지 못함",
-                  workouts: widget.workouts,
+                  dayInstance: widget.dayInstance,
                   index: index,
                   dayNum: widget.dayNum,
                 );
@@ -104,6 +107,7 @@ class _SelectWorkOutState extends State<SelectWorkOut> {
           ),
           TextButton(
             onPressed: () {
+              widget.changedListner();
               Navigator.pop(context);
             },
             child: const Text("운동 추가하기"),
@@ -118,13 +122,13 @@ class SelectBox extends StatefulWidget {
   final String workoutName;
   final dayNum;
 
-  var workouts;
+  var dayInstance;
   var index;
 
   SelectBox({
     super.key,
     required this.workoutName,
-    required this.workouts,
+    required this.dayInstance,
     required this.index,
     required this.dayNum,
   });
@@ -139,12 +143,12 @@ class _SelectBoxState extends State<SelectBox> {
 
   @override
   void didChangeDependencies() {
-    dayInstance = widget.workouts[widget.dayNum];
+    dayInstance = widget.dayInstance[widget.dayNum];
   }
 
   void addWorkout(String name) {
     setState(() {
-      provider.Workout newWorkout = provider.Workout(name);
+      maked.Workout newWorkout = maked.Workout(name);
       dayInstance.addWorkout(newWorkout);
     });
   }
