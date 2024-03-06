@@ -1,5 +1,5 @@
 class Program {
-  String programName;
+  late String? programName;
   late List<Week>? weeks;
 
   Program({

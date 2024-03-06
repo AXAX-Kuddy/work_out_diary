@@ -21,9 +21,8 @@ class PlanningScreen extends StatefulWidget {
 }
 
 class _PlanningScreenState extends State<PlanningScreen> {
-
   void createNewRoutine(BuildContext context) {
-    String userName = context.read<provider.Store>().userName;
+    String userName = context.read<provider.Store>().userInfo["userName"];
 
     maked.Program newProgram = maked.Program(
       programName: "$userName의 프로그램",

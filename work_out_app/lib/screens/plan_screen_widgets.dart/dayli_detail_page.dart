@@ -167,21 +167,6 @@ class _RpeInputState extends State<RpeInput> {
         const SizedBox(
           width: 5,
         ),
-        // Container(
-        //   width: 85,
-        //   height: 50,
-        //   decoration: BoxDecoration(
-        //     borderRadius: BorderRadius.circular(15),
-        //     border: Border.all(
-        //       color: widget.focusNode.hasFocus
-        //           ? palette.cardColorYelGreen
-        //           : Colors.transparent,
-        //     ),
-        //     color: widget.focusNode.hasFocus
-        //         ? palette.bgColor
-        //         : palette.bgFadeColor,
-        //   ),
-        //   child:
         DropdownButtonHideUnderline(
           child: DropdownButton2<String>(
             isExpanded: true,
@@ -204,7 +189,6 @@ class _RpeInputState extends State<RpeInput> {
               setState(() {
                 selectValue = value;
               });
-              print(widget.workouts);
             },
             buttonStyleData: ButtonStyleData(
               height: 50,
@@ -242,7 +226,6 @@ class _RpeInputState extends State<RpeInput> {
             ),
           ),
         ),
-        // ),
       ],
     );
   }
