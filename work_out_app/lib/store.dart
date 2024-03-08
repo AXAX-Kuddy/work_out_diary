@@ -9,7 +9,7 @@ class Store extends ChangeNotifier {
 
   Map<String, dynamic> userInfo = {
     "userName": "",
-    "userSBD": [],
+    "userSBD": "",
     "dotsPoint": "",
   };
 
