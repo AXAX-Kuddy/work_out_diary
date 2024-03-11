@@ -9,7 +9,9 @@ class CustomDropDownButton extends StatefulWidget {
   final String hint;
   final List<String> itemList;
   dynamic inputValue;
-  ///setState는 기본값 
+  VoidCallback selectChecker;
+
+  ///setState는 기본값
   final void Function(String?)? onChanged;
   final double width;
   final double height;
@@ -22,6 +24,7 @@ class CustomDropDownButton extends StatefulWidget {
     this.onChanged,
     this.width = 130,
     this.height = 60,
+    required this.selectChecker,
   });
 
   @override
@@ -63,6 +66,7 @@ class _CustomDropDownButtonState extends State<CustomDropDownButton> {
           value: selectedValue,
           onChanged: (value) {
             selectedValue = value;
+            widget.selectChecker();
             setState(() {
               _isSelectd = true;
               if (widget.onChanged != null) {
@@ -79,7 +83,7 @@ class _CustomDropDownButtonState extends State<CustomDropDownButton> {
                 color: _isSelectd
                     ? palette.cardColorYelGreen
                     : palette.bgFadeColor,
-                width: 3,
+                width: 2,
               ),
               borderRadius: BorderRadius.circular(14),
               color: palette.bgColor,

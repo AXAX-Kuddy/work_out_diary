@@ -1,4 +1,3 @@
-
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -11,6 +10,9 @@ class Store extends ChangeNotifier {
     "userName": "",
     "userSBD": "",
     "dotsPoint": "",
+    "age": "",
+    "weight": "",
+    "gender": "",
   };
 
   void changePage(int selectPage) {
@@ -25,6 +27,12 @@ class Store extends ChangeNotifier {
       userInfo["userSBD"] = value;
     } else if (command == "dots") {
       userInfo["dotsPoint"] = value;
+    } else if (command == "age") {
+      userInfo["age"] = value;
+    } else if (command == "weight") {
+      userInfo["weight"] = value;
+    } else if (command == "gender") {
+      userInfo["gender"] = value;
     }
   }
 
@@ -39,11 +47,11 @@ class Store extends ChangeNotifier {
     return true;
   }
 
-  double dotsCal(
-    num bodyWeight,
-    num weightLifted,
-    bool isFemale,
-  ) {
+  double dotsCal({
+    required num bodyWeight,
+    required num weightLifted,
+    required bool isFemale,
+  }) {
     var maleCoefficient = [
       -307.75076,
       24.0900756,

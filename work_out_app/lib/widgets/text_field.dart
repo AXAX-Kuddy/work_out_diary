@@ -58,7 +58,7 @@ class _CoustomTextFieldState extends State<CoustomTextField> {
               color: widget.isValid
                   ? palette.cardColorYelGreen
                   : palette.cardColorYelGreen,
-              width: 3,
+              width: 2,
             ),
           ),
           enabledBorder: OutlineInputBorder(
@@ -67,21 +67,21 @@ class _CoustomTextFieldState extends State<CoustomTextField> {
               color: widget.isValid
                   ? palette.cardColorYelGreen
                   : palette.bgFadeColor,
-              width: 3,
+              width: 2,
             ),
           ),
           errorBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(14),
             borderSide: const BorderSide(
               color: Colors.red,
-              width: 3,
+              width: 2,
             ),
           ),
           focusedErrorBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(14),
             borderSide: const BorderSide(
               color: Colors.red,
-              width: 3,
+              width: 2,
             ),
           ),
           hintText: widget.hintText,

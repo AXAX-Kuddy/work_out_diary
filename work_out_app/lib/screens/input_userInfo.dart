@@ -1,6 +1,8 @@
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import 'package:work_out_app/widgets/base_page.dart';
 import 'package:work_out_app/widgets/wide_button.dart';
 import 'package:work_out_app/widgets/widget_box.dart';
@@ -9,6 +11,8 @@ import 'package:line_icons/line_icons.dart';
 import 'package:line_icons/line_icon.dart';
 import 'package:work_out_app/widgets/text_field.dart';
 import 'package:work_out_app/widgets/drop_down.dart';
+import 'package:provider/provider.dart';
+import 'package:work_out_app/store.dart' as provider;
 
 class UserInfoPage extends StatefulWidget {
   const UserInfoPage({super.key});
@@ -18,22 +22,120 @@ class UserInfoPage extends StatefulWidget {
 }
 
 class _UserInfoPageState extends State<UserInfoPage> {
+  String calculateResult = "아직 입력하지 않은 값이 존재합니다.";
+  bool inputCheck = false;
+
   var userName;
   var age;
-  var userSBD = {};
+  num bodyWeight = 0;
+  Map<String, String> userSBD = {};
   var dotsPoint;
-  var isFemale;
+  bool isFemale = false;
   var itemList = [
     "남성",
     "여성",
   ];
+  late var dotsCal;
+  late var addInfo;
 
   final nameFormKey = GlobalKey<FormState>();
-  final sbdFormKey = GlobalKey<FormState>();
+  final _squatFormKey = GlobalKey<FormState>();
+  final _benchFormKey = GlobalKey<FormState>();
+  final _deadFormKey = GlobalKey<FormState>();
+  final _weightFormKey = GlobalKey<FormState>();
 
   bool nameFieldValid = false;
   bool ageFieldValid = false;
-  bool sbdValid = false;
+  bool _squatValid = false;
+  bool _benchValid = false;
+  bool _deadValid = false;
+  bool _weightValid = false;
+
+  bool genderChecker = false;
+  bool ageChecker = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    dotsCal = context.watch<provider.Store>().dotsCal;
+    addInfo = context.watch<provider.Store>().addInfo;
+  }
+
+  void changedGenderCheckCondition() {
+    setState(() {
+      genderChecker = true;
+    });
+  }
+
+  void changedAgeCheckerCondition() {
+    setState(() {
+      ageChecker = true;
+    });
+  }
+
+  void updateCalValue() {
+    final result = calculator(
+      dotsCal: dotsCal,
+      userSBD: userSBD,
+      bodyWeight: bodyWeight,
+      isFemale: isFemale,
+    );
+    setState(() {
+      if (_squatValid &&
+          _benchValid &&
+          _deadValid &&
+          _weightValid &&
+          genderChecker) {
+        inputCheck = true;
+        calculateResult = result;
+      } else {
+        inputCheck = false;
+      }
+    });
+  }
+
+  dynamic calculator({
+    required Function dotsCal,
+    required Map<String, String> userSBD,
+    required num bodyWeight,
+    required bool isFemale,
+  }) {
+    if (_squatValid &&
+        _benchValid &&
+        _deadValid &&
+        _weightValid &&
+        genderChecker) {
+      num weightLifted = 0;
+      for (var entry in userSBD.entries) {
+        weightLifted += num.parse(entry.value);
+      }
+      return dotsCal(
+        bodyWeight: bodyWeight,
+        weightLifted: weightLifted,
+        isFemale: isFemale,
+      ).toString();
+    } else {
+      return "아직 입력하지 않은 값이 존재합니다.";
+    }
+  }
+
+  void writeInfo() {
+    if (nameFieldValid != false &&
+        ageFieldValid != false &&
+        _squatValid != false &&
+        _benchValid != false &&
+        _deadValid != false &&
+        _weightValid != false &&
+        genderChecker != false) {
+      addInfo(command: "name", value: userName);
+      addInfo(command: "sbd", value: userSBD);
+      addInfo(command: "dots", value: calculateResult);
+      addInfo(command: "age", value: age);
+      addInfo(command: "weight", value: bodyWeight);
+      addInfo(command: "gender", value: isFemale);
+      context.read<provider.Store>().changePage(0);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -91,7 +193,9 @@ class _UserInfoPageState extends State<UserInfoPage> {
                     }
                   },
                   onSaved: (newValue) {
-                    userName = newValue;
+                    setState(() {
+                      userName = newValue;
+                    });
                   },
                   onFieldSubmitted: (String? value) {
                     final formKeyState = nameFormKey.currentState!;
@@ -109,6 +213,7 @@ class _UserInfoPageState extends State<UserInfoPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             CustomDropDownButton(
+              selectChecker: changedGenderCheckCondition,
               hint: "성별",
               itemList: itemList,
               onChanged: (value) {
@@ -121,89 +226,275 @@ class _UserInfoPageState extends State<UserInfoPage> {
                   // print(isFemale);
                   // print(value);
                 }
+                updateCalValue();
               },
             ),
             const SizedBox(
               width: 40,
             ),
             CustomDropDownButton(
+              selectChecker: changedAgeCheckerCondition,
               hint: "나이",
               itemList: List.generate(100, (index) => "${index + 1}"),
               onChanged: (value) {
                 age = value;
                 // print(value);
+                updateCalValue();
               },
             ),
           ],
         ),
         const SizedBox(
-          height: 30,
+          height: 20,
+        ),
+        Form(
+          key: _weightFormKey,
+          child: CoustomTextField(
+            width: 300,
+            height: 100,
+            isValid: _weightValid,
+            textInputType: TextInputType.number,
+            hintText: "몸무게 KG",
+            textStyle: TextStyle(
+              fontSize: 18,
+              color: palette.cardColorWhite,
+            ),
+            validator: (value) {
+              if (value!.isEmpty) {
+                setState(() {
+                  _weightValid = false;
+                });
+                return "값이 비었어요!";
+              } else {
+                setState(() {
+                  _weightValid = true;
+                });
+                return null;
+              }
+            },
+            onSaved: (newValue) {
+              setState(() {
+                bodyWeight = num.parse(newValue!);
+                updateCalValue();
+              });
+            },
+            onFieldSubmitted: (String? value) {
+              final formKeyState = _weightFormKey.currentState!;
+              if (formKeyState.validate()) {
+                formKeyState.save();
+              }
+            },
+          ),
         ),
         WidgetsBox(
           backgroundColor: palette.bgColor,
           inputContent: [
-            Form(
-              key: sbdFormKey,
-              child: Column(
-                children: [
-                  Row(
-                    children: [
+            Column(
+              children: [
+                Text(
+                  "PR",
+                  style: TextStyle(
+                    color: palette.cardColorWhite,
+                    fontSize: 30,
+                  ),
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                Row(
+                  children: [
+                    Column(
+                      children: [
+                        const Text(
+                          "스쿼트",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        Form(
+                          key: _squatFormKey,
+                          child: CoustomTextField(
+                            width: 105,
+                            height: 60,
+                            isValid: _squatValid,
+                            textInputType: TextInputType.number,
+                            textStyle: TextStyle(
+                              fontSize: 18,
+                              color: palette.cardColorWhite,
+                            ),
+                            validator: (value) {
+                              if (value!.isEmpty) {
+                                setState(() {
+                                  _squatValid = false;
+                                });
+                                return "값이 비었어요!";
+                              } else {
+                                setState(() {
+                                  _squatValid = true;
+                                });
+                                return null;
+                              }
+                            },
+                            onSaved: (newValue) {
+                              setState(() {
+                                userSBD["스쿼트"] = newValue!;
+                                updateCalValue();
+                              });
+                            },
+                            onFieldSubmitted: (String? value) {
+                              final formKeyState = _squatFormKey.currentState!;
+                              if (formKeyState.validate()) {
+                                formKeyState.save();
+                              }
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(
+                      width: 10,
+                    ),
+                    Column(
+                      children: [
+                        const Text(
+                          "벤치프레스",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        Form(
+                          key: _benchFormKey,
+                          child: CoustomTextField(
+                            width: 105,
+                            height: 60,
+                            isValid: _benchValid,
+                            textInputType: TextInputType.number,
+                            textStyle: TextStyle(
+                              fontSize: 18,
+                              color: palette.cardColorWhite,
+                            ),
+                            validator: (value) {
+                              if (value!.isEmpty) {
+                                setState(() {
+                                  _benchValid = false;
+                                });
+                                return "값이 비었어요!";
+                              } else {
+                                setState(() {
+                                  _benchValid = true;
+                                });
+                                return null;
+                              }
+                            },
+                            onSaved: (newValue) {
+                              setState(() {
+                                userSBD["벤치프레스"] = newValue!;
+                                updateCalValue();
+                              });
+                            },
+                            onFieldSubmitted: (String? value) {
+                              final formKeyState = _benchFormKey.currentState!;
+                              if (formKeyState.validate()) {
+                                formKeyState.save();
+                              }
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(
+                      width: 10,
+                    ),
+                    Column(
+                      children: [
+                        const Text(
+                          "데드리프트",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        Form(
+                          key: _deadFormKey,
+                          child: CoustomTextField(
+                            width: 105,
+                            height: 60,
+                            isValid: _deadValid,
+                            textInputType: TextInputType.number,
+                            textStyle: TextStyle(
+                              fontSize: 18,
+                              color: palette.cardColorWhite,
+                            ),
+                            validator: (value) {
+                              if (value!.isEmpty) {
+                                setState(() {
+                                  _deadValid = false;
+                                });
+                                return "값이 비었어요!";
+                              } else {
+                                setState(() {
+                                  _deadValid = true;
+                                });
+                                return null;
+                              }
+                            },
+                            onSaved: (newValue) {
+                              setState(() {
+                                userSBD["데드리프트"] = newValue!;
+                                updateCalValue();
+                              });
+                            },
+                            onFieldSubmitted: (String? value) {
+                              final formKeyState = _deadFormKey.currentState!;
+                              if (formKeyState.validate()) {
+                                formKeyState.save();
+                              }
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                Text(
+                  inputCheck ? "당신의 DOTS 포인트는 $calculateResult" : "",
+                  style: TextStyle(
+                    color: palette.cardColorWhite,
+                  ),
+                ),
+                const SizedBox(
+                  height: 60,
+                ),
+                const Visibility(
+                  visible: true,
+                  child: WideButton(
+                    width: 200,
+                    // onTapUpFunction: ,
+                    inputContent: [
                       Text(
-                        "PR",
+                        "저장하기",
                         style: TextStyle(
-                          color: palette.cardColorWhite,
-                          fontSize: 30,
+                          fontSize: 18,
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  Column(
-                    children: [
-                      const Text(
-                        "스쿼트",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 20,
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      CoustomTextField(
-                        width: 120,
-                        height: 100,
-                        isValid: sbdValid,
-                        textInputType: TextInputType.number,
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            setState(() {
-                              sbdValid = false;
-                            });
-                            return "값을 입력해주세요!";
-                          } else {
-                            setState(() {
-                              sbdValid = true;
-                            });
-                            return null;
-                          }
-                        },
-                        onSaved: (newValue) {
-                          userSBD["스쿼트"] = newValue!;
-                        },
-                        onFieldSubmitted: (String? value) {
-                          final formKeyState = sbdFormKey.currentState!;
-                          if (formKeyState.validate()) {
-                            formKeyState.save();
-                          }
-                        },
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+                )
+              ],
             ),
           ],
         )
