@@ -6,13 +6,40 @@ import 'package:work_out_app/make_program.dart';
 class Store extends ChangeNotifier {
   int pageNum = 0;
 
+  ///```
+  ///userInfo는 Map<String, dynamic>형식으로 되어있으며 Key값을 사용하여 자료를 쓸 수 있다.
+  ///```
+  ///
+  ///```
+  ///"userName" : String 유저이름 
+  ///```
+  ///
+  ///```
+  ///"userSBD" : {"스쿼트": String, "벤치프레스": String, "데드리프트": String} 사용 시 num 으로 바꿔야함.
+  ///```
+  ///
+  ///```
+  ///"dotsPoint" : String 닷츠포인트 
+  ///```
+  ///
+  ///```
+  ///"age" : String 나이 
+  ///```
+  ///
+  ///```
+  ///"weight" : String 몸무게 
+  ///```
+  ///
+  ///```
+  ///"isFemale" : bool 성별 유무
+  ///```
   Map<String, dynamic> userInfo = {
     "userName": "",
     "userSBD": "",
     "dotsPoint": "",
     "age": "",
     "weight": "",
-    "gender": "",
+    "isFemale": "",
   };
 
   void changePage(int selectPage) {
@@ -31,8 +58,8 @@ class Store extends ChangeNotifier {
       userInfo["age"] = value;
     } else if (command == "weight") {
       userInfo["weight"] = value;
-    } else if (command == "gender") {
-      userInfo["gender"] = value;
+    } else if (command == "isFemale") {
+      userInfo["isFemale"] = value;
     }
   }
 
@@ -45,6 +72,11 @@ class Store extends ChangeNotifier {
       }
     }
     return true;
+  }
+
+  void updateUserInfo(userInfo) {
+    userInfo;
+    notifyListeners();
   }
 
   double dotsCal({

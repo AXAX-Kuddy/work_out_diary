@@ -10,7 +10,7 @@ var cardColorWhite = const Color.fromARGB(226, 255, 255, 255);
 var cardColorGray = const Color.fromRGBO(73, 79, 86, 1);
 
 // 티어색
-var tierLow = Colors.brown;
+var tierLow = const Color.fromARGB(255, 119, 83, 70);
 var tierMiddleLow = const Color.fromRGBO(242, 136, 173, 1);
 var tierMiddle = const Color.fromRGBO(117, 99, 215, 1);
 var tierMiddleHigh = const Color.fromARGB(255, 245, 92, 49);

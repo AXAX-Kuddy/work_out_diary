@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -15,7 +17,16 @@ import 'package:provider/provider.dart';
 import 'package:work_out_app/store.dart' as provider;
 
 class UserInfoPage extends StatefulWidget {
-  const UserInfoPage({super.key});
+  Map<String, dynamic> userInfo;
+  Function(bool) updateInfo;
+  bool notWriteUserInfo;
+
+  UserInfoPage({
+    super.key,
+    required this.updateInfo,
+    required this.userInfo,
+    required this.notWriteUserInfo,
+  });
 
   @override
   State<UserInfoPage> createState() => _UserInfoPageState();
@@ -23,6 +34,7 @@ class UserInfoPage extends StatefulWidget {
 
 class _UserInfoPageState extends State<UserInfoPage> {
   String calculateResult = "아직 입력하지 않은 값이 존재합니다.";
+  bool dotsCheck = false;
   bool inputCheck = false;
 
   var userName;
@@ -45,7 +57,6 @@ class _UserInfoPageState extends State<UserInfoPage> {
   final _weightFormKey = GlobalKey<FormState>();
 
   bool nameFieldValid = false;
-  bool ageFieldValid = false;
   bool _squatValid = false;
   bool _benchValid = false;
   bool _deadValid = false;
@@ -73,6 +84,20 @@ class _UserInfoPageState extends State<UserInfoPage> {
     });
   }
 
+  bool allInputCheck() {
+    if (nameFieldValid &&
+        _squatValid &&
+        _benchValid &&
+        _deadValid &&
+        _weightValid &&
+        genderChecker &&
+        ageChecker) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   void updateCalValue() {
     final result = calculator(
       dotsCal: dotsCal,
@@ -86,9 +111,13 @@ class _UserInfoPageState extends State<UserInfoPage> {
           _deadValid &&
           _weightValid &&
           genderChecker) {
-        inputCheck = true;
+        dotsCheck = true;
         calculateResult = result;
+        if (allInputCheck()) {
+          inputCheck = true;
+        }
       } else {
+        dotsCheck = false;
         inputCheck = false;
       }
     });
@@ -120,20 +149,18 @@ class _UserInfoPageState extends State<UserInfoPage> {
   }
 
   void writeInfo() {
-    if (nameFieldValid != false &&
-        ageFieldValid != false &&
-        _squatValid != false &&
-        _benchValid != false &&
-        _deadValid != false &&
-        _weightValid != false &&
-        genderChecker != false) {
-      addInfo(command: "name", value: userName);
-      addInfo(command: "sbd", value: userSBD);
-      addInfo(command: "dots", value: calculateResult);
-      addInfo(command: "age", value: age);
-      addInfo(command: "weight", value: bodyWeight);
-      addInfo(command: "gender", value: isFemale);
-      context.read<provider.Store>().changePage(0);
+    if (allInputCheck()) {
+      print("완료");
+      setState(() {
+        addInfo(command: "name", value: userName);
+        addInfo(command: "sbd", value: userSBD);
+        addInfo(command: "dots", value: calculateResult);
+        addInfo(command: "age", value: age);
+        addInfo(command: "weight", value: bodyWeight);
+        addInfo(command: "isFemale", value: isFemale);
+        widget.updateInfo(widget.notWriteUserInfo);
+        context.read<provider.Store>().changePage(0);
+      });
     }
   }
 
@@ -176,18 +203,24 @@ class _UserInfoPageState extends State<UserInfoPage> {
                     if (value!.isEmpty) {
                       setState(() {
                         nameFieldValid = false;
+                        updateCalValue();
                       });
                       return "이름을 입력해주세요!";
                     } else if (value.length > 10) {
                       setState(() {
                         nameFieldValid = false;
+                        updateCalValue();
                       });
                       return "이름은 10글자 이하로 해주세요!";
                     } else if (!regex.hasMatch(value)) {
+                      setState(() {
+                        updateCalValue();
+                      });
                       return "특수문자를 제외해야해요!";
                     } else {
                       setState(() {
                         nameFieldValid = true;
+                        updateCalValue();
                       });
                       return null;
                     }
@@ -195,6 +228,7 @@ class _UserInfoPageState extends State<UserInfoPage> {
                   onSaved: (newValue) {
                     setState(() {
                       userName = newValue;
+                      updateCalValue();
                     });
                   },
                   onFieldSubmitted: (String? value) {
@@ -263,11 +297,13 @@ class _UserInfoPageState extends State<UserInfoPage> {
               if (value!.isEmpty) {
                 setState(() {
                   _weightValid = false;
+                  updateCalValue();
                 });
                 return "값이 비었어요!";
               } else {
                 setState(() {
                   _weightValid = true;
+                  updateCalValue();
                 });
                 return null;
               }
@@ -330,11 +366,13 @@ class _UserInfoPageState extends State<UserInfoPage> {
                               if (value!.isEmpty) {
                                 setState(() {
                                   _squatValid = false;
+                                  updateCalValue();
                                 });
                                 return "값이 비었어요!";
                               } else {
                                 setState(() {
                                   _squatValid = true;
+                                  updateCalValue();
                                 });
                                 return null;
                               }
@@ -342,6 +380,7 @@ class _UserInfoPageState extends State<UserInfoPage> {
                             onSaved: (newValue) {
                               setState(() {
                                 userSBD["스쿼트"] = newValue!;
+                                print(userSBD);
                                 updateCalValue();
                               });
                             },
@@ -385,11 +424,13 @@ class _UserInfoPageState extends State<UserInfoPage> {
                               if (value!.isEmpty) {
                                 setState(() {
                                   _benchValid = false;
+                                  updateCalValue();
                                 });
                                 return "값이 비었어요!";
                               } else {
                                 setState(() {
                                   _benchValid = true;
+                                  updateCalValue();
                                 });
                                 return null;
                               }
@@ -397,6 +438,7 @@ class _UserInfoPageState extends State<UserInfoPage> {
                             onSaved: (newValue) {
                               setState(() {
                                 userSBD["벤치프레스"] = newValue!;
+                                print(userSBD);
                                 updateCalValue();
                               });
                             },
@@ -440,11 +482,13 @@ class _UserInfoPageState extends State<UserInfoPage> {
                               if (value!.isEmpty) {
                                 setState(() {
                                   _deadValid = false;
+                                  updateCalValue();
                                 });
                                 return "값이 비었어요!";
                               } else {
                                 setState(() {
                                   _deadValid = true;
+                                  updateCalValue();
                                 });
                                 return null;
                               }
@@ -452,6 +496,7 @@ class _UserInfoPageState extends State<UserInfoPage> {
                             onSaved: (newValue) {
                               setState(() {
                                 userSBD["데드리프트"] = newValue!;
+                                print(userSBD);
                                 updateCalValue();
                               });
                             },
@@ -471,7 +516,7 @@ class _UserInfoPageState extends State<UserInfoPage> {
                   height: 10,
                 ),
                 Text(
-                  inputCheck ? "당신의 DOTS 포인트는 $calculateResult" : "",
+                  dotsCheck ? "당신의 DOTS 포인트는 $calculateResult" : "",
                   style: TextStyle(
                     color: palette.cardColorWhite,
                   ),
@@ -479,12 +524,12 @@ class _UserInfoPageState extends State<UserInfoPage> {
                 const SizedBox(
                   height: 60,
                 ),
-                const Visibility(
-                  visible: true,
+                Visibility(
+                  visible: inputCheck,
                   child: WideButton(
                     width: 200,
-                    // onTapUpFunction: ,
-                    inputContent: [
+                    onTapUpFunction: () => writeInfo(),
+                    inputContent: const [
                       Text(
                         "저장하기",
                         style: TextStyle(
