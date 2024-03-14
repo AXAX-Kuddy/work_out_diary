@@ -160,6 +160,7 @@ class _UserInfoPageState extends State<UserInfoPage> {
         addInfo(command: "isFemale", value: isFemale);
         widget.updateInfo(widget.notWriteUserInfo);
         context.read<provider.Store>().changePage(0);
+        Navigator.pop(context);
       });
     }
   }

@@ -148,7 +148,7 @@ class _SelectBoxState extends State<SelectBox> {
 
   void addWorkout(String name) {
     setState(() {
-      maked.Workout newWorkout = maked.Workout(name);
+      maked.Workout newWorkout = maked.Workout(name : name);
       dayInstance.addWorkout(newWorkout);
     });
   }

@@ -26,7 +26,7 @@ class _ProfileCardState extends State<ProfileCard> {
     "입문자",
     "중급자",
     "숙련자",
-    "선수",
+    "고급자",
   ];
 
   List<Color> colorList = [
@@ -40,22 +40,26 @@ class _ProfileCardState extends State<ProfileCard> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    userName = context.read<provider.Store>().userInfo["userName"];
-    _squatWeight = context.read<provider.Store>().userInfo["userSBD"]["스쿼트"];
-    _benchWeight = context.read<provider.Store>().userInfo["userSBD"]["벤치프레스"];
-    _deadWeight = context.read<provider.Store>().userInfo["userSBD"]["데드리프트"];
-    _dotsPoint = context.read<provider.Store>().userInfo["dotsPoint"];
+    userName = context.watch<provider.Store>().userInfo["userName"] ?? "유저";
+    _squatWeight =
+        context.watch<provider.Store>().userInfo["userSBD"]["스쿼트"] ?? "100.5";
+    _benchWeight =
+        context.watch<provider.Store>().userInfo["userSBD"]["벤치프레스"] ?? "100.5";
+    _deadWeight =
+        context.watch<provider.Store>().userInfo["userSBD"]["데드리프트"] ?? "100.5";
+    _dotsPoint =
+        context.watch<provider.Store>().userInfo["dotsPoint"] ?? "1000";
   }
 
   int userTier(String dotsPoint) {
     var point = num.parse(dotsPoint);
-    if (point > 400) {
+    if (point > 550) {
       return 4;
-    } else if (point > 300) {
+    } else if (point > 500) {
       return 3;
-    } else if (point > 200) {
+    } else if (point > 450) {
       return 2;
-    } else if (point > 100) {
+    } else if (point > 400) {
       return 1;
     } else {
       return 0;
@@ -129,25 +133,41 @@ class _ProfileCardState extends State<ProfileCard> {
             ),
           ],
         ),
-        Row(
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Text(
-              tierList[userTier(_dotsPoint)],
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.normal,
-              ),
+            Row(
+              children: [
+                Text(
+                  tierList[userTier(_dotsPoint)],
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(
+                  width: 5,
+                ),
+                Container(
+                  width: 15,
+                  height: 15,
+                  decoration: BoxDecoration(
+                    color: colorList[userTier(_dotsPoint)],
+                    borderRadius: BorderRadius.circular(50),
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(
-              width: 5,
-            ),
-            Container(
-              width: 15,
-              height: 15,
-              decoration: BoxDecoration(
-                color: colorList[userTier(_dotsPoint)],
-                borderRadius: BorderRadius.circular(50),
-              ),
+            Row(
+              children: [
+                Text(
+                  "$_dotsPoint PT",
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.normal,
+                  ),
+                ),
+              ],
             ),
           ],
         ),

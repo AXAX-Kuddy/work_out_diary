@@ -27,13 +27,12 @@ class RoutinePage extends StatefulWidget {
 }
 
 class _RoutinePageState extends State<RoutinePage> {
-  var weeks;
+  late List<maked.Week> weeks;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     weeks = widget.programInstance.weeks;
-    print(weeks);
   }
 
   void addWeeks(int index) {
@@ -77,6 +76,8 @@ class _RoutinePageState extends State<RoutinePage> {
             itemBuilder: (BuildContext context, int index) {
               return LayoutBuilder(
                   builder: (BuildContext context, BoxConstraints constraints) {
+                maked.Week week = weeks[index];
+                List<maked.Day>? days = week.days;
                 return SizedBox(
                   height: 300,
                   child: Column(
@@ -131,15 +132,17 @@ class _RoutinePageState extends State<RoutinePage> {
                           height: 180,
                           child: ListView.separated(
                             physics: const NeverScrollableScrollPhysics(),
+                            separatorBuilder:
+                                (BuildContext context, int index) =>
+                                    const Divider(),
+                            itemCount: days!.isEmpty ? 1 : days.length,
                             itemBuilder: (BuildContext context, int index) {
-                              var userSelectWorkOut = context
-                                  .read<provider.UserProgramListStore>()
-                                  .userSelectWorkOut;
-                              if (userSelectWorkOut.isNotEmpty) {
+                              if (days.isNotEmpty) {
+                                maked.Day day = week.getDay(index);
                                 return Row(
                                   children: [
                                     Text(
-                                      "${context.read<provider.UserProgramListStore>().userSelectWorkOut[index]}",
+                                      "${day.dayIndex + 1}일차",
                                       style: const TextStyle(
                                         color: Colors.white,
                                       ),
@@ -159,18 +162,6 @@ class _RoutinePageState extends State<RoutinePage> {
                                 );
                               }
                             },
-                            separatorBuilder:
-                                (BuildContext context, int index) =>
-                                    const Divider(),
-                            itemCount: context
-                                    .read<provider.UserProgramListStore>()
-                                    .userSelectWorkOut
-                                    .isEmpty
-                                ? 1
-                                : context
-                                    .read<provider.UserProgramListStore>()
-                                    .userSelectWorkOut
-                                    .length,
                           ),
                         ),
                       ),

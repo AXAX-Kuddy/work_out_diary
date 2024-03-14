@@ -6,12 +6,18 @@ import 'package:work_out_app/make_program.dart';
 class Store extends ChangeNotifier {
   int pageNum = 0;
 
+  void changePage(int selectPage) {
+    pageNum = selectPage;
+    print("페이지 전환 : $pageNum 페이지");
+    notifyListeners();
+  }
+
   ///```
   ///userInfo는 Map<String, dynamic>형식으로 되어있으며 Key값을 사용하여 자료를 쓸 수 있다.
   ///```
   ///
   ///```
-  ///"userName" : String 유저이름 
+  ///"userName" : String 유저이름
   ///```
   ///
   ///```
@@ -19,33 +25,33 @@ class Store extends ChangeNotifier {
   ///```
   ///
   ///```
-  ///"dotsPoint" : String 닷츠포인트 
+  ///"dotsPoint" : String 닷츠포인트
   ///```
   ///
   ///```
-  ///"age" : String 나이 
+  ///"age" : String 나이
   ///```
   ///
   ///```
-  ///"weight" : String 몸무게 
+  ///"weight" : String 몸무게
   ///```
   ///
   ///```
   ///"isFemale" : bool 성별 유무
   ///```
   Map<String, dynamic> userInfo = {
-    "userName": "",
-    "userSBD": "",
-    "dotsPoint": "",
-    "age": "",
-    "weight": "",
-    "isFemale": "",
+    "editing": false,
+    "userName": "유저",
+    "userSBD": {
+      "스쿼트": "100.5",
+      "벤치프레스": "100.5",
+      "데드리프트": "100.5",
+    },
+    "dotsPoint": "1000",
+    "age": "99",
+    "weight": "100",
+    "isFemale": false,
   };
-
-  void changePage(int selectPage) {
-    pageNum = selectPage;
-    notifyListeners();
-  }
 
   void addInfo({required String command, dynamic value}) {
     if (command == "name") {
@@ -64,14 +70,12 @@ class Store extends ChangeNotifier {
   }
 
   bool infoChecker(Map<String, dynamic> userInfo) {
-    for (var info in userInfo.entries) {
-      if (info.value is String && info.value.isEmpty) {
-        return false;
-      } else if (info.value is List && info.value.isEmpty) {
-        return false;
-      }
+    var editCheck = userInfo["editing"];
+    if (editCheck == false) {
+      return false;
+    } else {
+      return true;
     }
-    return true;
   }
 
   void updateUserInfo(userInfo) {

@@ -26,62 +26,67 @@ class Program {
 
 class Week {
   late int weekIndex;
-  List<Day> days = [];
+  late List<Day>? days;
 
   Week({
     this.weekIndex = 0,
-  });
+    List<Day>? days,
+  }) : days = days ?? [];
 
   void addDay(Day day) {
-    days.add(day);
+    days?.add(day);
   }
 
   void removeDay(Day day) {
-    days.remove(day);
+    days?.remove(day);
   }
 
   Day getDay(int index) {
-    return days[index];
+    return days![index];
   }
 }
 
 class Day {
   int dayIndex;
-  List<Workout> workouts = [];
+  List<Workout>? workouts;
 
   Day({
     this.dayIndex = 0,
-  });
+    List<Workout>? workouts,
+  }) : workouts = workouts ?? [];
 
   void addWorkout(Workout workout) {
-    workouts.add(workout);
+    workouts?.add(workout);
   }
 
   void removeWorkout(Workout workout) {
-    workouts.remove(workout);
+    workouts?.remove(workout);
   }
 
   Workout getWorkout(int index) {
-    return workouts[index];
+    return workouts![index];
   }
 }
 
 class Workout {
-  String name;
-  List<Set> sets = [];
+  String? name;
+  List<Set>? sets = [];
 
-  Workout(this.name);
+  Workout({
+    this.name,
+    List<Set>? sets,
+  }) : sets = sets ?? [];
 
   void addSet(Set set) {
-    sets.add(set);
+    sets?.add(set);
   }
 
   void removeSet(Set set) {
-    sets.remove(set);
+    sets?.remove(set);
   }
 
   Set getSet(int index) {
-    return sets[index];
+    return sets![index];
   }
 }
 
