@@ -13,15 +13,11 @@ import 'package:go_router/go_router.dart';
 import 'package:work_out_app/make_program.dart' as maked;
 
 class DayliPage extends StatefulWidget {
-  var programInstance;
-  final List weeks;
-  final int weekNum;
+  final maked.Week weekInstance;
 
-  DayliPage({
+  const DayliPage({
     super.key,
-    required this.weeks,
-    required this.weekNum,
-    required this.programInstance,
+    required this.weekInstance,
   });
 
   @override
@@ -29,38 +25,40 @@ class DayliPage extends StatefulWidget {
 }
 
 class _DayliPageState extends State<DayliPage> {
-  var dayliNum = 0;
-  var day;
-  var weekInstance;
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    weekInstance = widget.programInstance.getWeek(widget.weekNum);
-    day = weekInstance.days;
-  }
+  late List<maked.Day>? days = widget.weekInstance.days;
 
   void addDay(int index) {
     setState(() {
       maked.Day newDay = maked.Day(
         dayIndex: index,
       );
-      weekInstance.addDay(newDay);
+      widget.weekInstance.addDay(newDay);
+      print("추가된 일차는 : ${newDay.dayIndex}");
+      print("총 일차는 : ${days!.length}");
     });
   }
 
-  void deleteDay(int index) {
-    if (day.isNotEmpty && index < day.length) {
-      var getDay = weekInstance.getDay(index);
+  void deleteDay(maked.Day day) {
+    if (days!.isNotEmpty) {
       setState(() {
-        weekInstance.removeDay(getDay);
+        int deleteIndex = day.dayIndex;
+        widget.weekInstance.removeDay(day);
+        print("삭제된 일차는 : ${day.dayIndex}");
+
+        //삭제되면 인스턴스 내 dayIndex를 다시 설정
+        for (int i = 0; i < days!.length; i++) {
+          if (days![i].dayIndex > deleteIndex) {
+            days![i].dayIndex--;
+          }
+        }
+        print("총 일차는 : ${days!.length}");
       });
     }
   }
 
   void changedListner() {
     setState(() {
-      day;
+      days;
     });
   }
 
@@ -73,7 +71,7 @@ class _DayliPageState extends State<DayliPage> {
           height: 60,
           inputContent: [
             Text(
-              "${widget.weekNum + 1} 주차",
+              "${widget.weekInstance.weekIndex + 1} 주차",
               style: const TextStyle(
                 color: Colors.white,
                 fontSize: 34,
@@ -84,10 +82,16 @@ class _DayliPageState extends State<DayliPage> {
         ),
         Expanded(
           child: ListView.builder(
-            itemCount: day.length,
+            itemCount: days!.length,
             itemBuilder: (BuildContext context, int index) {
               return LayoutBuilder(
                 builder: (context, constraints) {
+                  /// 일차 인스턴스
+                  maked.Day day = widget.weekInstance.days![index];
+
+                  ///일차인스턴스 안 운동 목록
+                  List<maked.Workout>? workouts = day.workouts;
+
                   return WidgetsBox(
                     backgroundColor: palette.bgColor,
                     border: Border.all(
@@ -102,7 +106,7 @@ class _DayliPageState extends State<DayliPage> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Text(
-                                  "${index + 1}일차",
+                                  "${day.dayIndex + 1}일차",
                                   style: const TextStyle(
                                     color: Colors.white,
                                     fontSize: 20,
@@ -115,11 +119,38 @@ class _DayliPageState extends State<DayliPage> {
                               width: constraints.maxWidth,
                               height: 150,
                               child: ListView.builder(
-                                itemCount: day[widget.weekNum].workouts.isEmpty
-                                    ? 1
-                                    : day[widget.weekNum].workouts.length,
+                                itemCount:
+                                    workouts!.isEmpty ? 1 : workouts.length,
                                 itemBuilder: (BuildContext context, int index) {
-                                  if (day[widget.weekNum].workouts.isEmpty) {
+                                  if (workouts.isNotEmpty) {
+                                    return GestureDetector(
+                                        onTap: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) => DailyDetail(
+                                                dayNum: index,
+                                                workouts: workouts,
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                        child: SizedBox(
+                                          height: 150,
+                                          child: ListView.separated(
+                                            itemCount: workouts.length,
+                                            separatorBuilder:
+                                                (BuildContext context,
+                                                        int index) =>
+                                                    const Divider(),
+                                            itemBuilder: (context, index) {
+                                              maked.Workout workout =
+                                                  workouts[index];
+                                              return Text("${workout.name}");
+                                            },
+                                          ),
+                                        ));
+                                  } else {
                                     return TextButton(
                                       onPressed: () {
                                         Navigator.push(
@@ -128,7 +159,6 @@ class _DayliPageState extends State<DayliPage> {
                                               builder: ((context) {
                                             return SelectWorkOut(
                                               changedListner: changedListner,
-                                              dayNum: index,
                                               dayInstance: day,
                                             );
                                           })),
@@ -141,36 +171,13 @@ class _DayliPageState extends State<DayliPage> {
                                         ),
                                       ),
                                     );
-                                  } else {
-                                    return GestureDetector(
-                                      onTap: () {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) => DailyDetail(
-                                              dayNum: index,
-                                              workouts:
-                                                  day[widget.weekNum].workouts,
-                                            ),
-                                          ),
-                                        );
-                                      },
-                                      child: Text(
-                                        day[widget.weekNum]
-                                            .workouts[index]
-                                            .name,
-                                        style: TextStyle(
-                                          color: palette.cardColorWhite,
-                                        ),
-                                      ),
-                                    );
                                   }
                                 },
                               ),
                             ),
                             TextButton(
                               onPressed: () {
-                                deleteDay(index);
+                                deleteDay(day);
                               },
                               child: const Text(
                                 "일차 삭제하기",
@@ -188,7 +195,7 @@ class _DayliPageState extends State<DayliPage> {
         ),
         TextButton(
           onPressed: () {
-            addDay(day.length);
+            addDay(days!.length);
           },
           child: const Text(
             "일차 추가하기",

@@ -119,14 +119,17 @@ class Store extends ChangeNotifier {
   }
 }
 
-class WorkOutListStore extends ChangeNotifier {
-  List workOut = [
-    "스쿼트",
-    "데드리프트",
-    "벤치프레스",
-    "밀리터리 프레스",
-    "바벨 로우",
-  ];
+class WorkoutListStore extends ChangeNotifier {
+  String comp= "컴피티션";
+
+  Map<String, List<String>> workouts = {
+    "하체": ["스쿼트", "컨벤셔널 데드리프트"],
+    "등": ["바벨로우", "랫 풀 다운"],
+    "가슴": ["벤치프레스", "인클라인 벤치프레스"],
+    "어깨": ["스탠딩 밀리터리 프레스", "덤벨 숄더 프레스"],
+    "이두" : ["바벨컬, 해머컬"],
+    "삼두": ["클로즈 그립 벤치프레스", "케이블 푸시 다운"],
+  };
 }
 
 class UserProgramListStore extends ChangeNotifier {

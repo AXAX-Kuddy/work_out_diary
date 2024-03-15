@@ -29,7 +29,7 @@ void main() {
           create: (context) => provider.Store(),
         ),
         ChangeNotifierProvider(
-          create: (context) => provider.WorkOutListStore(),
+          create: (context) => provider.WorkoutListStore(),
         ),
         ChangeNotifierProvider(
           create: (context) => provider.UserProgramListStore(),
@@ -63,20 +63,20 @@ class _MyAppState extends State<MyApp> {
     userInfo = context.read<provider.Store>().userInfo;
     infoChecker = context.read<provider.Store>().infoChecker;
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (infoChecker(userInfo) == false && notWriteUserInfo) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => UserInfoPage(
-              updateInfo: updateUserInfo,
-              userInfo: userInfo,
-              notWriteUserInfo: notWriteUserInfo,
-            ),
-          ),
-        );
-      }
-    });
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    //   if (infoChecker(userInfo) == false && notWriteUserInfo) {
+    //     Navigator.push(
+    //       context,
+    //       MaterialPageRoute(
+    //         builder: (context) => UserInfoPage(
+    //           updateInfo: updateUserInfo,
+    //           userInfo: userInfo,
+    //           notWriteUserInfo: notWriteUserInfo,
+    //         ),
+    //       ),
+    //     );
+    //   }
+    // });
   }
 
   @override

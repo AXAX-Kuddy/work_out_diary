@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:work_out_app/screens/plan_screen_widgets.dart/select_work_out_page.dart';
 import 'package:work_out_app/screens/plan_screen_widgets.dart/week_in_dayli_page.dart';
-import 'package:work_out_app/test.dart';
 import 'package:work_out_app/widgets/base_page.dart';
 import 'package:work_out_app/widgets/widget_box.dart';
 import 'package:work_out_app/palette.dart' as palette;
@@ -15,7 +14,7 @@ import 'package:line_icons/line_icons.dart';
 import 'package:work_out_app/make_program.dart' as maked;
 
 class RoutinePage extends StatefulWidget {
-  final programInstance;
+  final maked.Program programInstance;
 
   const RoutinePage({
     super.key,
@@ -27,13 +26,7 @@ class RoutinePage extends StatefulWidget {
 }
 
 class _RoutinePageState extends State<RoutinePage> {
-  late List<maked.Week> weeks;
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    weeks = widget.programInstance.weeks;
-  }
+  late List<maked.Week>? weeks = widget.programInstance.weeks;
 
   void addWeeks(int index) {
     setState(() {
@@ -41,13 +34,25 @@ class _RoutinePageState extends State<RoutinePage> {
         weekIndex: index,
       );
       widget.programInstance.addWeek(newWeek);
+      print("추가된 주차는 : ${newWeek.weekIndex}");
+      print("총 주차는 : ${weeks!.length}개");
     });
   }
 
-  void deleteWeek(int index) {
-    if (weeks.isNotEmpty && index < weeks.length) {
+  void deleteWeek(maked.Week week) {
+    if (weeks!.isNotEmpty) {
       setState(() {
-        weeks.removeAt(index);
+        int deleteIndex = week.weekIndex;
+        widget.programInstance.removeWeek(week);
+        print("삭제된 주차는 : ${week.weekIndex}");
+
+        //삭제되면 인스턴스 내 weekIndex를 다시 설정
+        for (int i = 0; i < weeks!.length; i++) {
+          if (weeks![i].weekIndex > deleteIndex) {
+            weeks![i].weekIndex--;
+          }
+        }
+        print("총 주차는 : ${weeks!.length}개");
       });
     }
   }
@@ -72,12 +77,16 @@ class _RoutinePageState extends State<RoutinePage> {
         ),
         Expanded(
           child: ListView.builder(
-            itemCount: weeks.length,
+            itemCount: weeks!.length,
             itemBuilder: (BuildContext context, int index) {
               return LayoutBuilder(
                   builder: (BuildContext context, BoxConstraints constraints) {
-                maked.Week week = weeks[index];
+                ///주차 인스턴스
+                maked.Week week = weeks![index];
+
+                ///주차 인스턴스 안에 일차 목록
                 List<maked.Day>? days = week.days;
+
                 return SizedBox(
                   height: 300,
                   child: Column(
@@ -91,7 +100,7 @@ class _RoutinePageState extends State<RoutinePage> {
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               Text(
-                                "${index + 1}주차",
+                                "${week.weekIndex + 1}주차",
                                 style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 20,
@@ -103,7 +112,8 @@ class _RoutinePageState extends State<RoutinePage> {
                               ),
                               IconButton(
                                 onPressed: () {
-                                  deleteWeek(index);
+                                  // deleteWeek(week.weekIndex);
+                                  deleteWeek(week);
                                 },
                                 icon: const Icon(
                                   LineIcons.trash,
@@ -120,9 +130,7 @@ class _RoutinePageState extends State<RoutinePage> {
                             context,
                             MaterialPageRoute(
                               builder: (context) => DayliPage(
-                                programInstance: widget.programInstance,
-                                weeks: weeks,
-                                weekNum: index,
+                                weekInstance: week,
                               ),
                             ),
                           );
@@ -174,7 +182,7 @@ class _RoutinePageState extends State<RoutinePage> {
         ),
         TextButton(
           onPressed: () {
-            addWeeks(weeks.length);
+            addWeeks(weeks!.length);
             print(weeks);
           },
           child: const Text("+주차 추가"),
