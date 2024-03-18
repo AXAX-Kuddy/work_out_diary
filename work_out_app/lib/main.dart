@@ -32,6 +32,9 @@ void main() {
           create: (context) => provider.WorkoutListStore(),
         ),
         ChangeNotifierProvider(
+          create: (context) => provider.WorkoutDetail(),
+        ),
+        ChangeNotifierProvider(
           create: (context) => provider.UserProgramListStore(),
         ),
       ],

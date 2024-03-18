@@ -25,13 +25,36 @@ class SelectWorkOut extends StatefulWidget {
 }
 
 class _SelectWorkOutState extends State<SelectWorkOut> {
-  late Map<String, List<String>> workoutList;
+  List<maked.Workout> tempoList = [];
+
+  late maked.Day day;
+  late Map<String, List<provider.WorkoutDetail>> workoutList;
+  late provider.WorkoutDetail workoutDetail;
+
+  void managementTempoList(
+      {required maked.Workout workout, required String command}) {
+    if (command == "add") {
+      tempoList.add(workout);
+      print(workout.name);
+    } else if (command == "remove") {
+      tempoList.remove(workout);
+      print(workout.name);
+    } else {
+      print("커맨드가 잘못 입력됨");
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    day = widget.dayInstance;
+  }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     workoutList = context.read<provider.WorkoutListStore>().workouts;
-    print(workoutList.length);
+    workoutDetail = context.read<provider.WorkoutDetail>();
   }
 
   @override
@@ -66,7 +89,7 @@ class _SelectWorkOutState extends State<SelectWorkOut> {
             }),
           ).show(context);
           setState(() {
-            widget.dayInstance.workouts = [];
+            day.workouts = [];
           });
           return Future.value(false);
         }
@@ -96,10 +119,51 @@ class _SelectWorkOutState extends State<SelectWorkOut> {
             ),
           ),
           children: [
-            WidgetsBox(
-              backgroundColor: palette.bgColor,
-              height: 50,
-              inputContent: const [],
+            Expanded(
+              child: TabBarView(children: [
+                WorkoutList(
+                  part: "하체",
+                  workoutList: workoutList,
+                  day: day,
+                  tempoList: tempoList,
+                  managementTempoList: managementTempoList,
+                ),
+                WorkoutList(
+                  part: "등",
+                  workoutList: workoutList,
+                  day: day,
+                  tempoList: tempoList,
+                  managementTempoList: managementTempoList,
+                ),
+                WorkoutList(
+                  part: "가슴",
+                  workoutList: workoutList,
+                  day: day,
+                  tempoList: tempoList,
+                  managementTempoList: managementTempoList,
+                ),
+                WorkoutList(
+                  part: "어깨",
+                  workoutList: workoutList,
+                  day: day,
+                  tempoList: tempoList,
+                  managementTempoList: managementTempoList,
+                ),
+                WorkoutList(
+                  part: "이두",
+                  workoutList: workoutList,
+                  day: day,
+                  tempoList: tempoList,
+                  managementTempoList: managementTempoList,
+                ),
+                WorkoutList(
+                  part: "삼두",
+                  workoutList: workoutList,
+                  day: day,
+                  tempoList: tempoList,
+                  managementTempoList: managementTempoList,
+                ),
+              ]),
             ),
           ],
         ),
@@ -108,92 +172,145 @@ class _SelectWorkOutState extends State<SelectWorkOut> {
   }
 }
 
-// class SelectBox extends StatefulWidget {
-//   final String workoutName;
-//   final dayNum;
+class WorkoutList extends StatelessWidget {
+  final String part;
+  final Map<String, List<provider.WorkoutDetail>> workoutList;
+  List<maked.Workout> tempoList;
+  void Function({required maked.Workout workout, required String command})
+      managementTempoList;
 
-//   var dayInstance;
-//   var index;
+  final maked.Day day;
 
-//   SelectBox({
-//     super.key,
-//     required this.workoutName,
-//     required this.dayInstance,
-//     required this.index,
-//     required this.dayNum,
-//   });
+  WorkoutList({
+    super.key,
+    required this.part,
+    required this.workoutList,
+    required this.day,
+    required this.tempoList,
+    required this.managementTempoList,
+  });
 
-//   @override
-//   State<SelectBox> createState() => _SelectBoxState();
-// }
+  @override
+  Widget build(BuildContext context) {
+    return ListView.separated(
+      itemCount: workoutList[part]!.length,
+      separatorBuilder: (context, index) {
+        return const Divider();
+      },
+      itemBuilder: (context, index) {
+        return SelectBox(
+          workoutName: workoutList[part]![index].detail["종목"],
+          day: day,
+          index: index,
+          tempoList: tempoList,
+          managementTempoList: managementTempoList,
+        );
+      },
+    );
+  }
+}
 
-// class _SelectBoxState extends State<SelectBox> {
-//   bool checker = false;
-//   var dayInstance;
+class SelectBox extends StatefulWidget {
+  final String workoutName;
+  final maked.Day day;
+  final int index;
 
-//   @override
-//   void didChangeDependencies() {
-//     dayInstance = widget.dayInstance[widget.dayNum];
-//   }
+  List<maked.Workout> tempoList;
+  void Function({required maked.Workout workout, required String command})
+      managementTempoList;
 
-//   void addWorkout(String name) {
-//     setState(() {
-//       maked.Workout newWorkout = maked.Workout(name: name);
-//       dayInstance.addWorkout(newWorkout);
-//     });
-//   }
+  SelectBox({
+    super.key,
+    required this.workoutName,
+    required this.day,
+    required this.index,
+    required this.tempoList,
+    required this.managementTempoList,
+  });
 
-//   void deleteWorkout(int index) {
-//     if (dayInstance.workouts.isNotEmpty &&
-//         index < dayInstance.workouts.length) {
-//       setState(() {
-//         var workout = dayInstance.getWorkout(index);
-//         dayInstance.removeWorkout(workout);
-//       });
-//     }
-//   }
+  @override
+  State<SelectBox> createState() => _SelectBoxState();
+}
 
-//   @override
-//   Widget build(BuildContext context) {
-//     return GestureDetector(
-//       onTap: () {
-//         if (checker == false) {
-//           checker = true;
-//           addWorkout(widget.workoutName);
-//           print(dayInstance.workouts);
-//         } else if (checker == true) {
-//           checker = false;
-//           deleteWorkout(widget.index);
-//           print(dayInstance.workouts);
-//         }
-//       },
-//       child: Container(
-//         height: 60,
-//         padding: const EdgeInsets.all(15),
-//         decoration: BoxDecoration(
-//           border: Border.all(
-//             color: checker ? palette.cardColorYelGreen : palette.cardColorWhite,
-//           ),
-//           borderRadius: BorderRadius.circular(22),
-//         ),
-//         child: Row(
-//           children: [
-//             Text(
-//               widget.workoutName,
-//               style: const TextStyle(
-//                 fontSize: 18,
-//                 color: Colors.white,
-//               ),
-//             ),
-//             const Spacer(),
-//             Icon(
-//               checker ? LineIcons.check : LineIcons.circle,
-//               color:
-//                   checker ? palette.cardColorYelGreen : palette.cardColorWhite,
-//             )
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }
+class _SelectBoxState extends State<SelectBox> {
+  bool _checker = false;
+  late maked.Day day;
+  late void Function({required maked.Workout workout, required String command})
+      managementTempoList;
+
+  @override
+  void initState() {
+    super.initState();
+    day = widget.day;
+    managementTempoList = widget.managementTempoList;
+  }
+
+  void addWorkout() {
+    setState(() {
+      maked.Workout newWorkout = maked.Workout(
+        name: widget.workoutName,
+      );
+      managementTempoList(
+        command: "add",
+        workout: newWorkout,
+      );
+    });
+    print(widget.tempoList);
+  }
+
+  void deleteWorkout(String name) {
+    if (widget.tempoList.isNotEmpty) {
+      setState(() {
+        widget.tempoList.removeWhere((workout) => workout.name == name);
+      });
+    }
+    print(widget.tempoList);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        if (_checker == false) {
+          setState(() {
+            _checker = true;
+            addWorkout();
+          });
+        } else {
+          setState(() {
+            _checker = false;
+            deleteWorkout(widget.workoutName);
+          });
+        }
+      },
+      child: Container(
+        height: 60,
+        padding: const EdgeInsets.all(15),
+        decoration: BoxDecoration(
+          border: Border.all(
+            color:
+                _checker ? palette.cardColorYelGreen : palette.cardColorWhite,
+          ),
+          borderRadius: BorderRadius.circular(22),
+        ),
+        child: Row(
+          children: [
+            Text(
+              widget.workoutName,
+              style: const TextStyle(
+                fontSize: 18,
+                color: Colors.white,
+              ),
+            ),
+            const Spacer(),
+            Icon(
+              _checker ? LineIcons.check : LineIcons.circle,
+              color:
+                  _checker ? palette.cardColorYelGreen : palette.cardColorWhite,
+            )
+          ],
+        ),
+      ),
+    );
+  }
+}

@@ -119,16 +119,81 @@ class Store extends ChangeNotifier {
   }
 }
 
-class WorkoutListStore extends ChangeNotifier {
-  String comp= "컴피티션";
+class WorkoutDetail extends ChangeNotifier {
+  final String? workoutName;
+  final DateTime? date;
+  final String? notiMemo;
+  final String? memo;
+  WorkoutDetail({
+    this.workoutName,
+    this.date,
+    this.notiMemo,
+    this.memo,
+  });
 
-  Map<String, List<String>> workouts = {
-    "하체": ["스쿼트", "컨벤셔널 데드리프트"],
-    "등": ["바벨로우", "랫 풀 다운"],
-    "가슴": ["벤치프레스", "인클라인 벤치프레스"],
-    "어깨": ["스탠딩 밀리터리 프레스", "덤벨 숄더 프레스"],
-    "이두" : ["바벨컬, 해머컬"],
-    "삼두": ["클로즈 그립 벤치프레스", "케이블 푸시 다운"],
+  dynamic get detail => {
+        "종목": workoutName,
+        "전체메모": notiMemo,
+        "날짜메모": [
+          {
+            "날짜": date,
+            "내용": memo,
+          },
+        ],
+      };
+
+  void addMemo({DateTime? date, String? memo, required String location}) {
+    if (location == "noti") {
+      detail["전체메모"] = memo;
+    } else if (location == "date") {
+      var writeMemo = {"날짜": date, "내용": memo};
+      detail["날짜메모"].add(writeMemo);
+    }
+    notifyListeners();
+  }
+
+  void editMemo(
+      {required DateTime date, String? memo, required String location}) {
+    if (location == "noti") {
+      detail["전체메모"] = memo;
+    } else if (location == "date") {
+      for (int i = 0; i < detail["날짜메모"].length; i++) {
+        if (detail["날짜메모"]["날짜"] == date) {
+          detail["날짜메모"][date] = date;
+          detail["날짜메모"]["내용"] = memo;
+        }
+      }
+    }
+    notifyListeners();
+  }
+}
+
+class WorkoutListStore extends ChangeNotifier {
+  var workouts = {
+    "하체": [
+      WorkoutDetail(workoutName: "스쿼트"),
+      WorkoutDetail(workoutName: "데드리프트"),
+    ],
+    "등": [
+      WorkoutDetail(workoutName: "랫 풀 다운"),
+      WorkoutDetail(workoutName: "바벨 로우"),
+    ],
+    "가슴": [
+      WorkoutDetail(workoutName: "벤치프레스"),
+      WorkoutDetail(workoutName: "인클라인 벤치프레스"),
+    ],
+    "어깨": [
+      WorkoutDetail(workoutName: "밀리터리 프레스"),
+      WorkoutDetail(workoutName: "사이드 레터럴 레이즈"),
+    ],
+    "이두": [
+      WorkoutDetail(workoutName: "바벨컬"),
+      WorkoutDetail(workoutName: "해머컬"),
+    ],
+    "삼두": [
+      WorkoutDetail(workoutName: "클로즈 그립 벤치프레스"),
+      WorkoutDetail(workoutName: "트라이셉스 푸시 다운"),
+    ],
   };
 }
 
