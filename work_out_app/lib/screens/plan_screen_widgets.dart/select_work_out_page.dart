@@ -12,12 +12,14 @@ import 'package:work_out_app/make_program.dart' as maked;
 
 class SelectWorkOut extends StatefulWidget {
   final Function changedListner;
-  final maked.Day dayInstance;
+  final maked.Day? dayInstance;
+  final Function addFunction;
 
   const SelectWorkOut({
     super.key,
-    required this.dayInstance,
+    this.dayInstance,
     required this.changedListner,
+    required this.addFunction,
   });
 
   @override
@@ -27,7 +29,7 @@ class SelectWorkOut extends StatefulWidget {
 class _SelectWorkOutState extends State<SelectWorkOut> {
   List<maked.Workout> tempoList = [];
 
-  late maked.Day day;
+  late maked.Day? day;
   late Map<String, List<provider.WorkoutDetail>> workoutList;
   late provider.WorkoutDetail workoutDetail;
 
@@ -89,7 +91,7 @@ class _SelectWorkOutState extends State<SelectWorkOut> {
             }),
           ).show(context);
           setState(() {
-            day.workouts = [];
+            day!.workouts = [];
           });
           return Future.value(false);
         }
@@ -165,6 +167,17 @@ class _SelectWorkOutState extends State<SelectWorkOut> {
                 ),
               ]),
             ),
+            TextButton(
+              onPressed: () async {
+                for (int i = 0; i < tempoList.length; i++) {
+                  await widget.addFunction(tempoList[i]);
+                }
+                widget.changedListner();
+                // ignore: use_build_context_synchronously
+                Navigator.pop(context);
+              },
+              child: const Text("운동 추가하기"),
+            ),
           ],
         ),
       ),
@@ -179,7 +192,7 @@ class WorkoutList extends StatelessWidget {
   void Function({required maked.Workout workout, required String command})
       managementTempoList;
 
-  final maked.Day day;
+  final maked.Day? day;
 
   WorkoutList({
     super.key,
@@ -212,7 +225,7 @@ class WorkoutList extends StatelessWidget {
 
 class SelectBox extends StatefulWidget {
   final String workoutName;
-  final maked.Day day;
+  final maked.Day? day;
   final int index;
 
   List<maked.Workout> tempoList;
@@ -234,7 +247,7 @@ class SelectBox extends StatefulWidget {
 
 class _SelectBoxState extends State<SelectBox> {
   bool _checker = false;
-  late maked.Day day;
+  late maked.Day? day;
   late void Function({required maked.Workout workout, required String command})
       managementTempoList;
 

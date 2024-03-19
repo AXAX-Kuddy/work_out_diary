@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:work_out_app/widgets/base_page.dart';
+import 'package:work_out_app/make_program.dart' as maked;
 import 'package:work_out_app/palette.dart' as palette;
 
 //화면 위젯

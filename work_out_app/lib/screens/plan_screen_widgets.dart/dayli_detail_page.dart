@@ -1,15 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:work_out_app/widgets/base_page.dart';
+import 'package:work_out_app/widgets/drop_down.dart';
 import 'package:work_out_app/widgets/widget_box.dart';
 import 'package:work_out_app/palette.dart' as palette;
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:line_icons/line_icon.dart';
+import 'package:work_out_app/make_program.dart' as maked;
+import 'package:line_icons/line_icons.dart';
+import 'package:line_icons/line_icon.dart';
 
 class DailyDetail extends StatefulWidget {
   final int dayNum;
-  final workouts;
+  final List<maked.Workout>? workouts;
   const DailyDetail({
     super.key,
     required this.dayNum,
@@ -21,38 +25,28 @@ class DailyDetail extends StatefulWidget {
 }
 
 class _DailyDetailState extends State<DailyDetail> {
-  late List<FocusNode> _focusNodes;
+  late List<maked.Workout>? workouts = widget.workouts;
 
-  @override
-  void initState() {
-    super.initState();
-    _focusNodes = List.generate(widget.workouts.length, (index) => FocusNode());
-    for (var node in _focusNodes) {
-      node.addListener(() {
-        setState(() {});
-      });
-    }
-  }
+  final List<String> rpeList = [
+    "5",
+    "5.5",
+    "6",
+    "6.5",
+    "7",
+    "7.5",
+    "8",
+    "8.5",
+    "9",
+    "9.5",
+    "10"
+  ];
 
-  @override
-  void dispose() {
-    for (var node in _focusNodes) {
-      node.dispose();
-    }
-    super.dispose();
-  }
+  bool rpeinput = false;
 
-  void addSets(setNum) {
-    widget.workouts.add(
-      {
-        "$setNum세트": [
-          {
-            "중량": "",
-            "RPE": "",
-          },
-        ],
-      },
-    );
+  void changedRPEcheckCondition() {
+    setState(() {
+      rpeinput = true;
+    });
   }
 
   @override
@@ -74,11 +68,21 @@ class _DailyDetailState extends State<DailyDetail> {
         ),
         Expanded(
           child: ListView.separated(
+            separatorBuilder: (context, index) => const SizedBox(
+              height: 20,
+            ),
+            itemCount: workouts!.length,
+            shrinkWrap: true,
             itemBuilder: (context, index) {
+              //운동 인스턴스
+              maked.Workout workout = workouts![index];
+
+              List<maked.Set>? sets = workout.sets;
+
               return WidgetsBox(
                 backgroundColor: palette.bgColor,
                 border: Border.all(
-                  color: palette.cardColorYelGreen,
+                  color: palette.cardColorGray,
                 ),
                 horizontalAxis: MainAxisAlignment.center,
                 verticalAxis: CrossAxisAlignment.center,
@@ -86,7 +90,7 @@ class _DailyDetailState extends State<DailyDetail> {
                   Column(
                     children: [
                       Text(
-                        "${widget.workouts[index].name}",
+                        "${workout.name}",
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
@@ -98,21 +102,46 @@ class _DailyDetailState extends State<DailyDetail> {
                         thickness: 1,
                         height: 10,
                       ),
-                      RpeInput(
-                        focusNode: _focusNodes[index],
-                        label: "타겟 RPE",
-                        workouts: widget.workouts,
+                      CustomDropDownButton(
+                        hint: "Target @",
+                        selectChecker: changedRPEcheckCondition,
+                        itemList: rpeList,
                       ),
+                      Column(
+                        children: List.generate(
+                          sets!.length,
+                          (int index) {
+                            return SetDetail(
+                              workoutInstance: workout,
+                              setInstance: sets[index],
+                              updateState: () {
+                                setState(() {
+                                  sets;
+                                  print(sets.length);
+                                });
+                              },
+                            );
+                          },
+                        ),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          setState(() {
+                            maked.Set newSet = maked.Set(
+                              setNum: sets.length,
+                            );
+                            workout.addSet(newSet);
+                            print("추가된 세트는 : ${newSet.setNum}세트");
+                            print("총 세트 수는: ${sets.length}세트");
+                          });
+                        },
+                        child: const Text("세트 추가하기"),
+                      )
                     ],
                   )
                 ],
               );
             },
-            separatorBuilder: (context, index) => const SizedBox(
-              height: 20,
-            ),
-            itemCount: widget.workouts.length,
-            shrinkWrap: true,
           ),
         )
       ],
@@ -120,112 +149,49 @@ class _DailyDetailState extends State<DailyDetail> {
   }
 }
 
-class RpeInput extends StatefulWidget {
-  final FocusNode focusNode;
-  final String label;
-  List workouts;
+class SetDetail extends StatefulWidget {
+  final maked.Workout workoutInstance;
+  final maked.Set setInstance;
+  final Function updateState;
 
-  RpeInput({
-    Key? key,
-    required this.focusNode,
-    required this.label,
-    required this.workouts,
-  }) : super(key: key);
+  const SetDetail({
+    super.key,
+    required this.setInstance,
+    required this.workoutInstance,
+    required this.updateState,
+  });
 
   @override
-  State<RpeInput> createState() => _RpeInputState();
+  State<SetDetail> createState() => _SetDetailState();
 }
 
-class _RpeInputState extends State<RpeInput> {
-  List<String> rpeList = [
-    "5",
-    "5.5",
-    "6",
-    "6.5",
-    "7",
-    "7.5",
-    "8",
-    "8.5",
-    "9",
-    "9.5",
-    "10"
-  ];
-  String? selectValue;
+class _SetDetailState extends State<SetDetail> {
+  late final maked.Set _set = widget.setInstance;
+  late final maked.Workout _workout = widget.workoutInstance;
+
+  void deleteSet() {
+    setState(() {
+      _workout.removeSet(_set);
+      widget.updateState();
+    });
+    print("삭제된 세트는 : ${_set.setNum}세트");
+    print("총 세트 수는: ${_workout.sets!.length}세트");
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text(
-          widget.label,
-          style: TextStyle(
-            color: palette.cardColorWhite,
-            fontSize: 16,
+    return WidgetsBox(
+      inputContent: [
+        Text("${_set.setNum}"),
+        IconButton(
+          onPressed: () {
+            deleteSet();
+          },
+          icon: const Icon(
+            LineIcons.trash,
           ),
-        ),
-        const SizedBox(
-          width: 5,
-        ),
-        DropdownButtonHideUnderline(
-          child: DropdownButton2<String>(
-            isExpanded: true,
-            items: rpeList
-                .map((String item) => DropdownMenuItem<String>(
-                      value: item,
-                      child: Text(
-                        item,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ))
-                .toList(),
-            value: selectValue,
-            onChanged: (value) {
-              setState(() {
-                selectValue = value;
-              });
-            },
-            buttonStyleData: ButtonStyleData(
-              height: 50,
-              width: 80,
-              padding: const EdgeInsets.only(left: 14, right: 14),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(14),
-                color: palette.bgFadeColor,
-              ),
-              elevation: 2,
-            ),
-            iconStyleData: IconStyleData(
-              icon: const LineIcon.angleRight(),
-              iconSize: 14,
-              iconEnabledColor: palette.cardColorWhite,
-              iconDisabledColor: Colors.grey,
-            ),
-            dropdownStyleData: DropdownStyleData(
-              maxHeight: 200,
-              width: 200,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(14),
-                color: palette.bgColor,
-              ),
-              offset: const Offset(-20, 0),
-              scrollbarTheme: ScrollbarThemeData(
-                radius: const Radius.circular(40),
-                thickness: MaterialStateProperty.all(6),
-                thumbVisibility: MaterialStateProperty.all(true),
-              ),
-            ),
-            menuItemStyleData: const MenuItemStyleData(
-              height: 40,
-              padding: EdgeInsets.only(left: 14, right: 14),
-            ),
-          ),
-        ),
+          color: Colors.red,
+        )
       ],
     );
   }

@@ -34,7 +34,7 @@ class _RoutinePageState extends State<RoutinePage> {
         weekIndex: index,
       );
       widget.programInstance.addWeek(newWeek);
-      print("추가된 주차는 : ${newWeek.weekIndex}");
+      print("추가된 주차는 : ${newWeek.weekIndex + 1}주차");
       print("총 주차는 : ${weeks!.length}개");
     });
   }
@@ -44,7 +44,7 @@ class _RoutinePageState extends State<RoutinePage> {
       setState(() {
         int deleteIndex = week.weekIndex;
         widget.programInstance.removeWeek(week);
-        print("삭제된 주차는 : ${week.weekIndex}");
+        print("삭제된 주차는 : ${week.weekIndex + 1}주차");
 
         //삭제되면 인스턴스 내 weekIndex를 다시 설정
         for (int i = 0; i < weeks!.length; i++) {
@@ -55,6 +55,12 @@ class _RoutinePageState extends State<RoutinePage> {
         print("총 주차는 : ${weeks!.length}개");
       });
     }
+  }
+
+  void changedListner() {
+    setState(() {
+      weeks;
+    });
   }
 
   @override
@@ -131,6 +137,7 @@ class _RoutinePageState extends State<RoutinePage> {
                             MaterialPageRoute(
                               builder: (context) => DayliPage(
                                 weekInstance: week,
+                                changedListner : changedListner,
                               ),
                             ),
                           );

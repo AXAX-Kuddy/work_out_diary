@@ -91,9 +91,15 @@ class Workout {
 }
 
 class Set {
-  int reps;
-  double weight;
-  double rpe;
+  int setNum;
+  int? reps;
+  double? weight;
+  double? rpe;
 
-  Set(this.reps, this.rpe, this.weight);
+  Set({
+    required this.setNum,
+    this.reps,
+    this.rpe,
+    this.weight,
+  });
 }

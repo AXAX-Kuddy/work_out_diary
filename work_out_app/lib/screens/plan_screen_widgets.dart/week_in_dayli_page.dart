@@ -14,10 +14,12 @@ import 'package:work_out_app/make_program.dart' as maked;
 
 class DayliPage extends StatefulWidget {
   final maked.Week weekInstance;
+  final Function changedListner;
 
   const DayliPage({
     super.key,
     required this.weekInstance,
+    required this.changedListner,
   });
 
   @override
@@ -33,8 +35,9 @@ class _DayliPageState extends State<DayliPage> {
         dayIndex: index,
       );
       widget.weekInstance.addDay(newDay);
-      print("추가된 일차는 : ${newDay.dayIndex}");
-      print("총 일차는 : ${days!.length}");
+      print("추가된 일차는 : ${newDay.dayIndex + 1}일차");
+      print("총 일차는 : ${days!.length}일");
+      widget.changedListner();
     });
   }
 
@@ -43,7 +46,7 @@ class _DayliPageState extends State<DayliPage> {
       setState(() {
         int deleteIndex = day.dayIndex;
         widget.weekInstance.removeDay(day);
-        print("삭제된 일차는 : ${day.dayIndex}");
+        print("삭제된 일차는 : ${day.dayIndex + 1}일차");
 
         //삭제되면 인스턴스 내 dayIndex를 다시 설정
         for (int i = 0; i < days!.length; i++) {
@@ -51,7 +54,8 @@ class _DayliPageState extends State<DayliPage> {
             days![i].dayIndex--;
           }
         }
-        print("총 일차는 : ${days!.length}");
+        print("총 일차는 : ${days!.length}일");
+        widget.changedListner();
       });
     }
   }
@@ -129,7 +133,7 @@ class _DayliPageState extends State<DayliPage> {
                                             context,
                                             MaterialPageRoute(
                                               builder: (context) => DailyDetail(
-                                                dayNum: index,
+                                                dayNum: day.dayIndex,
                                                 workouts: workouts,
                                               ),
                                             ),
@@ -160,6 +164,7 @@ class _DayliPageState extends State<DayliPage> {
                                             return SelectWorkOut(
                                               changedListner: changedListner,
                                               dayInstance: day,
+                                              addFunction: day.addWorkout,
                                             );
                                           })),
                                         );
