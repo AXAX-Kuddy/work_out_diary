@@ -8,6 +8,7 @@ class WidgetsBox extends StatelessWidget {
   final MainAxisAlignment horizontalAxis;
   final CrossAxisAlignment verticalAxis;
   final Border? border;
+  final EdgeInsetsGeometry? margin;
 
   const WidgetsBox({
     super.key,
@@ -18,11 +19,13 @@ class WidgetsBox extends StatelessWidget {
     this.horizontalAxis = MainAxisAlignment.spaceEvenly,
     this.verticalAxis = CrossAxisAlignment.start,
     this.border,
+    this.margin,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
+      margin: margin,
       height: height,
       width: width,
       decoration: BoxDecoration(

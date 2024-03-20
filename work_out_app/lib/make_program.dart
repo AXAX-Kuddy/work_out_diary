@@ -91,13 +91,13 @@ class Workout {
 }
 
 class Set {
-  int setNum;
+  int setIndex;
   int? reps;
   double? weight;
   double? rpe;
 
   Set({
-    required this.setNum,
+    required this.setIndex,
     this.reps,
     this.rpe,
     this.weight,

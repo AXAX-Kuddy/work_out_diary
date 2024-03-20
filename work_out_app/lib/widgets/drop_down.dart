@@ -83,7 +83,7 @@ class _CustomDropDownButtonState extends State<CustomDropDownButton> {
                 color: _isSelectd
                     ? palette.cardColorYelGreen
                     : palette.bgFadeColor,
-                width: 2,
+                width: 1,
               ),
               borderRadius: BorderRadius.circular(14),
               color: palette.bgColor,

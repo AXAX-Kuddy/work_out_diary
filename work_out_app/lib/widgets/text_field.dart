@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:work_out_app/palette.dart' as palette;
 
 class CoustomTextField extends StatefulWidget {
-  String? userName;
+  final String? userName;
   bool isValid = false;
 
   final String? Function(String?)? validator;
   final String? Function(String?)? onChanged;
   void Function(String)? onFieldSubmitted;
-  void Function(String?)? onSaved;
+  final void Function(String?)? onSaved;
   final String? hintText;
   final TextStyle? textStyle;
   final double? width;
@@ -58,7 +58,7 @@ class _CoustomTextFieldState extends State<CoustomTextField> {
               color: widget.isValid
                   ? palette.cardColorYelGreen
                   : palette.cardColorYelGreen,
-              width: 2,
+              width: 1,
             ),
           ),
           enabledBorder: OutlineInputBorder(
@@ -67,21 +67,21 @@ class _CoustomTextFieldState extends State<CoustomTextField> {
               color: widget.isValid
                   ? palette.cardColorYelGreen
                   : palette.bgFadeColor,
-              width: 2,
+              width: 1,
             ),
           ),
           errorBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(14),
             borderSide: const BorderSide(
               color: Colors.red,
-              width: 2,
+              width: 1,
             ),
           ),
           focusedErrorBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(14),
             borderSide: const BorderSide(
               color: Colors.red,
-              width: 2,
+              width: 1,
             ),
           ),
           hintText: widget.hintText,
