@@ -91,15 +91,27 @@ class Workout {
 }
 
 class Set {
-  int setIndex;
+  late int? setIndex;
   int? reps;
   double? weight;
   double? rpe;
 
   Set({
-    required this.setIndex,
+    this.setIndex,
     this.reps,
     this.rpe,
     this.weight,
   });
+
+  set editReps(int value) {
+    reps = value;
+  }
+
+  set editWeight(double value) {
+    weight = value;
+  }
+
+  set editRpe(double value) {
+    rpe = value;
+  }
 }

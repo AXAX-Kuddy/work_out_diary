@@ -44,7 +44,6 @@ class _RoutinePageState extends State<RoutinePage> {
       setState(() {
         int deleteIndex = week.weekIndex;
         widget.programInstance.removeWeek(week);
-        print("삭제된 주차는 : ${week.weekIndex + 1}주차");
 
         //삭제되면 인스턴스 내 weekIndex를 다시 설정
         for (int i = 0; i < weeks!.length; i++) {
@@ -52,7 +51,6 @@ class _RoutinePageState extends State<RoutinePage> {
             weeks![i].weekIndex--;
           }
         }
-        print("총 주차는 : ${weeks!.length}개");
       });
     }
   }

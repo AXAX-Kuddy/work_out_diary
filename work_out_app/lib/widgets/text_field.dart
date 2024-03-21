@@ -50,6 +50,7 @@ class _CoustomTextFieldState extends State<CoustomTextField> {
         validator: widget.validator,
         cursorColor: palette.cardColorYelGreen,
         textAlign: TextAlign.center,
+        textAlignVertical: TextAlignVertical.top,
         style: widget.textStyle,
         decoration: InputDecoration(
           focusedBorder: OutlineInputBorder(

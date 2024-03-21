@@ -11,6 +11,7 @@ import 'package:line_icons/line_icon.dart';
 import 'package:work_out_app/make_program.dart' as maked;
 import 'package:line_icons/line_icons.dart';
 import 'package:line_icons/line_icon.dart';
+import 'package:work_out_app/widgets/non_form_text_field.dart';
 
 class DailyDetail extends StatefulWidget {
   final int dayNum;
@@ -26,6 +27,7 @@ class DailyDetail extends StatefulWidget {
 }
 
 class _DailyDetailState extends State<DailyDetail> {
+  List<maked.Set> tempoList = [];
   late List<maked.Workout>? workouts = widget.workouts;
 
   final List<String> rpeList = [
@@ -167,7 +169,9 @@ class _DailyDetailState extends State<DailyDetail> {
                             sets!.length,
                             (int index) {
                               return SetDetail(
-                                setNum: index,
+                                key: ValueKey(index),
+                                setIndex: index,
+                                setInstance: sets[index],
                                 workoutInstance: workout,
                                 updateState: () {
                                   setState(() {
@@ -180,14 +184,9 @@ class _DailyDetailState extends State<DailyDetail> {
                         ),
                         TextButton(
                           onPressed: () {
-                            setState(() {
-                              maked.Set newSet = maked.Set(
-                                setIndex: sets.length,
-                              );
-                              workout.addSet(newSet);
-                              print("추가된 세트는 : ${newSet.setIndex}세트");
-                              print("총 세트 수는: ${sets.length}세트");
-                            });
+                            maked.Set newSet = maked.Set();
+                            workout.addSet(newSet);
+                            setState(() {});
                           },
                           child: const Text("세트 추가하기"),
                         ),
@@ -205,13 +204,15 @@ class _DailyDetailState extends State<DailyDetail> {
 }
 
 class SetDetail extends StatefulWidget {
-  int setNum;
+  final int setIndex;
+  final maked.Set setInstance;
   final maked.Workout workoutInstance;
   final Function updateState;
 
-  SetDetail({
+  const SetDetail({
     super.key,
-    required this.setNum,
+    required this.setIndex,
+    required this.setInstance,
     required this.workoutInstance,
     required this.updateState,
   });
@@ -222,26 +223,32 @@ class SetDetail extends StatefulWidget {
 
 class _SetDetailState extends State<SetDetail> {
   late final maked.Workout _workout = widget.workoutInstance;
-  late final maked.Set _set = _workout.sets![widget.setNum];
 
-  final _weightFormKey = GlobalKey<FormState>();
-  final _repsFormKey = GlobalKey<FormState>();
+  final TextEditingController _weightController = TextEditingController();
+  final TextEditingController _repsController = TextEditingController();
 
   final bool _weightValid = false;
   bool _repsValid = false;
 
-  void deleteSet(maked.Set set) async {
-    int deleteIndex = set.setIndex;
-    _workout.removeSet(set);
-    print("삭제된 세트는 : ${set.setIndex}세트");
+  @override
+  void initState() {
+    super.initState();
+    widget.setInstance.setIndex = widget.setIndex;
+  }
+
+  void deleteSet() {
+    int deleteIndex = widget.setInstance.setIndex!;
+
+    setState(() {
+      _workout.removeSet(widget.setInstance);
+    });
 
     for (int i = 0; i < _workout.sets!.length; i++) {
-      if (set.setIndex > deleteIndex) {
-        set.setIndex--;
+      if (_workout.sets![i].setIndex! > deleteIndex) {
+        _workout.sets![i].setIndex = _workout.sets![i].setIndex! - 1;
       }
     }
-    print("총 세트 수는: ${_workout.sets!.length}세트");
-    await widget.updateState();
+    widget.updateState();
   }
 
   @override
@@ -254,7 +261,7 @@ class _SetDetailState extends State<SetDetail> {
             Expanded(
               flex: 2,
               child: Text(
-                "${_set.setIndex}",
+                "${widget.setInstance.setIndex! + 1}",
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: palette.cardColorWhite,
@@ -264,15 +271,14 @@ class _SetDetailState extends State<SetDetail> {
             ),
             Expanded(
               flex: 3,
-              child: CoustomTextField(
-                key: _weightFormKey,
+              child: CustomTextField2(
+                width: 90,
+                height: 45,
+                valid: _weightValid,
+                textInputType: TextInputType.number,
                 textStyle: TextStyle(
                   color: palette.cardColorWhite,
                 ),
-                textInputType: TextInputType.number,
-                width: 100,
-                height: 60,
-                isValid: _weightValid,
               ),
             ),
             const SizedBox(
@@ -280,26 +286,26 @@ class _SetDetailState extends State<SetDetail> {
             ),
             Expanded(
               flex: 3,
-              child: CoustomTextField(
-                key: _repsFormKey,
+              child: CustomTextField2(
+                controller: _repsController,
+                width: 90,
+                height: 45,
+                valid: _repsValid,
+                textInputType: TextInputType.number,
                 textStyle: TextStyle(
                   color: palette.cardColorWhite,
                 ),
-                textInputType: TextInputType.number,
-                width: 100,
-                height: 60,
-                isValid: _repsValid,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
+                onSubmitted: (value) {
+                  if (value.length > 1) {
                     setState(() {
-                      _repsValid = false;
-                    });
-                    return "값을 입력해주세요";
-                  } else {
-                    setState(() {
+                      _repsController.text = value;
                       _repsValid = true;
                     });
-                    return null;
+                  } else if (value.isEmpty) {
+                    setState(() {
+                      _repsController.text = "0";
+                      _repsValid = false;
+                    });
                   }
                 },
               ),
@@ -307,9 +313,7 @@ class _SetDetailState extends State<SetDetail> {
             Expanded(
               flex: 2,
               child: IconButton(
-                onPressed: () {
-                  deleteSet(_set);
-                },
+                onPressed: () => deleteSet(),
                 icon: const Icon(
                   LineIcons.trash,
                 ),
