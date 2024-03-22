@@ -11,6 +11,7 @@ class CustomTextField2 extends StatefulWidget {
 
   final void Function(String)? onChanged;
   final void Function(String)? onSubmitted;
+  final void Function()? onTap;
 
   bool valid;
 
@@ -25,6 +26,7 @@ class CustomTextField2 extends StatefulWidget {
     this.onChanged,
     this.onSubmitted,
     this.controller,
+    this.onTap,
   });
 
   @override
@@ -68,6 +70,7 @@ class _CustomTextField2State extends State<CustomTextField2> {
         ),
         onChanged: widget.onChanged,
         onSubmitted: widget.onSubmitted,
+        onTap: widget.onTap,
       ),
     );
   }

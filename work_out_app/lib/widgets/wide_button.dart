@@ -4,6 +4,7 @@ import 'package:work_out_app/widgets/widget_box.dart';
 class WideButton extends StatefulWidget {
   final Color unTapColor;
   final Color tapColor;
+  final Color tapBorderColor;
   final List<Widget> inputContent;
   final bool buttonTest;
   final Function? onTapUpFunction;
@@ -27,6 +28,7 @@ class WideButton extends StatefulWidget {
     this.verticalAxis = CrossAxisAlignment.center,
     this.height = 50,
     this.width,
+    this.tapBorderColor = const Color.fromRGBO(0, 0, 0, 0),
   });
 
   @override
@@ -36,6 +38,7 @@ class WideButton extends StatefulWidget {
 class _WideButtonState extends State<WideButton> {
   late Color btnColor;
   late bool buttonTest;
+  Color borderColor = const Color.fromRGBO(0, 0, 0, 0);
 
   @override
   void initState() {
@@ -49,11 +52,13 @@ class _WideButtonState extends State<WideButton> {
         onTapDown: (details) {
           setState(() {
             btnColor = widget.tapColor;
+            borderColor = widget.tapBorderColor;
           });
         },
         onTapUp: (details) {
           setState(() {
             btnColor = widget.unTapColor;
+            borderColor = const Color.fromRGBO(0, 0, 0, 0);
           });
           if (buttonTest) {
             print("버튼테스트");
@@ -67,6 +72,9 @@ class _WideButtonState extends State<WideButton> {
         },
         child: WidgetsBox(
           backgroundColor: btnColor,
+          border: Border.all(
+            color: borderColor,
+          ),
           horizontalAxis: widget.horizontalAxis,
           verticalAxis: widget.verticalAxis,
           height: widget.height,

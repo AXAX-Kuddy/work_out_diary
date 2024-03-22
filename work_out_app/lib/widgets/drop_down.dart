@@ -7,9 +7,12 @@ import 'package:work_out_app/palette.dart' as palette;
 
 class CustomDropDownButton extends StatefulWidget {
   final String hint;
+  final TextStyle? textStyle;
+  final TextStyle? itemTextStyle;
   final List<String> itemList;
   dynamic inputValue;
-  VoidCallback selectChecker;
+  VoidCallback? selectChecker;
+  final Function(String)? returnableChecker;
 
   ///setState는 기본값
   final void Function(String?)? onChanged;
@@ -24,7 +27,10 @@ class CustomDropDownButton extends StatefulWidget {
     this.onChanged,
     this.width = 130,
     this.height = 60,
-    required this.selectChecker,
+    this.selectChecker,
+    this.returnableChecker,
+    this.textStyle,
+    this.itemTextStyle,
   });
 
   @override
@@ -45,20 +51,14 @@ class _CustomDropDownButtonState extends State<CustomDropDownButton> {
           isExpanded: true,
           hint: Text(
             widget.hint,
-            style: const TextStyle(
-              fontSize: 18,
-              color: Colors.white,
-            ),
+            style: widget.textStyle,
           ),
           items: widget.itemList
               .map((String item) => DropdownMenuItem<String>(
                     value: item,
                     child: Text(
                       item,
-                      style: const TextStyle(
-                        fontSize: 18,
-                        color: Colors.white,
-                      ),
+                      style: widget.itemTextStyle,
                       overflow: TextOverflow.ellipsis,
                     ),
                   ))
@@ -66,7 +66,12 @@ class _CustomDropDownButtonState extends State<CustomDropDownButton> {
           value: selectedValue,
           onChanged: (value) {
             selectedValue = value;
-            widget.selectChecker();
+            if (widget.selectChecker != null) {
+              widget.selectChecker!();
+            }
+            if (widget.returnableChecker != null) {
+              widget.returnableChecker!(value!);
+            }
             setState(() {
               _isSelectd = true;
               if (widget.onChanged != null) {
