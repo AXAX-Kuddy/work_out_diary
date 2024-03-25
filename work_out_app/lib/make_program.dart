@@ -70,10 +70,12 @@ class Day {
 
 class Workout {
   String? name;
+  double? targetRpe;
   List<Set>? sets = [];
 
   Workout({
     this.name,
+    this.targetRpe,
     List<Set>? sets,
   }) : sets = sets ?? [];
 

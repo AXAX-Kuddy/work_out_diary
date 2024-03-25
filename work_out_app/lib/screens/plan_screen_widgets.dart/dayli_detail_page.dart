@@ -15,12 +15,16 @@ import 'package:line_icons/line_icon.dart';
 import 'package:work_out_app/widgets/non_form_text_field.dart';
 
 class DailyDetail extends StatefulWidget {
-  final int dayNum;
+  final int? dayNum;
   final List<maked.Workout>? workouts;
+  final int callPlace;
+  final Function? changedListner;
   const DailyDetail({
     super.key,
-    required this.dayNum,
-    required this.workouts,
+    this.dayNum,
+    this.workouts,
+    required this.callPlace,
+    this.changedListner,
   });
 
   @override
@@ -60,14 +64,24 @@ class _DailyDetailState extends State<DailyDetail> {
         WidgetsBox(
           backgroundColor: palette.bgColor,
           inputContent: [
-            Text(
-              "${widget.dayNum + 1}일차 세부 운동 설정",
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 34,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+            if (widget.callPlace == 0)
+              Text(
+                "${widget.dayNum! + 1}일차 세부 운동 설정",
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 34,
+                  fontWeight: FontWeight.bold,
+                ),
+              )
+            else if (widget.callPlace == 1)
+              const Text(
+                "금일 운동 설정",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 34,
+                  fontWeight: FontWeight.bold,
+                ),
+              )
           ],
         ),
         Expanded(
@@ -79,7 +93,7 @@ class _DailyDetailState extends State<DailyDetail> {
             shrinkWrap: true,
             itemBuilder: (context, index) {
               //운동 인스턴스
-              maked.Workout workout = workouts![index];
+              maked.Workout? workout = workouts![index];
 
               List<maked.Set>? sets = workout.sets;
 
@@ -111,9 +125,9 @@ class _DailyDetailState extends State<DailyDetail> {
                               width: 15,
                             ),
                             CustomDropDownButton(
-                              width: 80,
-                              height: 50,
-                              hint: "RPE",
+                              width: 87,
+                              height: 45,
+                              hint: "@강도",
                               textStyle: TextStyle(
                                 color: palette.cardColorWhite,
                               ),
@@ -122,6 +136,11 @@ class _DailyDetailState extends State<DailyDetail> {
                               ),
                               selectChecker: changedRPEcheckCondition,
                               itemList: rpeList,
+                              onChanged: (value) {
+                                if (value != null) {
+                                  workout.targetRpe = double.parse(value);
+                                }
+                              },
                             ),
                           ],
                         ),
@@ -193,13 +212,14 @@ class _DailyDetailState extends State<DailyDetail> {
                         ),
                         Column(
                           children: List.generate(
-                            sets!.length,
+                            workout.sets!.length,
                             (int index) {
                               return SetDetail(
                                 key: ValueKey(index),
                                 setIndex: index,
-                                setInstance: sets[index],
+                                setInstance: workout.sets![index],
                                 workoutInstance: workout,
+                                tempoList: tempoList,
                                 updateState: () {
                                   setState(() {
                                     sets;
@@ -249,7 +269,29 @@ class _DailyDetailState extends State<DailyDetail> {
               );
             },
           ),
-        )
+        ),
+        const SizedBox(
+          height: 20,
+        ),
+        WideButton(
+          unTapColor: palette.bgFadeColor,
+          tapColor: palette.bgColor,
+          tapBorderColor: palette.cardColorYelGreen,
+          onTapUpFunction: () {
+            if (widget.callPlace == 0) {
+              widget.changedListner!();
+              Navigator.pop(context);
+            }
+          },
+          inputContent: [
+            Text(
+              "설정 완료",
+              style: TextStyle(
+                color: palette.cardColorWhite,
+              ),
+            ),
+          ],
+        ),
       ],
     );
   }
@@ -260,13 +302,15 @@ class SetDetail extends StatefulWidget {
   final maked.Set setInstance;
   final maked.Workout workoutInstance;
   final Function updateState;
+  List<maked.Set>? tempoList;
 
-  const SetDetail({
+  SetDetail({
     super.key,
     required this.setIndex,
     required this.setInstance,
     required this.workoutInstance,
     required this.updateState,
+    this.tempoList,
   });
 
   @override
@@ -285,7 +329,6 @@ class _SetDetailState extends State<SetDetail> {
 
   bool _weightValid = false;
   bool _repsValid = false;
-  // ignore: unused_field
   bool _rpeSelect = false;
 
   final List<String> rpeList = [
@@ -565,7 +608,7 @@ class _SetDetailState extends State<SetDetail> {
                 _e1rmText,
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  color: palette.cardColorWhite,
+                  color: palette.cardColorWhite.withOpacity(0.6),
                 ),
               ),
             ),
@@ -575,7 +618,7 @@ class _SetDetailState extends State<SetDetail> {
                 _weightCalResult,
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  color: palette.cardColorWhite,
+                  color: palette.cardColorWhite.withOpacity(0.6),
                 ),
               ),
             ),

@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:work_out_app/screens/plan_screen_widgets.dart/dayli_detail_page.dart';
 import 'package:work_out_app/screens/plan_screen_widgets.dart/select_work_out_page.dart';
 import 'package:work_out_app/widgets/base_page.dart';
+import 'package:work_out_app/widgets/wide_button.dart';
 import 'package:work_out_app/widgets/widget_box.dart';
 import 'package:work_out_app/palette.dart' as palette;
 import 'package:line_icons/line_icon.dart';
@@ -97,76 +98,61 @@ class _DayliPageState extends State<DayliPage> {
                   List<maked.Workout>? workouts = day.workouts;
 
                   return WidgetsBox(
+                    margin: const EdgeInsets.only(
+                      bottom: 20,
+                    ),
                     backgroundColor: palette.bgColor,
                     border: Border.all(
                       color: palette.cardColorGray,
                     ),
-                    height: 250,
                     inputContent: [
                       Expanded(
                         child: Column(
                           children: [
                             Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
                               children: [
+                                const SizedBox(
+                                  width: 8,
+                                ),
                                 Text(
                                   "${day.dayIndex + 1}일차",
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 20,
+                                  style: TextStyle(
+                                    fontSize: 25,
                                     fontWeight: FontWeight.bold,
+                                    color: palette.cardColorWhite,
                                   ),
+                                ),
+                                const SizedBox(
+                                  width: 15,
+                                ),
+                                IconButton(
+                                  onPressed: () => deleteDay(day),
+                                  icon: const Icon(
+                                    LineIcons.trash,
+                                  ),
+                                  color: Colors.red,
                                 ),
                               ],
                             ),
+                            const SizedBox(
+                              height: 20,
+                            ),
                             SizedBox(
                               width: constraints.maxWidth,
-                              height: 150,
-                              child: ListView.builder(
-                                itemCount:
-                                    workouts!.isEmpty ? 1 : workouts.length,
-                                itemBuilder: (BuildContext context, int index) {
-                                  if (workouts.isNotEmpty) {
-                                    return GestureDetector(
-                                        onTap: () {
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) => DailyDetail(
-                                                dayNum: day.dayIndex,
-                                                workouts: workouts,
-                                              ),
-                                            ),
-                                          );
-                                        },
-                                        child: SizedBox(
-                                          height: 150,
-                                          child: ListView.separated(
-                                            itemCount: workouts.length,
-                                            separatorBuilder:
-                                                (BuildContext context,
-                                                        int index) =>
-                                                    const Divider(),
-                                            itemBuilder: (context, index) {
-                                              maked.Workout workout =
-                                                  workouts[index];
-                                              return Text("${workout.name}");
-                                            },
-                                          ),
-                                        ));
-                                  } else {
-                                    return TextButton(
+                              child: workouts!.isEmpty
+                                  ? TextButton(
                                       onPressed: () {
                                         Navigator.push(
                                           context,
                                           MaterialPageRoute(
-                                              builder: ((context) {
-                                            return SelectWorkOut(
-                                              changedListner: changedListner,
-                                              dayInstance: day,
-                                              addFunction: day.addWorkout,
-                                            );
-                                          })),
+                                            builder: ((context) {
+                                              return SelectWorkOut(
+                                                changedListner: changedListner,
+                                                dayInstance: day,
+                                                addFunction: day.addWorkout,
+                                              );
+                                            }),
+                                          ),
                                         );
                                       },
                                       child: Text(
@@ -175,22 +161,98 @@ class _DayliPageState extends State<DayliPage> {
                                           color: palette.cardColorWhite,
                                         ),
                                       ),
-                                    );
-                                  }
-                                },
-                              ),
+                                    )
+                                  : Column(
+                                      children: List.generate(workouts.length,
+                                          (index) {
+                                        return GestureDetector(
+                                          onTap: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    DailyDetail(
+                                                  changedListner:
+                                                      changedListner,
+                                                  dayNum: day.dayIndex,
+                                                  workouts: workouts,
+                                                  callPlace: 0,
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                          child: Column(
+                                            children: [
+                                              const SizedBox(
+                                                height: 20,
+                                              ),
+                                              Row(
+                                                children: [
+                                                  const SizedBox(
+                                                    width: 8,
+                                                  ),
+                                                  Text(
+                                                    "${index + 1}.",
+                                                    style: TextStyle(
+                                                      fontSize: 18,
+                                                      color: palette
+                                                          .cardColorWhite,
+                                                    ),
+                                                  ),
+                                                  const SizedBox(
+                                                    width: 10,
+                                                  ),
+                                                  Text(
+                                                    "${workouts[index].name} | ",
+                                                    style: TextStyle(
+                                                      fontSize: 18,
+                                                      color: palette
+                                                          .cardColorWhite,
+                                                    ),
+                                                  ),
+                                                  Text(
+                                                    workouts[index]
+                                                            .sets!
+                                                            .isEmpty
+                                                        ? "세부 설정 없음"
+                                                        : "${workouts[index].sets!.length} ${workouts[index].sets!.length == 1 ? "Set" : "Sets"}",
+                                                    style: TextStyle(
+                                                      fontSize: 18,
+                                                      color: palette
+                                                          .cardColorWhite,
+                                                    ),
+                                                  ),
+                                                  Text(
+                                                    workouts[index].targetRpe ==
+                                                                null ||
+                                                            workouts[index]
+                                                                .targetRpe!
+                                                                .isNaN
+                                                        ? ""
+                                                        : " | 타겟 RPE ${workouts[index].targetRpe}",
+                                                    style: TextStyle(
+                                                      fontSize: 18,
+                                                      color: palette
+                                                          .cardColorWhite,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                              const SizedBox(
+                                                height: 10,
+                                              ),
+                                            ],
+                                          ),
+                                        );
+                                      }),
+                                    ),
                             ),
-                            TextButton(
-                              onPressed: () {
-                                deleteDay(day);
-                              },
-                              child: const Text(
-                                "일차 삭제하기",
-                              ),
-                            )
+                            const SizedBox(
+                              height: 20,
+                            ),
                           ],
                         ),
-                      )
+                      ),
                     ],
                   );
                 },
@@ -198,14 +260,14 @@ class _DayliPageState extends State<DayliPage> {
             },
           ),
         ),
-        TextButton(
-          onPressed: () {
+        WideButton(
+          onTapUpFunction: () {
             addDay(days!.length);
           },
-          child: const Text(
-            "일차 추가하기",
-          ),
-        )
+          inputContent: const [
+            Text("일차 추가하기"),
+          ],
+        ),
       ],
     );
   }
