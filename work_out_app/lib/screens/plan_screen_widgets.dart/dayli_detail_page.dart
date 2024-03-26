@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:work_out_app/widgets/base_page.dart';
 import 'package:work_out_app/widgets/drop_down.dart';
+import 'package:work_out_app/widgets/inten_select.dart';
 import 'package:work_out_app/widgets/text_field.dart';
 import 'package:work_out_app/widgets/wide_button.dart';
 import 'package:work_out_app/widgets/widget_box.dart';
@@ -121,27 +122,6 @@ class _DailyDetailState extends State<DailyDetail> {
                                 color: palette.cardColorWhite,
                               ),
                             ),
-                            const SizedBox(
-                              width: 15,
-                            ),
-                            CustomDropDownButton(
-                              width: 87,
-                              height: 45,
-                              hint: "@강도",
-                              textStyle: TextStyle(
-                                color: palette.cardColorWhite,
-                              ),
-                              itemTextStyle: TextStyle(
-                                color: palette.cardColorWhite,
-                              ),
-                              selectChecker: changedRPEcheckCondition,
-                              itemList: rpeList,
-                              onChanged: (value) {
-                                if (value != null) {
-                                  workout.targetRpe = double.parse(value);
-                                }
-                              },
-                            ),
                           ],
                         ),
                         const SizedBox(
@@ -188,7 +168,7 @@ class _DailyDetailState extends State<DailyDetail> {
                             Expanded(
                               flex: 2,
                               child: Text(
-                                "rpe",
+                                "강도",
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
                                   color: palette.cardColorWhite,
@@ -322,14 +302,21 @@ class _SetDetailState extends State<SetDetail> {
 
   final TextEditingController _weightController = TextEditingController();
   final TextEditingController _repsController = TextEditingController();
+  final TextEditingController _1rmController = TextEditingController();
   String _selectRpe = "0";
+  String _select1rmPercent = "0";
 
   String _weightCalResult = "";
   String _e1rmText = "";
 
   bool _weightValid = false;
   bool _repsValid = false;
+
   bool _rpeSelect = false;
+  // ignore: prefer_final_fields
+  bool _1rmSelect = false;
+
+  int _selectInte = 0;
 
   final List<String> rpeList = [
     "5",
@@ -435,11 +422,65 @@ class _SetDetailState extends State<SetDetail> {
   }
 
   String rpeSelectConditionChecker(String value) {
-    setState(() {
-      _rpeSelect = true;
-      _selectRpe = value;
-    });
-    return value;
+    if (_1rmSelect == false) {
+      setState(() {
+        _rpeSelect = true;
+        _selectRpe = value;
+      });
+      return value;
+    } else {
+      setState(() {
+        _rpeSelect = false;
+        _selectRpe = "0";
+      });
+      return "0";
+    }
+  }
+
+  Widget intensityGrider(int selectValue) {
+    switch (selectValue) {
+      case 0:
+        return CustomDropDownButton(
+          height: 40,
+          hint: "rpe",
+          textStyle: TextStyle(
+            color: palette.cardColorWhite,
+          ),
+          itemList: rpeList,
+          itemTextStyle: TextStyle(
+            color: palette.cardColorWhite,
+          ),
+          returnableChecker: rpeSelectConditionChecker,
+          onChanged: (value) {
+            e1rmCal(
+              weight: double.parse(_weightController.text),
+              reps: double.parse(_repsController.text),
+              rpe: double.parse(_selectRpe),
+            );
+          },
+        );
+      case 1:
+        return CustomTextField2(
+          controller: _1rmController,
+          height: 40,
+          textStyle: TextStyle(
+            color: palette.cardColorWhite,
+          ),
+          textInputType: TextInputType.number,
+          valid: _1rmSelect,
+          onSubmitted: (value) {
+            double asValue = double.parse(value);
+            if (asValue > 100) {
+              asValue = 100;
+              _select1rmPercent = asValue.toString();
+            }
+          },
+        );
+      case 2:
+        return const SizedBox.shrink();
+      default:
+        return const SizedBox.shrink();
+    }
   }
 
   @override
@@ -568,22 +609,7 @@ class _SetDetailState extends State<SetDetail> {
             ),
             Expanded(
               flex: 2,
-              child: CustomDropDownButton(
-                height: 40,
-                itemList: rpeList,
-                hint: "",
-                itemTextStyle: TextStyle(
-                  color: palette.cardColorWhite,
-                ),
-                returnableChecker: rpeSelectConditionChecker,
-                onChanged: (value) {
-                  e1rmCal(
-                    weight: double.parse(_weightController.text),
-                    reps: double.parse(_repsController.text),
-                    rpe: double.parse(_selectRpe),
-                  );
-                },
-              ),
+              child: intensityGrider(_selectInte),
             ),
             Expanded(
               flex: 1,
@@ -598,9 +624,10 @@ class _SetDetailState extends State<SetDetail> {
           ],
         ),
         const SizedBox(
-          height: 2,
+          height: 5,
         ),
         Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
               flex: 1,
@@ -622,13 +649,36 @@ class _SetDetailState extends State<SetDetail> {
                 ),
               ),
             ),
-            const Expanded(
-              flex: 2,
-              child: SizedBox.shrink(),
+            const SizedBox(
+              width: 5,
             ),
             const Expanded(
               flex: 2,
               child: SizedBox.shrink(),
+            ),
+            const SizedBox(
+              width: 5,
+            ),
+            Expanded(
+              flex: 2,
+              child: IntensitySelector(
+                height: 30,
+                hint: "강도 기반",
+                textStyle: TextStyle(
+                  fontSize: 12,
+                  color: palette.cardColorWhite,
+                ),
+                itemTextStyle: TextStyle(
+                  fontSize: 12,
+                  color: palette.cardColorWhite,
+                ),
+                onChanged: (value) {
+                  setState(() {
+                    _selectInte = value!;
+                    intensityGrider(_selectInte);
+                  });
+                },
+              ),
             ),
             const Expanded(
               flex: 1,
