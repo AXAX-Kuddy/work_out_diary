@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 import 'package:work_out_app/widgets/base_page.dart';
 import 'package:work_out_app/widgets/drop_down.dart';
 import 'package:work_out_app/widgets/inten_select.dart';
@@ -14,6 +15,8 @@ import 'package:work_out_app/make_program.dart' as maked;
 import 'package:line_icons/line_icons.dart';
 import 'package:line_icons/line_icon.dart';
 import 'package:work_out_app/widgets/non_form_text_field.dart';
+import 'package:provider/provider.dart';
+import 'package:work_out_app/store.dart' as provider;
 
 class DailyDetail extends StatefulWidget {
   final int? dayNum;
@@ -35,8 +38,10 @@ class DailyDetail extends StatefulWidget {
 class _DailyDetailState extends State<DailyDetail> {
   List<maked.Set> tempoList = [];
   late List<maked.Workout>? workouts = widget.workouts;
+  late Map<String, dynamic> userInfo;
+  late void Function({required String command, required dynamic value}) addInfo;
 
-  final List<String> rpeList = [
+  late final List<String> rpeList = [
     "5",
     "5.5",
     "6",
@@ -51,6 +56,13 @@ class _DailyDetailState extends State<DailyDetail> {
   ];
 
   bool rpeinput = false;
+
+  @override
+  void initState() {
+    super.initState();
+    userInfo = context.read<provider.Store>().userInfo;
+    addInfo = context.read<provider.Store>().addInfo;
+  }
 
   void changedRPEcheckCondition() {
     setState(() {
@@ -200,6 +212,8 @@ class _DailyDetailState extends State<DailyDetail> {
                                 setInstance: workout.sets![index],
                                 workoutInstance: workout,
                                 tempoList: tempoList,
+                                userInfo: userInfo,
+                                addInfo: addInfo,
                                 updateState: () {
                                   setState(() {
                                     sets;
@@ -282,14 +296,19 @@ class SetDetail extends StatefulWidget {
   final maked.Set setInstance;
   final maked.Workout workoutInstance;
   final Function updateState;
-  List<maked.Set>? tempoList;
+  final List<maked.Set>? tempoList;
+  final Map<String, dynamic> userInfo;
+  final void Function({required String command, required dynamic value})
+      addInfo;
 
-  SetDetail({
+  const SetDetail({
     super.key,
     required this.setIndex,
     required this.setInstance,
     required this.workoutInstance,
     required this.updateState,
+    required this.userInfo,
+    required this.addInfo,
     this.tempoList,
   });
 
@@ -338,6 +357,7 @@ class _SetDetailState extends State<SetDetail> {
     widget.setInstance.setIndex = widget.setIndex;
     _weightController.text = "0";
     _repsController.text = "0";
+    _1rmController.text = "0%";
   }
 
   void deleteSet() {
@@ -442,71 +462,136 @@ class _SetDetailState extends State<SetDetail> {
       case 0:
         return const SizedBox.shrink();
       case 1:
-        return CustomTextField2(
-          controller: _1rmController,
-          inputFormatters: [
-            CurrencyFormatter(),
-          ],
-          height: 40,
-          textStyle: TextStyle(
-            color: palette.cardColorWhite,
-          ),
-          textInputType: TextInputType.number,
-          valid: _1rmSelect,
-          onChanged: (value) {
-            // value가 3자리수 (999% 이상)일 경우 100으로 바꿈
-            if (value.length > 4) {
-              _select1rmPercent = "100";
-              _1rmController.text = "100%";
-              setState(() {
-                _1rmSelect = true;
-              });
-            }
-          },
-          onSubmitted: (value) {
-            // 입력한 값이 비었을 경우
-            if (value.isEmpty) {
-              _select1rmPercent = "0";
-              _1rmController.text = "0%";
-              setState(() {
-                _1rmSelect = false;
-              });
-              //값이 있을 경우
-            } else if (value.isNotEmpty) {
-              //%가 있는지 체크하고 지움
-              if (value.contains("%") && value.length > 1) {
-                double asValue =
-                    double.parse(value.substring(0, value.length - 1));
-
-                // 100숫자 100이상 입력 시 100으로 바꿈
-                if (asValue > 100) {
-                  _select1rmPercent = "100";
-                  _1rmController.text = "100%";
-                  setState(() {
-                    _1rmSelect = true;
-                  });
-                }
-
-                // 0, 혹은 0이하일 1로 바꿈
-                if (asValue <= 0) {
-                  _select1rmPercent = "1";
-                  _1rmController.text = "1%";
-                  setState(() {
-                    _1rmSelect = true;
-                  });
-                }
-
-                //%만 남았을 경우
-              } else if (value.contains("%") == false || value.length < 2) {
+        if (num.parse(widget.userInfo["dotsPoint"]) == 0) {
+          return TextButton(
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (context) {
+                  bool squatValid = false;
+                  bool benchValid = false;
+                  bool deadValid = false;
+                  Map<String, String> sbd = {};
+                  return Dialog(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Row(
+                            children: [
+                              const Text("스쿼트"),
+                              Expanded(
+                                child: CustomTextField2(
+                                  valid: squatValid,
+                                  onSubmitted: (value) {
+                                    if (double.parse(value) <= 0) {}
+                                    sbd["스쿼트"] = value;
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                                child: const Text("취소"),
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                                child: const Text("저장"),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              );
+            },
+            child: Text(
+              "1rm 기입",
+              style: TextStyle(
+                color: palette.cardColorWhite,
+              ),
+            ),
+          );
+        } else {
+          return CustomTextField2(
+            controller: _1rmController,
+            inputFormatters: [
+              CurrencyFormatter(),
+            ],
+            height: 40,
+            textStyle: TextStyle(
+              color: palette.cardColorWhite,
+            ),
+            textInputType: TextInputType.number,
+            valid: _1rmSelect,
+            onChanged: (value) {
+              // value가 3자리수 (999% 이상)일 경우 100으로 바꿈
+              if (value.length > 4) {
+                _select1rmPercent = "100";
+                _1rmController.text = "100%";
+                setState(() {
+                  _1rmSelect = true;
+                });
+              }
+            },
+            onSubmitted: (value) {
+              // 입력한 값이 비었을 경우
+              if (value.isEmpty) {
                 _select1rmPercent = "0";
                 _1rmController.text = "0%";
                 setState(() {
                   _1rmSelect = false;
                 });
+                //값이 있을 경우
+              } else if (value.isNotEmpty) {
+                //%가 있는지 체크하고 지움
+                if (value.contains("%") && value.length > 1) {
+                  double asValue =
+                      double.parse(value.substring(0, value.length - 1));
+
+                  // 100숫자 100이상 입력 시 100으로 바꿈
+                  if (asValue > 100) {
+                    _select1rmPercent = "100";
+                    _1rmController.text = "100%";
+                    setState(() {
+                      _1rmSelect = true;
+                    });
+                  }
+
+                  // 0, 혹은 0이하일 1로 바꿈
+                  if (asValue <= 0) {
+                    _select1rmPercent = "1";
+                    _1rmController.text = "1%";
+                    setState(() {
+                      _1rmSelect = true;
+                    });
+                  }
+
+                  //%만 남았을 경우
+                } else if (value.contains("%") == false || value.length < 2) {
+                  _select1rmPercent = "0";
+                  _1rmController.text = "0%";
+                  setState(() {
+                    _1rmSelect = false;
+                  });
+                }
               }
-            }
-          },
-        );
+            },
+          );
+        }
+
       case 2:
         return CustomDropDownButton(
           height: 40,
