@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:work_out_app/palette.dart' as palette;
 
 class CustomTextField2 extends StatefulWidget {
@@ -8,6 +9,7 @@ class CustomTextField2 extends StatefulWidget {
   final TextInputType? textInputType;
   final TextStyle? textStyle;
   final TextEditingController? controller;
+  final List<TextInputFormatter>? inputFormatters;
 
   final void Function(String)? onChanged;
   final void Function(String)? onSubmitted;
@@ -27,6 +29,7 @@ class CustomTextField2 extends StatefulWidget {
     this.onSubmitted,
     this.controller,
     this.onTap,
+    this.inputFormatters,
   });
 
   @override
@@ -41,6 +44,7 @@ class _CustomTextField2State extends State<CustomTextField2> {
       height: widget.height,
       child: TextField(
         controller: widget.controller,
+        inputFormatters: widget.inputFormatters,
         keyboardType: widget.textInputType,
         cursorColor: palette.cardColorYelGreen,
         textAlign: TextAlign.center,

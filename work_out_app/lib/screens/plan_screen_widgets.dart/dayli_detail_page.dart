@@ -440,6 +440,74 @@ class _SetDetailState extends State<SetDetail> {
   Widget intensityGrider(int selectValue) {
     switch (selectValue) {
       case 0:
+        return const SizedBox.shrink();
+      case 1:
+        return CustomTextField2(
+          controller: _1rmController,
+          inputFormatters: [
+            CurrencyFormatter(),
+          ],
+          height: 40,
+          textStyle: TextStyle(
+            color: palette.cardColorWhite,
+          ),
+          textInputType: TextInputType.number,
+          valid: _1rmSelect,
+          onChanged: (value) {
+            // value가 3자리수 (999% 이상)일 경우 100으로 바꿈
+            if (value.length > 4) {
+              _select1rmPercent = "100";
+              _1rmController.text = "100%";
+              setState(() {
+                _1rmSelect = true;
+              });
+            }
+          },
+          onSubmitted: (value) {
+            // 입력한 값이 비었을 경우
+            if (value.isEmpty) {
+              _select1rmPercent = "0";
+              _1rmController.text = "0%";
+              setState(() {
+                _1rmSelect = false;
+              });
+              //값이 있을 경우
+            } else if (value.isNotEmpty) {
+              //%가 있는지 체크하고 지움
+              if (value.contains("%") && value.length > 1) {
+                double asValue =
+                    double.parse(value.substring(0, value.length - 1));
+
+                // 100숫자 100이상 입력 시 100으로 바꿈
+                if (asValue > 100) {
+                  _select1rmPercent = "100";
+                  _1rmController.text = "100%";
+                  setState(() {
+                    _1rmSelect = true;
+                  });
+                }
+
+                // 0, 혹은 0이하일 1로 바꿈
+                if (asValue <= 0) {
+                  _select1rmPercent = "1";
+                  _1rmController.text = "1%";
+                  setState(() {
+                    _1rmSelect = true;
+                  });
+                }
+
+                //%만 남았을 경우
+              } else if (value.contains("%") == false || value.length < 2) {
+                _select1rmPercent = "0";
+                _1rmController.text = "0%";
+                setState(() {
+                  _1rmSelect = false;
+                });
+              }
+            }
+          },
+        );
+      case 2:
         return CustomDropDownButton(
           height: 40,
           hint: "rpe",
@@ -459,25 +527,7 @@ class _SetDetailState extends State<SetDetail> {
             );
           },
         );
-      case 1:
-        return CustomTextField2(
-          controller: _1rmController,
-          height: 40,
-          textStyle: TextStyle(
-            color: palette.cardColorWhite,
-          ),
-          textInputType: TextInputType.number,
-          valid: _1rmSelect,
-          onSubmitted: (value) {
-            double asValue = double.parse(value);
-            if (asValue > 100) {
-              asValue = 100;
-              _select1rmPercent = asValue.toString();
-            }
-          },
-        );
-      case 2:
-        return const SizedBox.shrink();
+
       default:
         return const SizedBox.shrink();
     }
@@ -690,6 +740,26 @@ class _SetDetailState extends State<SetDetail> {
           height: 10,
         ),
       ],
+    );
+  }
+}
+
+class CurrencyFormatter extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+      TextEditingValue oldValue, TextEditingValue newValue) {
+    // 새로운 값이 비어있거나, 이미 '%'로 끝나는 경우, 변경 없이 반환
+    if (newValue.text.isEmpty || newValue.text.endsWith('%')) {
+      return newValue;
+    }
+    // 숫자만 입력받고, 입력된 숫자 뒤에 '%'를 붙임
+    final digitsOnly = newValue.text.replaceAll(RegExp(r'[^0-9]'), '');
+    final newText = '$digitsOnly%';
+
+    return TextEditingValue(
+      text: newText,
+      // 사용자가 입력을 계속할 수 있도록 커서 위치를 조정
+      selection: TextSelection.collapsed(offset: newText.length - 1),
     );
   }
 }
