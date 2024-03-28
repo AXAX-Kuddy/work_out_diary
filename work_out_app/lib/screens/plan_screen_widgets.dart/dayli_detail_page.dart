@@ -468,49 +468,116 @@ class _SetDetailState extends State<SetDetail> {
               showDialog(
                 context: context,
                 builder: (context) {
+                  final sbdFormKey = GlobalKey<FormState>();
+
                   bool squatValid = false;
                   bool benchValid = false;
                   bool deadValid = false;
                   Map<String, String> sbd = {};
                   return Dialog(
+                    backgroundColor: palette.bgColor,
                     child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Row(
-                            children: [
-                              const Text("스쿼트"),
-                              Expanded(
-                                child: CustomTextField2(
-                                  valid: squatValid,
-                                  onSubmitted: (value) {
-                                    if (double.parse(value) <= 0) {}
-                                    sbd["스쿼트"] = value;
-                                  },
+                      padding: const EdgeInsets.all(20.0),
+                      child: Form(
+                        key: sbdFormKey,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const SizedBox(
+                              height: 15,
+                            ),
+                            Text(
+                              "당신의 기록을 입력해주세요",
+                              style: TextStyle(
+                                fontSize: 17,
+                                color: palette.cardColorWhite,
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 30,
+                            ),
+                            Row(
+                              children: [
+                                Text(
+                                  "스쿼트",
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    color: palette.cardColorWhite,
+                                  ),
                                 ),
-                              ),
-                            ],
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              TextButton(
-                                onPressed: () {
-                                  Navigator.pop(context);
-                                },
-                                child: const Text("취소"),
-                              ),
-                              TextButton(
-                                onPressed: () {
-                                  Navigator.pop(context);
-                                },
-                                child: const Text("저장"),
-                              ),
-                            ],
-                          ),
-                        ],
+                                const SizedBox(
+                                  width: 10,
+                                ),
+                                Expanded(
+                                  child: CoustomTextField(
+                                    height: 50,
+                                    isValid: squatValid,
+                                    textInputType: TextInputType.number,
+                                    textStyle: TextStyle(
+                                      color: palette.cardColorWhite,
+                                    ),
+                                    validator: (String? value) {
+                                      if (value!.isEmpty) {
+                                        setState(() {
+                                          squatValid = false;
+                                        });
+                                        return "무게를 입력해주세요!";
+                                      } else if (value.isNotEmpty) {
+                                        final doubleValue =
+                                            double.tryParse(value);
+                                        if (doubleValue == null) {
+                                          setState(() {
+                                            squatValid = false;
+                                          });
+                                          return "숫자만 입력해주세요!";
+                                        } else if (doubleValue <= 0) {
+                                          setState(() {
+                                            squatValid = false;
+                                          });
+                                          return "0kg 이상 입력해주세요!";
+                                        }
+                                      }
+                                      setState(() {
+                                        squatValid = true;
+                                      });
+                                      return null;
+                                    },
+                                    onSaved: (String? newValue) {
+                                      setState(() {
+                                        sbd["스쿼트"] = newValue!;
+                                      });
+                                    },
+                                    onFieldSubmitted: (String? value) {
+                                      final formKeyState =
+                                          sbdFormKey.currentState!;
+                                      if (formKeyState.validate()) {
+                                        formKeyState.save();
+                                      }
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                  child: const Text("취소"),
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                  child: const Text("저장"),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   );
