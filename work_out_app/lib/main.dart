@@ -99,7 +99,7 @@ class _MyAppState extends State<MyApp> {
     return Scaffold(
       body: [
         const HomeScreen(),
-        const PlanningScreen(),
+        // const PlanningScreen(),
         const WorkOutScreen(),
         const DotsPointScreen(),
       ][context.watch<provider.Store>().pageNum],
@@ -117,10 +117,10 @@ class _MyAppState extends State<MyApp> {
             icon: LineIcon.home(),
             label: "Home",
           ),
-          BottomNavigationBarItem(
-            icon: LineIcon.calendar(),
-            label: "Planning",
-          ),
+          // BottomNavigationBarItem(
+          //   icon: LineIcon.calendar(),
+          //   label: "Planning",
+          // ),
           BottomNavigationBarItem(
             icon: LineIcon.dumbbell(),
             label: "Work Out",

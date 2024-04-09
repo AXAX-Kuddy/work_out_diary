@@ -80,29 +80,29 @@ class _PlanningScreenState extends State<PlanningScreen> {
         const SizedBox(
           height: 15,
         ),
-        WideButton(
-          onTapUpFunction: () {
-            createNewRoutine(context);
-          },
-          height: 80,
-          inputContent: const [
-            SizedBox(
-              width: 10,
-            ),
-            Text(
-              "새로운 루틴 만들기",
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            Spacer(),
-            LineIcon(
-              LineIcons.angleRight,
-              size: 20,
-            ),
-          ],
-        ),
+        // WideButton(
+        //   onTapUpFunction: () {
+        //     createNewRoutine(context);
+        //   },
+        //   height: 80,
+        //   inputContent: const [
+        //     SizedBox(
+        //       width: 10,
+        //     ),
+        //     Text(
+        //       "새로운 루틴 만들기",
+        //       style: TextStyle(
+        //         fontSize: 18,
+        //         fontWeight: FontWeight.bold,
+        //       ),
+        //     ),
+        //     Spacer(),
+        //     LineIcon(
+        //       LineIcons.angleRight,
+        //       size: 20,
+        //     ),
+        //   ],
+        // ),
       ],
     );
   }
