@@ -75,25 +75,12 @@ class _TodayWorkOutCardState extends State<TodayWorkOutCard> {
             const SizedBox(
               height: 15,
             ),
-            const Column(
-              children: [
-                Text(
-                  "유저 이름's 프로그램 이름",
-                  style: TextStyle(
-                    fontSize: 22,
-                  ),
-                ),
-                SizedBox(
-                  height: 12,
-                ),
-                Text(
-                  "n주차 n일째",
-                  style: TextStyle(
-                    fontSize: 15,
-                  ),
-                ),
-              ],
-            )
+            Column(
+              children: List.generate(
+                7,
+                (index) => Text("$index번째 루틴"),
+              ),
+            ),
           ],
         ),
       ],

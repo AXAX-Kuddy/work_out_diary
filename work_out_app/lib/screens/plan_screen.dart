@@ -41,45 +41,72 @@ class _PlanningScreenState extends State<PlanningScreen> {
   @override
   Widget build(BuildContext context) {
     return BasePage(
+      appBar: AppBar(
+        elevation: 0,
+        centerTitle: true,
+        leading: IconButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          icon: LineIcon.angleLeft(
+            color: palette.cardColorWhite,
+            size: 30,
+          ),
+        ),
+        title: const Text(
+          "Planning",
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 50,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
       children: [
-        WidgetsBox(
-          height: 90,
-          backgroundColor: palette.bgColor,
-          inputContent: const [
-            Text(
-              "Planning",
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 50,
-                fontWeight: FontWeight.bold,
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            TextButton.icon(
+              onPressed: () {},
+              icon: LineIcon.plus(
+                color: palette.cardColorWhite,
+                size: 28,
+              ),
+              label: Text(
+                "운동추가",
+                style: TextStyle(
+                  fontSize: 17,
+                  color: palette.cardColorWhite,
+                ),
               ),
             ),
           ],
         ),
-        WideButton(
-          onTapUpFunction: () => context.read<provider.Store>().changePage(2),
-          height: 80,
-          inputContent: const [
-            SizedBox(
-              width: 10,
-            ),
-            Text(
-              "루틴 없이 운동 바로 시작하기",
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            Spacer(),
-            LineIcon(
-              LineIcons.angleRight,
-              size: 20,
-            ),
-          ],
-        ),
-        const SizedBox(
-          height: 15,
-        ),
+
+        // WideButton(
+        //   onTapUpFunction: () => context.read<provider.Store>().changePage(2),
+        //   height: 80,
+        //   inputContent: const [
+        //     SizedBox(
+        //       width: 10,
+        //     ),
+        //     Text(
+        //       "루틴 없이 운동 바로 시작하기",
+        //       style: TextStyle(
+        //         fontSize: 18,
+        //         fontWeight: FontWeight.bold,
+        //       ),
+        //     ),
+        //     Spacer(),
+        //     LineIcon(
+        //       LineIcons.angleRight,
+        //       size: 20,
+        //     ),
+        //   ],
+        // ),
+        // const SizedBox(
+        //   height: 15,
+        // ),
         // WideButton(
         //   onTapUpFunction: () {
         //     createNewRoutine(context);

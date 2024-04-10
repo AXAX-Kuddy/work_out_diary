@@ -17,6 +17,8 @@ import 'package:provider/provider.dart';
 import 'package:work_out_app/store.dart' as provider;
 import 'package:go_router/go_router.dart';
 import 'package:animations/animations.dart';
+import 'package:scale_button/scale_button.dart';
+import 'package:spring_button/spring_button.dart';
 
 //아이콘
 import 'package:line_icons/line_icons.dart';
@@ -41,8 +43,18 @@ void main() {
       ],
       child: MaterialApp(
         theme: ThemeData(
-          fontFamily: "Pretendard",
-        ),
+            fontFamily: "Pretendard",
+            splashFactory: NoSplash.splashFactory,
+            splashColor: Colors.transparent,
+            highlightColor: Colors.transparent,
+            appBarTheme: AppBarTheme(
+              backgroundColor: palette.bgColor,
+            ),
+            textButtonTheme: TextButtonThemeData(
+                style: ButtonStyle(
+              overlayColor: MaterialStateColor.resolveWith(
+                  (states) => Colors.transparent),
+            ))),
         home: const MyApp(),
       ),
     ),

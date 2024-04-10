@@ -4,11 +4,15 @@ import 'package:work_out_app/palette.dart' as palette;
 class BasePage extends StatelessWidget {
   final List<Widget> children;
   final AppBar? appBar;
+  final Widget? floatingActionButton;
+  final FloatingActionButtonLocation? floatingActionButtonLocation;
 
   const BasePage({
     super.key,
     required this.children,
     this.appBar,
+    this.floatingActionButton,
+    this.floatingActionButtonLocation,
   });
 
   @override
@@ -33,6 +37,8 @@ class BasePage extends StatelessWidget {
           ),
         ),
       ),
+      floatingActionButton: floatingActionButton,
+      floatingActionButtonLocation: floatingActionButtonLocation,
     );
   }
 }
