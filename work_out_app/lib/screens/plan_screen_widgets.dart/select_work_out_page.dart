@@ -7,19 +7,19 @@ import 'package:work_out_app/palette.dart' as palette;
 import 'package:provider/provider.dart';
 import 'package:work_out_app/store.dart' as provider;
 import 'package:animated_snack_bar/animated_snack_bar.dart';
-import 'package:roundcheckbox/roundcheckbox.dart';
+
 import 'package:work_out_app/make_program.dart' as maked;
 
 class SelectWorkOut extends StatefulWidget {
-  final Function changedListner;
+  final Function? changedListner;
   final maked.Day? dayInstance;
-  final Function addFunction;
+  final Function? addFunction;
 
   const SelectWorkOut({
     super.key,
     this.dayInstance,
-    required this.changedListner,
-    required this.addFunction,
+    this.changedListner,
+    this.addFunction,
   });
 
   @override
@@ -37,12 +37,10 @@ class _SelectWorkOutState extends State<SelectWorkOut> {
       {required maked.Workout workout, required String command}) {
     if (command == "add") {
       tempoList.add(workout);
-      print(workout.name);
     } else if (command == "remove") {
       tempoList.remove(workout);
-      print(workout.name);
     } else {
-      print("커맨드가 잘못 입력됨");
+      debugPrint("커맨드가 잘못 입력됨");
     }
   }
 
@@ -61,125 +59,88 @@ class _SelectWorkOutState extends State<SelectWorkOut> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
-        DateTime? lastBackPressed;
-        DateTime now = DateTime.now();
-
-        if (lastBackPressed == null ||
-            now.difference(lastBackPressed) > const Duration(seconds: 2)) {
-          lastBackPressed = now;
-          AnimatedSnackBar(
-            mobileSnackBarPosition: MobileSnackBarPosition.bottom,
-            duration: const Duration(seconds: 4),
-            builder: ((context) {
-              return MaterialAnimatedSnackBar(
-                titleText: "뒤로가면 모든 선택 항목이 초기화 됩니다.",
-                messageText: "한번 더 누르면 뒤로 갑니다.",
-                type: AnimatedSnackBarType.info,
-                iconData: LineIcons.check,
-                backgroundColor: palette.cardColorYelGreen,
-                foregroundColor: Colors.black,
-                titleTextStyle: const TextStyle(
-                  color: Colors.black,
-                ),
-                messageTextStyle: const TextStyle(
-                  color: Colors.black,
-                ),
-                borderRadius: BorderRadius.circular(40),
-              );
-            }),
-          ).show(context);
-          setState(() {
-            day!.workouts = [];
-          });
-          return Future.value(false);
-        }
-        return Future.value(true);
-      },
-      child: DefaultTabController(
-        length: workoutList.length,
-        child: BasePage(
-          appBar: AppBar(
-            title: const Text(
-              "Select Your Workout",
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 32,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            bottom: const TabBar(
-              tabs: <Widget>[
-                Text("하체"),
-                Text("등"),
-                Text("가슴"),
-                Text("어깨"),
-                Text("이두"),
-                Text("삼두"),
-              ],
+    return DefaultTabController(
+      length: workoutList.length,
+      child: BasePage(
+        appBar: AppBar(
+          title: const Text(
+            "Select Your Workout",
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 32,
+              fontWeight: FontWeight.bold,
             ),
           ),
-          children: [
-            Expanded(
-              child: TabBarView(children: [
-                WorkoutList(
-                  part: "하체",
-                  workoutList: workoutList,
-                  day: day,
-                  tempoList: tempoList,
-                  managementTempoList: managementTempoList,
-                ),
-                WorkoutList(
-                  part: "등",
-                  workoutList: workoutList,
-                  day: day,
-                  tempoList: tempoList,
-                  managementTempoList: managementTempoList,
-                ),
-                WorkoutList(
-                  part: "가슴",
-                  workoutList: workoutList,
-                  day: day,
-                  tempoList: tempoList,
-                  managementTempoList: managementTempoList,
-                ),
-                WorkoutList(
-                  part: "어깨",
-                  workoutList: workoutList,
-                  day: day,
-                  tempoList: tempoList,
-                  managementTempoList: managementTempoList,
-                ),
-                WorkoutList(
-                  part: "이두",
-                  workoutList: workoutList,
-                  day: day,
-                  tempoList: tempoList,
-                  managementTempoList: managementTempoList,
-                ),
-                WorkoutList(
-                  part: "삼두",
-                  workoutList: workoutList,
-                  day: day,
-                  tempoList: tempoList,
-                  managementTempoList: managementTempoList,
-                ),
-              ]),
-            ),
-            TextButton(
-              onPressed: () async {
-                for (int i = 0; i < tempoList.length; i++) {
-                  await widget.addFunction(tempoList[i]);
-                }
-                widget.changedListner();
-                // ignore: use_build_context_synchronously
-                Navigator.pop(context);
-              },
-              child: const Text("운동 추가하기"),
-            ),
-          ],
+          bottom: const TabBar(
+            tabs: <Widget>[
+              Text("하체"),
+              Text("등"),
+              Text("가슴"),
+              Text("어깨"),
+              Text("이두"),
+              Text("삼두"),
+            ],
+          ),
         ),
+        children: [
+          Expanded(
+            child: TabBarView(children: [
+              WorkoutList(
+                part: "하체",
+                workoutList: workoutList,
+                day: day,
+                tempoList: tempoList,
+                managementTempoList: managementTempoList,
+              ),
+              WorkoutList(
+                part: "등",
+                workoutList: workoutList,
+                day: day,
+                tempoList: tempoList,
+                managementTempoList: managementTempoList,
+              ),
+              WorkoutList(
+                part: "가슴",
+                workoutList: workoutList,
+                day: day,
+                tempoList: tempoList,
+                managementTempoList: managementTempoList,
+              ),
+              WorkoutList(
+                part: "어깨",
+                workoutList: workoutList,
+                day: day,
+                tempoList: tempoList,
+                managementTempoList: managementTempoList,
+              ),
+              WorkoutList(
+                part: "이두",
+                workoutList: workoutList,
+                day: day,
+                tempoList: tempoList,
+                managementTempoList: managementTempoList,
+              ),
+              WorkoutList(
+                part: "삼두",
+                workoutList: workoutList,
+                day: day,
+                tempoList: tempoList,
+                managementTempoList: managementTempoList,
+              ),
+            ]),
+          ),
+          TextButton(
+            onPressed: () async {
+              for (int i = 0; i < tempoList.length; i++) {
+                await widget.addFunction!(tempoList[i]);
+              }
+              widget.changedListner!();
+              // ignore: use_build_context_synchronously
+              Navigator.pop(context);
+            },
+            child: const Text("운동 추가하기"),
+          ),
+        ],
       ),
     );
   }

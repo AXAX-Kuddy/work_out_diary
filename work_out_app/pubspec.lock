@@ -160,14 +160,6 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  go_router:
-    dependency: "direct main"
-    description:
-      name: go_router
-      sha256: "170c46e237d6eb0e6e9f0e8b3f56101e14fb64f787016e42edd74c39cf8b176a"
-      url: "https://pub.dev"
-    source: hosted
-    version: "13.2.0"
   html:
     dependency: transitive
     description:
@@ -240,14 +232,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.1"
-  logging:
-    dependency: transitive
-    description:
-      name: logging
-      sha256: "623a88c9594aa774443aa3eb2d41807a48486b5613e67599fb4c41c0ad47c340"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.2.0"
   matcher:
     dependency: transitive
     description:
@@ -312,22 +296,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "6.1.1"
-  roundcheckbox:
+  simple_animations:
     dependency: "direct main"
     description:
-      name: roundcheckbox
-      sha256: "5d6f607ed9d26fde0072af2545f56d84a6b6d2a45972b0c41f90c2d73224f339"
+      name: simple_animations
+      sha256: "1ea7b93fb98e2a611b6865d632de55607b766328d14700143353129ee0559d3a"
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.5"
-  scale_button:
-    dependency: "direct main"
-    description:
-      name: scale_button
-      sha256: c9d1e36cfa9030c3a13b8746e8a7bc7b4b27577553e0bdb2ecc52c9cbc92bd85
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.1.2"
+    version: "5.0.2"
   simple_gesture_detector:
     dependency: transitive
     description:
@@ -349,14 +325,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.10.0"
-  spring_button:
-    dependency: "direct main"
-    description:
-      name: spring_button
-      sha256: b6d0839fc711a691d14159cf3feb499f9067ba5542630d1db0effac3c9fd2dae
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.0.0"
   stack_trace:
     dependency: transitive
     description:
@@ -455,4 +423,4 @@ packages:
     version: "3.1.2"
 sdks:
   dart: ">=3.2.0-0 <4.0.0"
-  flutter: ">=3.13.0"
+  flutter: ">=3.7.0"

@@ -15,10 +15,8 @@ import 'package:work_out_app/screens/input_userInfo.dart';
 //패키지들
 import 'package:provider/provider.dart';
 import 'package:work_out_app/store.dart' as provider;
-import 'package:go_router/go_router.dart';
 import 'package:animations/animations.dart';
-import 'package:scale_button/scale_button.dart';
-import 'package:spring_button/spring_button.dart';
+
 
 //아이콘
 import 'package:line_icons/line_icons.dart';

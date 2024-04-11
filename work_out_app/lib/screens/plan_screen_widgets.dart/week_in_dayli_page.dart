@@ -10,7 +10,7 @@ import 'package:line_icons/line_icon.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:provider/provider.dart';
 import 'package:work_out_app/store.dart' as provider;
-import 'package:go_router/go_router.dart';
+
 import 'package:work_out_app/make_program.dart' as maked;
 
 class DayliPage extends StatefulWidget {

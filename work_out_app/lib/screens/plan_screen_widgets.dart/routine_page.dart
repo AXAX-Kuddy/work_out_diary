@@ -1,6 +1,5 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:work_out_app/screens/plan_screen_widgets.dart/select_work_out_page.dart';
 import 'package:work_out_app/screens/plan_screen_widgets.dart/week_in_dayli_page.dart';
