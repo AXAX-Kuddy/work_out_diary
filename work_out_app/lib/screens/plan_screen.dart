@@ -23,15 +23,12 @@ class PlanningScreen extends StatefulWidget {
 
 class _PlanningScreenState extends State<PlanningScreen> {
   late List<maked.Workout> workoutList;
-  late void Function(List<maked.Workout> list) addList;
 
   @override
   void initState() {
     super.initState();
     workoutList =
         context.read<provider.UserProgramListStore>().userSelectWorkOut;
-    addList =
-        context.read<provider.UserProgramListStore>().addUserSelectWorkOut;
   }
 
   @override
@@ -77,7 +74,12 @@ class _PlanningScreenState extends State<PlanningScreen> {
                     ),
                   );
                 } else {
-                  return Text("${workoutList[index].name}");
+                  return Text(
+                    "${workoutList[index].name}",
+                    style: TextStyle(
+                      color: palette.cardColorWhite,
+                    ),
+                  );
                 }
               },
             ),
@@ -93,9 +95,6 @@ class _PlanningScreenState extends State<PlanningScreen> {
                   PageRouteBuilder(
                     pageBuilder: (context, animation, secondaryAnimation) =>
                         SelectWorkOut(
-                      addFunction: (List<maked.Workout> list) {
-                        addList(list);
-                      },
                       changedListner: () {
                         setState(() {
                           workoutList;

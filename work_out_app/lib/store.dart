@@ -198,11 +198,15 @@ class WorkoutListStore extends ChangeNotifier {
 }
 
 class UserProgramListStore extends ChangeNotifier {
-  ///selectWorkOut 페이지에서 유저가 선택한 운동을 여기에 보관합니다.
   List<maked.Workout> userSelectWorkOut = [];
 
-  void addUserSelectWorkOut(List<maked.Workout> list) {
-    userSelectWorkOut.addAll(list);
+  void addUserSelectWorkout(maked.Workout workout) {
+    userSelectWorkOut.add(workout);
+    notifyListeners();
+  }
+
+  void removeUserSelectWorkout(maked.Workout workout) {
+    userSelectWorkOut.remove(workout);
     notifyListeners();
   }
 }

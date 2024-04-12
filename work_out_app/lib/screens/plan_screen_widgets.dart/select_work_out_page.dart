@@ -27,18 +27,20 @@ class SelectWorkOut extends StatefulWidget {
 }
 
 class _SelectWorkOutState extends State<SelectWorkOut> {
-  List<maked.Workout> tempoList = [];
+  late List<maked.Workout> tempoList;
+  late void Function(maked.Workout) addWorkout;
+  late void Function(maked.Workout) removeWorkout;
 
   late maked.Day? day;
   late Map<String, List<provider.WorkoutDetail>> workoutList;
   late provider.WorkoutDetail workoutDetail;
 
   void managementTempoList(
-      {required maked.Workout workout, required String command}) {
-    if (command == "add") {
-      tempoList.add(workout);
-    } else if (command == "remove") {
-      tempoList.remove(workout);
+      {required maked.Workout workout, required int command}) {
+    if (command == 1) {
+      addWorkout(workout);
+    } else if (command == 0) {
+      removeWorkout(workout);
     } else {
       debugPrint("커맨드가 잘못 입력됨");
     }
@@ -48,13 +50,14 @@ class _SelectWorkOutState extends State<SelectWorkOut> {
   void initState() {
     super.initState();
     day = widget.dayInstance;
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
     workoutList = context.read<provider.WorkoutListStore>().workouts;
     workoutDetail = context.read<provider.WorkoutDetail>();
+
+    tempoList = context.read<provider.UserProgramListStore>().userSelectWorkOut;
+    addWorkout =
+        context.read<provider.UserProgramListStore>().addUserSelectWorkout;
+    removeWorkout =
+        context.read<provider.UserProgramListStore>().removeUserSelectWorkout;
   }
 
   @override
@@ -164,7 +167,7 @@ class WorkoutList extends StatelessWidget {
   final String part;
   final Map<String, List<provider.WorkoutDetail>> workoutList;
   List<maked.Workout> tempoList;
-  void Function({required maked.Workout workout, required String command})
+  void Function({required maked.Workout workout, required int command})
       managementTempoList;
 
   final maked.Day? day;
@@ -191,8 +194,6 @@ class WorkoutList extends StatelessWidget {
       itemBuilder: (context, index) {
         return SelectBox(
           workoutName: workoutList[part]![index].detail["종목"],
-          day: day,
-          index: index,
           tempoList: tempoList,
           managementTempoList: managementTempoList,
         );
@@ -203,18 +204,14 @@ class WorkoutList extends StatelessWidget {
 
 class SelectBox extends StatefulWidget {
   final String workoutName;
-  final maked.Day? day;
-  final int index;
-
   List<maked.Workout> tempoList;
-  void Function({required maked.Workout workout, required String command})
+
+  void Function({required maked.Workout workout, required int command})
       managementTempoList;
 
   SelectBox({
     super.key,
     required this.workoutName,
-    required this.day,
-    required this.index,
     required this.tempoList,
     required this.managementTempoList,
   });
@@ -224,35 +221,41 @@ class SelectBox extends StatefulWidget {
 }
 
 class _SelectBoxState extends State<SelectBox> {
+  late maked.Workout workoutInstance;
+
   bool _checker = false;
   late maked.Day? day;
-  late void Function({required maked.Workout workout, required String command})
+  late void Function({required maked.Workout workout, required int command})
       managementTempoList;
 
   @override
   void initState() {
     super.initState();
-    day = widget.day;
     managementTempoList = widget.managementTempoList;
+    workoutInstance = maked.Workout(name: widget.workoutName);
+
+    _checker =
+        widget.tempoList.any((workout) => workout.name == widget.workoutName);
   }
 
   void addWorkout() {
     setState(() {
-      maked.Workout newWorkout = maked.Workout(
-        name: widget.workoutName,
-      );
       managementTempoList(
-        command: "add",
-        workout: newWorkout,
+        command: 1,
+        workout: workoutInstance,
       );
     });
   }
 
-  void deleteWorkout(String name) {
+  void deleteWorkout() {
     if (widget.tempoList.isNotEmpty) {
       setState(() {
-        widget.tempoList.removeWhere((workout) => workout.name == name);
+        managementTempoList(
+          command: 0,
+          workout: workoutInstance,
+        );
       });
+      print(widget.tempoList);
     }
   }
 
@@ -268,7 +271,7 @@ class _SelectBoxState extends State<SelectBox> {
         } else {
           setState(() {
             _checker = false;
-            deleteWorkout(widget.workoutName);
+            deleteWorkout();
           });
         }
       },
