@@ -22,6 +22,18 @@ class PlanningScreen extends StatefulWidget {
 }
 
 class _PlanningScreenState extends State<PlanningScreen> {
+  late List<maked.Workout> workoutList;
+  late void Function(List<maked.Workout> list) addList;
+
+  @override
+  void initState() {
+    super.initState();
+    workoutList =
+        context.read<provider.UserProgramListStore>().userSelectWorkOut;
+    addList =
+        context.read<provider.UserProgramListStore>().addUserSelectWorkOut;
+  }
+
   @override
   Widget build(BuildContext context) {
     return BasePage(
@@ -47,6 +59,30 @@ class _PlanningScreenState extends State<PlanningScreen> {
         ),
       ),
       children: [
+        Expanded(
+          child: ScrollConfiguration(
+            behavior: const ScrollBehavior().copyWith(overscroll: false),
+            child: ListView.builder(
+              itemCount: workoutList.isEmpty ? 1 : workoutList.length,
+              itemBuilder: (BuildContext context, int index) {
+                if (workoutList.isEmpty) {
+                  return Center(
+                    heightFactor: 20,
+                    child: Text(
+                      "운동을 추가해주세요!",
+                      style: TextStyle(
+                        fontSize: 20,
+                        color: palette.cardColorWhite,
+                      ),
+                    ),
+                  );
+                } else {
+                  return Text("${workoutList[index].name}");
+                }
+              },
+            ),
+          ),
+        ),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -56,10 +92,19 @@ class _PlanningScreenState extends State<PlanningScreen> {
                   context,
                   PageRouteBuilder(
                     pageBuilder: (context, animation, secondaryAnimation) =>
-                        const SelectWorkOut(),
+                        SelectWorkOut(
+                      addFunction: (List<maked.Workout> list) {
+                        addList(list);
+                      },
+                      changedListner: () {
+                        setState(() {
+                          workoutList;
+                        });
+                      },
+                    ),
                     transitionsBuilder:
                         (context, animation, secondaryAnimation, child) {
-                      var begin = const Offset(1.0, 0.0); // 오른쪽에서 왼쪽으로 슬라이드
+                      var begin = const Offset(0.0, 1.0);
                       var end = Offset.zero;
                       var curve = Curves.ease;
 

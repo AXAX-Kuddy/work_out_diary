@@ -63,11 +63,22 @@ class _SelectWorkOutState extends State<SelectWorkOut> {
       length: workoutList.length,
       child: BasePage(
         appBar: AppBar(
-          title: const Text(
+          centerTitle: true,
+          leading: IconButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            icon: Icon(
+              Icons.close,
+              size: 30,
+              color: palette.cardColorWhite,
+            ),
+          ),
+          title: Text(
             "Select Your Workout",
             style: TextStyle(
-              color: Colors.white,
-              fontSize: 32,
+              color: palette.cardColorWhite,
+              fontSize: 30,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -131,10 +142,13 @@ class _SelectWorkOutState extends State<SelectWorkOut> {
           ),
           TextButton(
             onPressed: () async {
-              for (int i = 0; i < tempoList.length; i++) {
-                await widget.addFunction!(tempoList[i]);
+              if (widget.addFunction != null) {
+                await widget.addFunction!(tempoList);
               }
-              widget.changedListner!();
+
+              if (widget.changedListner != null) {
+                widget.changedListner!();
+              }
               // ignore: use_build_context_synchronously
               Navigator.pop(context);
             },
@@ -169,7 +183,10 @@ class WorkoutList extends StatelessWidget {
     return ListView.separated(
       itemCount: workoutList[part]!.length,
       separatorBuilder: (context, index) {
-        return const Divider();
+        return const Divider(
+          height: 20,
+          color: Colors.white,
+        );
       },
       itemBuilder: (context, index) {
         return SelectBox(
@@ -229,7 +246,6 @@ class _SelectBoxState extends State<SelectBox> {
         workout: newWorkout,
       );
     });
-    print(widget.tempoList);
   }
 
   void deleteWorkout(String name) {
@@ -238,7 +254,6 @@ class _SelectBoxState extends State<SelectBox> {
         widget.tempoList.removeWhere((workout) => workout.name == name);
       });
     }
-    print(widget.tempoList);
   }
 
   @override

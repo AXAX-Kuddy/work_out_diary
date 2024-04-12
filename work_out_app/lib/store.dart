@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:work_out_app/make_program.dart';
+import 'package:work_out_app/make_program.dart' as maked;
 
 class Store extends ChangeNotifier {
   int pageNum = 0;
@@ -199,22 +199,10 @@ class WorkoutListStore extends ChangeNotifier {
 
 class UserProgramListStore extends ChangeNotifier {
   ///selectWorkOut 페이지에서 유저가 선택한 운동을 여기에 보관합니다.
-  List userSelectWorkOut = [];
+  List<maked.Workout> userSelectWorkOut = [];
 
-  ///사용자가 생성 및 받아온 루틴들은 모두 이곳에 보관함.
-  List programs = [];
-
-  void addProgram(Program program) {
-    programs.add(program);
+  void addUserSelectWorkOut(List<maked.Workout> list) {
+    userSelectWorkOut.addAll(list);
     notifyListeners();
-  }
-
-  void removeProgram(Program program) {
-    programs.remove(program);
-    notifyListeners();
-  }
-
-  Program getProgram(int index) {
-    return programs[index];
   }
 }
