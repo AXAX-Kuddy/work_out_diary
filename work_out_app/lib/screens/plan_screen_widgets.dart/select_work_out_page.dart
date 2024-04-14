@@ -27,9 +27,7 @@ class SelectWorkOut extends StatefulWidget {
 }
 
 class _SelectWorkOutState extends State<SelectWorkOut> {
-  late List<maked.Workout> tempoList;
-  late void Function(maked.Workout) addWorkout;
-  late void Function(maked.Workout) removeWorkout;
+  List<maked.Workout> tempoList = [];
 
   late maked.Day? day;
   late Map<String, List<provider.WorkoutDetail>> workoutList;
@@ -38,9 +36,9 @@ class _SelectWorkOutState extends State<SelectWorkOut> {
   void managementTempoList(
       {required maked.Workout workout, required int command}) {
     if (command == 1) {
-      addWorkout(workout);
+      tempoList.add(workout);
     } else if (command == 0) {
-      removeWorkout(workout);
+      tempoList.remove(workout);
     } else {
       debugPrint("커맨드가 잘못 입력됨");
     }
@@ -52,12 +50,6 @@ class _SelectWorkOutState extends State<SelectWorkOut> {
     day = widget.dayInstance;
     workoutList = context.read<provider.WorkoutListStore>().workouts;
     workoutDetail = context.read<provider.WorkoutDetail>();
-
-    tempoList = context.read<provider.UserProgramListStore>().userSelectWorkOut;
-    addWorkout =
-        context.read<provider.UserProgramListStore>().addUserSelectWorkout;
-    removeWorkout =
-        context.read<provider.UserProgramListStore>().removeUserSelectWorkout;
   }
 
   @override
@@ -233,9 +225,6 @@ class _SelectBoxState extends State<SelectBox> {
     super.initState();
     managementTempoList = widget.managementTempoList;
     workoutInstance = maked.Workout(name: widget.workoutName);
-
-    _checker =
-        widget.tempoList.any((workout) => workout.name == widget.workoutName);
   }
 
   void addWorkout() {
@@ -245,6 +234,7 @@ class _SelectBoxState extends State<SelectBox> {
         workout: workoutInstance,
       );
     });
+    debugPrint("${widget.tempoList}");
   }
 
   void deleteWorkout() {
@@ -255,7 +245,7 @@ class _SelectBoxState extends State<SelectBox> {
           workout: workoutInstance,
         );
       });
-      print(widget.tempoList);
+      debugPrint("${widget.tempoList}");
     }
   }
 
