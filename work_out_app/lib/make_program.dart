@@ -97,12 +97,14 @@ class Set {
   int? reps;
   double? weight;
   double? rpe;
+  bool setComplete;
 
   Set({
     this.setIndex,
     this.reps,
     this.rpe,
     this.weight,
+    this.setComplete = false,
   });
 
   set editReps(int value) {

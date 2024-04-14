@@ -29,6 +29,9 @@ class TopDivider extends StatelessWidget {
             style: TextStyle(color: palette.cardColorWhite),
           ),
         ),
+        const SizedBox(
+          width: 8,
+        ),
         Expanded(
           flex: 2,
           child: Text(
@@ -36,6 +39,9 @@ class TopDivider extends StatelessWidget {
             textAlign: TextAlign.center,
             style: TextStyle(color: palette.cardColorWhite),
           ),
+        ),
+        const SizedBox(
+          width: 8,
         ),
         Expanded(
           flex: 2,

@@ -6,6 +6,7 @@ import 'package:line_icons/line_icons.dart';
 import 'package:work_out_app/screens/plan_screen.dart';
 import 'package:work_out_app/screens/plan_screen_widgets.dart/top_divider.dart';
 import 'package:work_out_app/widgets/drop_down.dart';
+import 'package:work_out_app/widgets/non_form_text_field.dart';
 
 class WorkoutDetail extends StatefulWidget {
   final int index;
@@ -127,6 +128,8 @@ class _WorkoutDetailState extends State<WorkoutDetail> {
                                       setState(() {
                                         selectRpe = "0";
                                         target = "타겟 RPE";
+                                        widget.workoutInstance.targetRpe =
+                                            double.parse(selectRpe);
                                       });
                                       Navigator.pop(context);
                                     },
@@ -140,10 +143,14 @@ class _WorkoutDetailState extends State<WorkoutDetail> {
                                     onPressed: () {
                                       if (selectRpe == "0") {
                                         setState(() {
+                                          widget.workoutInstance.targetRpe =
+                                              double.parse(selectRpe);
                                           target = "타겟 RPE";
                                         });
                                       } else {
                                         setState(() {
+                                          widget.workoutInstance.targetRpe =
+                                              double.parse(selectRpe);
                                           target = selectRpe;
                                         });
                                       }
@@ -261,7 +268,17 @@ class _WorkoutDetailState extends State<WorkoutDetail> {
           children: List.generate(
             widget.workoutInstance.sets!.length,
             (index) {
-              return const SetsDetail();
+              return Column(
+                children: [
+                  SetsDetail(
+                    index: index,
+                    setInstance: widget.workoutInstance.sets![index],
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                ],
+              );
             },
           ),
         ),
@@ -327,7 +344,13 @@ class _WorkoutDetailState extends State<WorkoutDetail> {
 }
 
 class SetsDetail extends StatefulWidget {
-  const SetsDetail({super.key});
+  final int index;
+  final maked.Set setInstance;
+  const SetsDetail({
+    super.key,
+    required this.index,
+    required this.setInstance,
+  });
 
   @override
   State<SetsDetail> createState() => _SetsDetailState();
@@ -342,46 +365,79 @@ class _SetsDetailState extends State<SetsDetail> {
         Expanded(
           flex: 1,
           child: Text(
-            "세트",
+            "${widget.index + 1}",
             textAlign: TextAlign.center,
             style: TextStyle(
+              fontSize: 17,
               color: palette.cardColorWhite,
             ),
           ),
         ),
-        Expanded(
+        const Expanded(
           flex: 2,
-          child: Text(
-            "무게",
-            textAlign: TextAlign.center,
-            style: TextStyle(color: palette.cardColorWhite),
-          ),
+          child: SetInputField(),
         ),
-        Expanded(
-          flex: 2,
-          child: Text(
-            "갯수",
-            textAlign: TextAlign.center,
-            style: TextStyle(color: palette.cardColorWhite),
-          ),
+        const SizedBox(
+          width: 8,
         ),
-        Expanded(
+        const Expanded(
           flex: 2,
-          child: Text(
-            "RPE",
-            textAlign: TextAlign.center,
-            style: TextStyle(color: palette.cardColorWhite),
-          ),
+          child: SetInputField(),
+        ),
+        const SizedBox(
+          width: 8,
+        ),
+        const Expanded(
+          flex: 2,
+          child: SetInputField(),
         ),
         Expanded(
           flex: 1,
-          child: Text(
-            "완료",
-            textAlign: TextAlign.center,
-            style: TextStyle(color: palette.cardColorWhite),
+          child: IconButton(
+            constraints: const BoxConstraints(),
+            padding: EdgeInsets.zero,
+            visualDensity: VisualDensity.compact,
+            onPressed: () {
+              if (widget.setInstance.setComplete == false) {
+                setState(() {
+                  widget.setInstance.setComplete = true;
+                });
+              } else {
+                setState(() {
+                  widget.setInstance.setComplete = false;
+                });
+              }
+            },
+            icon: LineIcon(
+              widget.setInstance.setComplete
+                  ? LineIcons.checkCircle
+                  : LineIcons.circle,
+              size: 30,
+              color: widget.setInstance.setComplete
+                  ? palette.cardColorYelGreen
+                  : palette.cardColorGray,
+            ),
           ),
         ),
       ],
+    );
+  }
+}
+
+class SetInputField extends StatelessWidget {
+  const SetInputField({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomTextField2(
+      height: 45,
+      valid: false,
+      textInputType: TextInputType.number,
+      textStyle: TextStyle(
+        color: palette.cardColorWhite,
+      ),
     );
   }
 }
