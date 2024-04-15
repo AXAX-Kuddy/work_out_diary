@@ -94,16 +94,16 @@ class Workout {
 
 class Set {
   late int? setIndex;
-  int? reps;
-  double? weight;
-  double? rpe;
+  int reps;
+  double weight;
+  double rpe;
   bool setComplete;
 
   Set({
     this.setIndex,
-    this.reps,
-    this.rpe,
-    this.weight,
+    this.reps = 0,
+    this.rpe = 0,
+    this.weight = 0,
     this.setComplete = false,
   });
 

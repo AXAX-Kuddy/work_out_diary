@@ -6,6 +6,7 @@ class BasePage extends StatelessWidget {
   final AppBar? appBar;
   final Widget? floatingActionButton;
   final FloatingActionButtonLocation? floatingActionButtonLocation;
+  final EdgeInsets padding;
 
   const BasePage({
     super.key,
@@ -13,6 +14,7 @@ class BasePage extends StatelessWidget {
     this.appBar,
     this.floatingActionButton,
     this.floatingActionButtonLocation,
+    this.padding = const EdgeInsets.all(15),
   });
 
   @override
@@ -25,7 +27,7 @@ class BasePage extends StatelessWidget {
         ),
         // ignore: prefer_const_constructors
         child: Padding(
-          padding: const EdgeInsets.all(15),
+          padding: padding,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [

@@ -28,7 +28,7 @@ class WorkoutDetail extends StatefulWidget {
 }
 
 class _WorkoutDetailState extends State<WorkoutDetail> {
-  String target = "타겟 RPE";
+  String target = "Target";
   final List<String> rpeList = [
     "5",
     "5.5",
@@ -127,7 +127,7 @@ class _WorkoutDetailState extends State<WorkoutDetail> {
                                     onPressed: () {
                                       setState(() {
                                         selectRpe = "0";
-                                        target = "타겟 RPE";
+                                        target = "Target";
                                         widget.workoutInstance.targetRpe =
                                             double.parse(selectRpe);
                                       });
@@ -145,7 +145,7 @@ class _WorkoutDetailState extends State<WorkoutDetail> {
                                         setState(() {
                                           widget.workoutInstance.targetRpe =
                                               double.parse(selectRpe);
-                                          target = "타겟 RPE";
+                                          target = "Target";
                                         });
                                       } else {
                                         setState(() {
@@ -273,6 +273,7 @@ class _WorkoutDetailState extends State<WorkoutDetail> {
                   SetsDetail(
                     index: index,
                     setInstance: widget.workoutInstance.sets![index],
+                    rpeList: rpeList,
                   ),
                   const SizedBox(
                     height: 20,
@@ -317,7 +318,14 @@ class _WorkoutDetailState extends State<WorkoutDetail> {
                     widget.workoutInstance.addSet(newSet);
                   });
                 } else {
-                  maked.Set newSet = widget.workoutInstance.sets!.last;
+                  double preSetWeight =
+                      widget.workoutInstance.sets!.last.weight;
+                  int preSetReps = widget.workoutInstance.sets!.last.reps;
+
+                  maked.Set newSet = maked.Set(
+                    weight: preSetWeight,
+                    reps: preSetReps,
+                  );
                   setState(() {
                     widget.workoutInstance.addSet(newSet);
                   });
@@ -346,10 +354,12 @@ class _WorkoutDetailState extends State<WorkoutDetail> {
 class SetsDetail extends StatefulWidget {
   final int index;
   final maked.Set setInstance;
+  final List<String>? rpeList;
   const SetsDetail({
     super.key,
     required this.index,
     required this.setInstance,
+    this.rpeList,
   });
 
   @override
@@ -357,6 +367,52 @@ class SetsDetail extends StatefulWidget {
 }
 
 class _SetsDetailState extends State<SetsDetail> {
+  String handleWeightSubmitted(String value) {
+    //숫자 이외의 다른 값이 있을 경우
+    if (double.tryParse(value) == null) {
+      value = "0";
+      widget.setInstance.editWeight = double.parse(value);
+      return value;
+    } else if (double.parse(value) <= 0) {
+      value = "0";
+      widget.setInstance.editWeight = double.parse(value);
+      return value;
+    }
+
+    //끝이 .으로 끝날 경우
+    if (value.endsWith(".")) {
+      value += "0"; // 뒤에 0 붙임
+      widget.setInstance.editWeight = double.parse(value);
+      return value;
+    }
+
+    widget.setInstance.editWeight = double.parse(value);
+    return value;
+  }
+
+  String handleRepsSubmitted(String value) {
+    //숫자 이외의 다른 값이 있을 경우
+    if (int.tryParse(value) == null) {
+      value = "0";
+      widget.setInstance.editReps = int.parse(value);
+      return value;
+    } else if (int.parse(value) <= 0) {
+      value = "0";
+      widget.setInstance.editReps = int.parse(value);
+      return value;
+    }
+
+    //끝이 .으로 끝날 경우
+    if (value.endsWith(".")) {
+      value.substring(0, value.length - 1); // 소숫점 제거
+      widget.setInstance.editReps = int.parse(value);
+      return value;
+    }
+
+    widget.setInstance.editReps = int.parse(value);
+    return value;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -373,23 +429,47 @@ class _SetsDetailState extends State<SetsDetail> {
             ),
           ),
         ),
-        const Expanded(
+        Expanded(
           flex: 2,
-          child: SetInputField(),
+
+          //중량
+          child: SetInputField(
+            setInstance: widget.setInstance,
+            fieldText: widget.setInstance.weight.toString(),
+            onSubmitted: handleWeightSubmitted,
+          ),
         ),
         const SizedBox(
           width: 8,
         ),
-        const Expanded(
+        Expanded(
           flex: 2,
-          child: SetInputField(),
+
+          // 갯수
+          child: SetInputField(
+            setInstance: widget.setInstance,
+            fieldText: widget.setInstance.reps.toString(),
+            onSubmitted: handleRepsSubmitted,
+          ),
         ),
         const SizedBox(
           width: 8,
         ),
-        const Expanded(
+        Expanded(
           flex: 2,
-          child: SetInputField(),
+          child: CustomDropDownButton(
+            enabledValid: false,
+            height: 40,
+            hint: "@",
+            textStyle: TextStyle(color: palette.cardColorWhite),
+            itemList: widget.rpeList!,
+            itemTextStyle: TextStyle(
+              color: palette.cardColorWhite,
+            ),
+            onChanged: (value) {
+              widget.setInstance.editRpe = double.parse(value!);
+            },
+          ),
         ),
         Expanded(
           flex: 1,
@@ -424,20 +504,56 @@ class _SetsDetailState extends State<SetsDetail> {
   }
 }
 
-class SetInputField extends StatelessWidget {
+class SetInputField extends StatefulWidget {
+  final maked.Set setInstance;
+  final String fieldText;
+  final String Function(String)? onSubmitted;
+  final void Function()? onTap;
+
   const SetInputField({
     super.key,
+    required this.setInstance,
+    required this.fieldText,
+    this.onSubmitted,
+    this.onTap,
   });
+
+  @override
+  State<SetInputField> createState() => _SetInputFieldState();
+}
+
+class _SetInputFieldState extends State<SetInputField> {
+  final TextEditingController controller = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    controller.text = widget.fieldText;
+  }
 
   @override
   Widget build(BuildContext context) {
     return CustomTextField2(
-      height: 45,
+      controller: controller,
+      height: 40,
       valid: false,
       textInputType: TextInputType.number,
       textStyle: TextStyle(
         color: palette.cardColorWhite,
       ),
+      onSubmitted: (value) {
+        if (widget.onSubmitted != null) {
+          controller.text = widget.onSubmitted!.call(value);
+        }
+      },
+      onTap: () {
+        if (double.parse(controller.text) <= 0) {
+          controller.text = "";
+        }
+        if (widget.onTap != null) {
+          widget.onTap?.call();
+        }
+      },
     );
   }
 }

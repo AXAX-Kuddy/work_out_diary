@@ -13,6 +13,7 @@ class CustomDropDownButton extends StatefulWidget {
   dynamic inputValue;
   VoidCallback? selectChecker;
   final Function(String)? returnableChecker;
+  final bool enabledValid;
 
   ///setState는 기본값
   final void Function(String?)? onChanged;
@@ -31,6 +32,7 @@ class CustomDropDownButton extends StatefulWidget {
     this.returnableChecker,
     this.textStyle,
     this.itemTextStyle,
+    this.enabledValid = true,
   });
 
   @override
@@ -72,8 +74,12 @@ class _CustomDropDownButtonState extends State<CustomDropDownButton> {
             if (widget.returnableChecker != null) {
               widget.returnableChecker!(value!);
             }
+            if (widget.enabledValid) {
+              setState(() {
+                _isSelectd = true;
+              });
+            }
             setState(() {
-              _isSelectd = true;
               if (widget.onChanged != null) {
                 widget.onChanged!(value);
               }

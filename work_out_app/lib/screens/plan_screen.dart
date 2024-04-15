@@ -49,6 +49,7 @@ class _PlanningScreenState extends State<PlanningScreen> {
   @override
   Widget build(BuildContext context) {
     return BasePage(
+      padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
       appBar: AppBar(
         elevation: 0,
         centerTitle: true,
@@ -160,6 +161,3 @@ class _PlanningScreenState extends State<PlanningScreen> {
     );
   }
 }
-
-
-
