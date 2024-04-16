@@ -28,6 +28,8 @@ class WorkoutDetail extends StatefulWidget {
 }
 
 class _WorkoutDetailState extends State<WorkoutDetail> {
+  List<Map<int, double>> e1rmList = [];
+
   String target = "Target";
   final List<String> rpeList = [
     "5",
@@ -43,9 +45,28 @@ class _WorkoutDetailState extends State<WorkoutDetail> {
     "10"
   ];
 
-  @override
-  void initState() {
-    super.initState();
+  void addE1rmList(Map<int, double> result) {
+    int findKey = result.keys.first;
+    int findIndex = e1rmList.indexWhere((map) => map.containsKey(findKey));
+
+    if (findIndex != -1) {
+      e1rmList[findIndex][findKey] = result[findKey]!;
+    } else {
+      e1rmList.add(result);
+    }
+  }
+
+  String showE1rm() {
+    if (e1rmList.isNotEmpty) {
+      double maxValue = e1rmList
+          .map((map) => map.values)
+          .expand((values) => values)
+          .reduce((maxValue, value) => value > maxValue ? value : maxValue);
+
+      return "e1rm : ${maxValue.toString()}";
+    } else {
+      return "테스트";
+    }
   }
 
   @override
@@ -274,14 +295,26 @@ class _WorkoutDetailState extends State<WorkoutDetail> {
                     index: index,
                     setInstance: widget.workoutInstance.sets![index],
                     rpeList: rpeList,
+                    addE1rm: addE1rmList,
                   ),
                   const SizedBox(
-                    height: 20,
+                    height: 15,
                   ),
                 ],
               );
             },
           ),
+        ),
+        Row(
+          children: [
+            const SizedBox(
+              width: 15,
+            ),
+            Text(
+              showE1rm(),
+              style: TextStyle(color: palette.cardColorWhite),
+            ),
+          ],
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -355,11 +388,13 @@ class SetsDetail extends StatefulWidget {
   final int index;
   final maked.Set setInstance;
   final List<String>? rpeList;
+  final void Function(Map<int, double>) addE1rm;
   const SetsDetail({
     super.key,
     required this.index,
     required this.setInstance,
     this.rpeList,
+    required this.addE1rm,
   });
 
   @override
@@ -372,10 +407,12 @@ class _SetsDetailState extends State<SetsDetail> {
     if (double.tryParse(value) == null) {
       value = "0";
       widget.setInstance.editWeight = double.parse(value);
+      e1rmCal();
       return value;
     } else if (double.parse(value) <= 0) {
       value = "0";
       widget.setInstance.editWeight = double.parse(value);
+      e1rmCal();
       return value;
     }
 
@@ -383,10 +420,12 @@ class _SetsDetailState extends State<SetsDetail> {
     if (value.endsWith(".")) {
       value += "0"; // 뒤에 0 붙임
       widget.setInstance.editWeight = double.parse(value);
+      e1rmCal();
       return value;
     }
 
     widget.setInstance.editWeight = double.parse(value);
+    e1rmCal();
     return value;
   }
 
@@ -395,10 +434,12 @@ class _SetsDetailState extends State<SetsDetail> {
     if (int.tryParse(value) == null) {
       value = "0";
       widget.setInstance.editReps = int.parse(value);
+      e1rmCal();
       return value;
     } else if (int.parse(value) <= 0) {
       value = "0";
       widget.setInstance.editReps = int.parse(value);
+      e1rmCal();
       return value;
     }
 
@@ -406,11 +447,60 @@ class _SetsDetailState extends State<SetsDetail> {
     if (value.endsWith(".")) {
       value.substring(0, value.length - 1); // 소숫점 제거
       widget.setInstance.editReps = int.parse(value);
+      e1rmCal();
       return value;
     }
 
     widget.setInstance.editReps = int.parse(value);
+    e1rmCal();
     return value;
+  }
+
+  double percentage(int reps, double rpe) {
+    if (rpe <= 0 || reps <= 0) {
+      return 0;
+    }
+
+    if (rpe > 10) {
+      rpe = 10;
+    }
+
+    if (reps < 1 || rpe < 4) {
+      return 0;
+    }
+
+    if (reps == 1 && rpe == 10) {
+      return 100;
+    }
+
+    var x = (10 - rpe) + (reps - 1);
+    if (x >= 16) {
+      return 0;
+    }
+    var intersection = 2.92;
+
+    if (x <= intersection) {
+      var a = 0.347619;
+      var b = -4.60714;
+      var c = 99.9667;
+      return a * x * x + b * x + c;
+    }
+
+    var m = -2.64249;
+    var b = 97.0955;
+    return m * x + b;
+  }
+
+  void e1rmCal() {
+    double weight = widget.setInstance.weight;
+    int reps = widget.setInstance.reps;
+    double rpe = widget.setInstance.rpe;
+
+    double result = percentage(reps, rpe);
+    double e1rm = weight / result * 100;
+
+    Map<int, double> finalData = {widget.index: e1rm};
+    widget.addE1rm(finalData);
   }
 
   @override
