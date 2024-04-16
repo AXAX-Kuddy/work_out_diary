@@ -28,7 +28,8 @@ class WorkoutDetail extends StatefulWidget {
 }
 
 class _WorkoutDetailState extends State<WorkoutDetail> {
-  List<Map<int, double>> e1rmList = [];
+  String e1rm = "테스트";
+  Map<int, double> e1rmList = {};
 
   String target = "Target";
   final List<String> rpeList = [
@@ -45,27 +46,25 @@ class _WorkoutDetailState extends State<WorkoutDetail> {
     "10"
   ];
 
-  void addE1rmList(Map<int, double> result) {
-    int findKey = result.keys.first;
-    int findIndex = e1rmList.indexWhere((map) => map.containsKey(findKey));
-
-    if (findIndex != -1) {
-      e1rmList[findIndex][findKey] = result[findKey]!;
-    } else {
-      e1rmList.add(result);
-    }
+  void addE1rmList(int key, double value) {
+    e1rmList[key] = value;
+    showE1rm();
   }
 
-  String showE1rm() {
+  void showE1rm() {
     if (e1rmList.isNotEmpty) {
-      double maxValue = e1rmList
-          .map((map) => map.values)
-          .expand((values) => values)
-          .reduce((maxValue, value) => value > maxValue ? value : maxValue);
+      List<double> list = e1rmList.values.toList();
+      double result = list.reduce((max, value) => max > value ? max : value);
 
-      return "e1rm : ${maxValue.toString()}";
+      if (result.isInfinite || result.isNaN) {
+        e1rm = "값이 무한이거나 양수가 아님";
+      } else {
+        setState(() {
+          e1rm = "e1rm : ${result.toStringAsFixed(1)}";
+        });
+      }
     } else {
-      return "테스트";
+      e1rm = "리스트가 비어있음";
     }
   }
 
@@ -311,7 +310,7 @@ class _WorkoutDetailState extends State<WorkoutDetail> {
               width: 15,
             ),
             Text(
-              showE1rm(),
+              e1rm,
               style: TextStyle(color: palette.cardColorWhite),
             ),
           ],
@@ -322,6 +321,13 @@ class _WorkoutDetailState extends State<WorkoutDetail> {
             TextButton.icon(
               onPressed: () {
                 if (widget.workoutInstance.sets!.isNotEmpty) {
+                  if (e1rmList.isNotEmpty) {
+                    List<int> list = e1rmList.keys.toList();
+                    int getSetIndex = list.last;
+
+                    e1rmList.remove(getSetIndex);
+                    showE1rm();
+                  }
                   setState(() {
                     maked.Set getSet = widget.workoutInstance.sets!.last;
                     widget.workoutInstance.removeSet(getSet);
@@ -388,7 +394,7 @@ class SetsDetail extends StatefulWidget {
   final int index;
   final maked.Set setInstance;
   final List<String>? rpeList;
-  final void Function(Map<int, double>) addE1rm;
+  final void Function(int, double) addE1rm;
   const SetsDetail({
     super.key,
     required this.index,
@@ -499,8 +505,7 @@ class _SetsDetailState extends State<SetsDetail> {
     double result = percentage(reps, rpe);
     double e1rm = weight / result * 100;
 
-    Map<int, double> finalData = {widget.index: e1rm};
-    widget.addE1rm(finalData);
+    widget.addE1rm(widget.index, e1rm);
   }
 
   @override
@@ -558,6 +563,7 @@ class _SetsDetailState extends State<SetsDetail> {
             ),
             onChanged: (value) {
               widget.setInstance.editRpe = double.parse(value!);
+              e1rmCal();
             },
           ),
         ),
