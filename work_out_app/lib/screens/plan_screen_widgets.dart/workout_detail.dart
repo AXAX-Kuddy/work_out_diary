@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:work_out_app/make_program.dart' as maked;
 import 'package:work_out_app/palette.dart' as palette;
 import 'package:line_icons/line_icon.dart';
@@ -31,6 +32,7 @@ class _WorkoutDetailState extends State<WorkoutDetail> {
   late List<maked.Set> setList;
 
   String e1rm = "";
+  String e1rmWithSet = "";
   String target = "Target";
   final List<String> rpeList = [
     "5",
@@ -54,11 +56,14 @@ class _WorkoutDetailState extends State<WorkoutDetail> {
           maxE1rmSet = set;
         }
       }
+      int setIndex = maxE1rmSet.setIndex! + 1;
       setState(() {
+        e1rmWithSet = setIndex.toString();
         e1rm = maxE1rmSet.e1rm.toStringAsFixed(1);
       });
     } else {
       setState(() {
+        e1rmWithSet = "";
         e1rm = "";
       });
     }
@@ -150,8 +155,8 @@ class _WorkoutDetailState extends State<WorkoutDetail> {
                                       setState(() {
                                         selectRpe = "0";
                                         target = "Target";
-                                        widget.workoutInstance.targetRpe =
-                                            double.parse(selectRpe);
+                                        widget.workoutInstance.editTargetRpe(
+                                            double.parse(selectRpe));
                                       });
                                       Navigator.pop(context);
                                     },
@@ -165,14 +170,14 @@ class _WorkoutDetailState extends State<WorkoutDetail> {
                                     onPressed: () {
                                       if (selectRpe == "0") {
                                         setState(() {
-                                          widget.workoutInstance.targetRpe =
-                                              double.parse(selectRpe);
+                                          widget.workoutInstance.editTargetRpe(
+                                              double.parse(selectRpe));
                                           target = "Target";
                                         });
                                       } else {
                                         setState(() {
-                                          widget.workoutInstance.targetRpe =
-                                              double.parse(selectRpe);
+                                          widget.workoutInstance.editTargetRpe(
+                                              double.parse(selectRpe));
                                           target = selectRpe;
                                         });
                                       }
@@ -311,12 +316,33 @@ class _WorkoutDetailState extends State<WorkoutDetail> {
             const SizedBox(
               width: 15,
             ),
-            Text(
-              e1rm,
-              style: TextStyle(color: palette.cardColorWhite),
+            Visibility(
+              visible:
+                  double.tryParse(e1rm) == null || double.tryParse(e1rm) == 0
+                      ? false
+                      : true,
+              child: Text(
+                "$e1rmWithSet세트 기준, e1RM : $e1rm",
+                style: TextStyle(
+                  color: palette.cardColorWhite.withOpacity(0.5),
+                ),
+              ),
             ),
           ],
         ),
+        // Row(
+        //   children: [
+        //     const SizedBox(
+        //       width: 15,
+        //     ),
+        //     Text(
+        //       "현1rm의 200%",
+        //       style: TextStyle(
+        //         color: palette.cardColorWhite.withOpacity(0.5),
+        //       ),
+        //     ),
+        //   ],
+        // ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [

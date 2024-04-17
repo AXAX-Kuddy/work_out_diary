@@ -70,12 +70,12 @@ class Day {
 
 class Workout {
   String? name;
-  double? targetRpe;
+  double targetRpe;
   List<Set>? sets = [];
 
   Workout({
     this.name,
-    this.targetRpe,
+    this.targetRpe = 0,
     List<Set>? sets,
   }) : sets = sets ?? [];
 
@@ -89,6 +89,10 @@ class Workout {
 
   Set getSet(int index) {
     return sets![index];
+  }
+
+  void editTargetRpe(double value) {
+    targetRpe = value;
   }
 }
 
