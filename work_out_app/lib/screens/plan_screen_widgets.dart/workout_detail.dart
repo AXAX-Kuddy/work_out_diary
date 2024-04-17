@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:work_out_app/make_program.dart' as maked;
 import 'package:work_out_app/palette.dart' as palette;
@@ -12,6 +13,7 @@ class WorkoutDetail extends StatefulWidget {
   final int index;
   final void Function(maked.Workout) removeWorkout;
   final maked.Workout workoutInstance;
+  final List<maked.Workout> workoutList;
 
   const WorkoutDetail({
     super.key,
@@ -21,16 +23,14 @@ class WorkoutDetail extends StatefulWidget {
     required this.workoutInstance,
   });
 
-  final List<maked.Workout> workoutList;
-
   @override
   State<WorkoutDetail> createState() => _WorkoutDetailState();
 }
 
 class _WorkoutDetailState extends State<WorkoutDetail> {
-  String e1rm = "테스트";
-  Map<int, double> e1rmList = {};
+  late List<maked.Set> setList;
 
+  String e1rm = "";
   String target = "Target";
   final List<String> rpeList = [
     "5",
@@ -46,26 +46,28 @@ class _WorkoutDetailState extends State<WorkoutDetail> {
     "10"
   ];
 
-  void addE1rmList(int key, double value) {
-    e1rmList[key] = value;
-    showE1rm();
+  void findE1rm() {
+    if (setList.isNotEmpty) {
+      maked.Set maxE1rmSet = setList[0];
+      for (maked.Set set in setList) {
+        if (set.e1rm > maxE1rmSet.e1rm) {
+          maxE1rmSet = set;
+        }
+      }
+      setState(() {
+        e1rm = maxE1rmSet.e1rm.toStringAsFixed(1);
+      });
+    } else {
+      setState(() {
+        e1rm = "";
+      });
+    }
   }
 
-  void showE1rm() {
-    if (e1rmList.isNotEmpty) {
-      List<double> list = e1rmList.values.toList();
-      double result = list.reduce((max, value) => max > value ? max : value);
-
-      if (result.isInfinite || result.isNaN) {
-        e1rm = "값이 무한이거나 양수가 아님";
-      } else {
-        setState(() {
-          e1rm = "e1rm : ${result.toStringAsFixed(1)}";
-        });
-      }
-    } else {
-      e1rm = "리스트가 비어있음";
-    }
+  @override
+  void initState() {
+    super.initState();
+    setList = widget.workoutInstance.sets!;
   }
 
   @override
@@ -294,7 +296,7 @@ class _WorkoutDetailState extends State<WorkoutDetail> {
                     index: index,
                     setInstance: widget.workoutInstance.sets![index],
                     rpeList: rpeList,
-                    addE1rm: addE1rmList,
+                    findE1rm: findE1rm,
                   ),
                   const SizedBox(
                     height: 15,
@@ -321,18 +323,12 @@ class _WorkoutDetailState extends State<WorkoutDetail> {
             TextButton.icon(
               onPressed: () {
                 if (widget.workoutInstance.sets!.isNotEmpty) {
-                  if (e1rmList.isNotEmpty) {
-                    List<int> list = e1rmList.keys.toList();
-                    int getSetIndex = list.last;
-
-                    e1rmList.remove(getSetIndex);
-                    showE1rm();
-                  }
                   setState(() {
                     maked.Set getSet = widget.workoutInstance.sets!.last;
                     widget.workoutInstance.removeSet(getSet);
                   });
                 }
+                findE1rm();
               },
               icon: const LineIcon(
                 LineIcons.minus,
@@ -362,6 +358,7 @@ class _WorkoutDetailState extends State<WorkoutDetail> {
                   int preSetReps = widget.workoutInstance.sets!.last.reps;
 
                   maked.Set newSet = maked.Set(
+                    setIndex: widget.workoutInstance.sets!.length,
                     weight: preSetWeight,
                     reps: preSetReps,
                   );
@@ -369,6 +366,7 @@ class _WorkoutDetailState extends State<WorkoutDetail> {
                     widget.workoutInstance.addSet(newSet);
                   });
                 }
+                findE1rm();
               },
               icon: LineIcon(
                 LineIcons.plus,
@@ -394,13 +392,14 @@ class SetsDetail extends StatefulWidget {
   final int index;
   final maked.Set setInstance;
   final List<String>? rpeList;
-  final void Function(int, double) addE1rm;
+  final Function findE1rm;
+
   const SetsDetail({
     super.key,
     required this.index,
     required this.setInstance,
     this.rpeList,
-    required this.addE1rm,
+    required this.findE1rm,
   });
 
   @override
@@ -412,26 +411,28 @@ class _SetsDetailState extends State<SetsDetail> {
     //숫자 이외의 다른 값이 있을 경우
     if (double.tryParse(value) == null) {
       value = "0";
-      widget.setInstance.editWeight = double.parse(value);
-      e1rmCal();
+
+      widget.setInstance.editWeight(double.parse(value));
+
       return value;
     } else if (double.parse(value) <= 0) {
       value = "0";
-      widget.setInstance.editWeight = double.parse(value);
-      e1rmCal();
+      widget.setInstance.editWeight(double.parse(value));
+
       return value;
     }
 
     //끝이 .으로 끝날 경우
     if (value.endsWith(".")) {
       value += "0"; // 뒤에 0 붙임
-      widget.setInstance.editWeight = double.parse(value);
-      e1rmCal();
+
+      widget.setInstance.editWeight(double.parse(value));
+
       return value;
     }
 
-    widget.setInstance.editWeight = double.parse(value);
-    e1rmCal();
+    widget.setInstance.editWeight(double.parse(value));
+
     return value;
   }
 
@@ -439,73 +440,32 @@ class _SetsDetailState extends State<SetsDetail> {
     //숫자 이외의 다른 값이 있을 경우
     if (int.tryParse(value) == null) {
       value = "0";
-      widget.setInstance.editReps = int.parse(value);
-      e1rmCal();
+      widget.setInstance.editReps(int.parse(value));
+
       return value;
     } else if (int.parse(value) <= 0) {
       value = "0";
-      widget.setInstance.editReps = int.parse(value);
-      e1rmCal();
+      widget.setInstance.editReps(int.parse(value));
+
       return value;
     }
 
     //끝이 .으로 끝날 경우
     if (value.endsWith(".")) {
       value.substring(0, value.length - 1); // 소숫점 제거
-      widget.setInstance.editReps = int.parse(value);
-      e1rmCal();
+      widget.setInstance.editReps(int.parse(value));
+
       return value;
     }
+    widget.setInstance.editReps(int.parse(value));
 
-    widget.setInstance.editReps = int.parse(value);
-    e1rmCal();
     return value;
   }
 
-  double percentage(int reps, double rpe) {
-    if (rpe <= 0 || reps <= 0) {
-      return 0;
-    }
-
-    if (rpe > 10) {
-      rpe = 10;
-    }
-
-    if (reps < 1 || rpe < 4) {
-      return 0;
-    }
-
-    if (reps == 1 && rpe == 10) {
-      return 100;
-    }
-
-    var x = (10 - rpe) + (reps - 1);
-    if (x >= 16) {
-      return 0;
-    }
-    var intersection = 2.92;
-
-    if (x <= intersection) {
-      var a = 0.347619;
-      var b = -4.60714;
-      var c = 99.9667;
-      return a * x * x + b * x + c;
-    }
-
-    var m = -2.64249;
-    var b = 97.0955;
-    return m * x + b;
-  }
-
-  void e1rmCal() {
-    double weight = widget.setInstance.weight;
-    int reps = widget.setInstance.reps;
-    double rpe = widget.setInstance.rpe;
-
-    double result = percentage(reps, rpe);
-    double e1rm = weight / result * 100;
-
-    widget.addE1rm(widget.index, e1rm);
+  @override
+  void initState() {
+    super.initState();
+    widget.setInstance.onUpdate = () => widget.findE1rm();
   }
 
   @override
@@ -562,8 +522,7 @@ class _SetsDetailState extends State<SetsDetail> {
               color: palette.cardColorWhite,
             ),
             onChanged: (value) {
-              widget.setInstance.editRpe = double.parse(value!);
-              e1rmCal();
+              widget.setInstance.editRpe(double.parse(value!));
             },
           ),
         ),

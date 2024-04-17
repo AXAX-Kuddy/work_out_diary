@@ -97,25 +97,98 @@ class Set {
   int reps;
   double weight;
   double rpe;
+  double e1rm;
   bool setComplete;
+  Function? onUpdate;
 
   Set({
     this.setIndex,
     this.reps = 0,
     this.rpe = 0,
     this.weight = 0,
+    this.e1rm = 0,
     this.setComplete = false,
+    this.onUpdate,
   });
 
-  set editReps(int value) {
+  void _notifyUpdate() {
+    if (onUpdate != null) {
+      onUpdate!();
+    }
+  }
+
+  void editReps(int value) {
     reps = value;
+    _e1rmCal();
+    _notifyUpdate();
   }
 
-  set editWeight(double value) {
+  void editWeight(double value) {
     weight = value;
+    _e1rmCal();
+    _notifyUpdate();
   }
 
-  set editRpe(double value) {
+  void editRpe(double value) {
     rpe = value;
+    _e1rmCal();
+    _notifyUpdate();
+  }
+
+  void editE1rm(double value) {
+    if (value.isInfinite || value.isNaN || value.isNegative) {
+      e1rm = 0;
+      _notifyUpdate();
+    } else {
+      e1rm = value;
+      _notifyUpdate();
+    }
+  }
+
+  double _percentage(int reps, double rpe) {
+    if (rpe <= 0 || reps <= 0) {
+      return 0;
+    }
+
+    if (rpe > 10) {
+      rpe = 10;
+    }
+
+    if (reps < 1 || rpe < 4) {
+      return 0;
+    }
+
+    if (reps == 1 && rpe == 10) {
+      return 100;
+    }
+
+    var x = (10 - rpe) + (reps - 1);
+    if (x >= 16) {
+      return 0;
+    }
+    var intersection = 2.92;
+
+    if (x <= intersection) {
+      var a = 0.347619;
+      var b = -4.60714;
+      var c = 99.9667;
+      return a * x * x + b * x + c;
+    }
+
+    var m = -2.64249;
+    var b = 97.0955;
+    return m * x + b;
+  }
+
+  void _e1rmCal() {
+    double result = _percentage(reps, rpe);
+    double e1rm = weight / result * 100;
+
+    editE1rm(e1rm);
+  }
+
+  void changedSetComp(bool value) {
+    setComplete = value;
+    _notifyUpdate();
   }
 }
