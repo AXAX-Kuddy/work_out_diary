@@ -15,6 +15,7 @@ import 'package:work_out_app/widgets/wide_button.dart';
 import 'package:work_out_app/widgets/widget_box.dart';
 import 'package:provider/provider.dart';
 import 'package:work_out_app/store.dart' as provider;
+import 'package:stop_watch_timer/stop_watch_timer.dart';
 
 import 'package:work_out_app/make_program.dart' as maked;
 
@@ -30,11 +31,21 @@ class _PlanningScreenState extends State<PlanningScreen> {
   late void Function(maked.Workout) addWorkout;
   late void Function(maked.Workout) removeWorkout;
 
+  final StopWatchTimer stopWatchTimer = StopWatchTimer();
+  var displayTime;
+
   @override
   void initState() {
     super.initState();
     workoutList =
         context.read<provider.UserProgramListStore>().userSelectWorkOut;
+    displayTime = StopWatchTimer.getDisplayTime(1);
+  }
+
+  @override
+  void dispose() async {
+    super.dispose();
+    await stopWatchTimer.dispose();
   }
 
   @override
@@ -156,6 +167,22 @@ class _PlanningScreenState extends State<PlanningScreen> {
               ),
             ),
           ],
+        ),
+        SizedBox(
+          height: 50,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              TextButton(
+                onPressed: () {},
+                child: const Text("버튼"),
+              ),
+              TextButton(
+                onPressed: () {},
+                child: const Text("버튼"),
+              ),
+            ],
+          ),
         ),
       ],
     );
