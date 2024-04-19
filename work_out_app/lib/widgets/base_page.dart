@@ -21,6 +21,7 @@ class BasePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: appBar,
+      
       body: Container(
         decoration: BoxDecoration(
           color: palette.bgColor,

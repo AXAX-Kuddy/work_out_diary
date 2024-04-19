@@ -10,6 +10,7 @@ import 'package:work_out_app/screens/plan_screen_widgets.dart/top_divider.dart';
 import 'package:work_out_app/widgets/drop_down.dart';
 import 'package:work_out_app/widgets/non_form_text_field.dart';
 
+
 class WorkoutDetail extends StatefulWidget {
   final int index;
   final void Function(maked.Workout) removeWorkout;
@@ -57,15 +58,24 @@ class _WorkoutDetailState extends State<WorkoutDetail> {
         }
       }
       int setIndex = maxE1rmSet.setIndex! + 1;
-      setState(() {
-        e1rmWithSet = setIndex.toString();
-        e1rm = maxE1rmSet.e1rm.toStringAsFixed(1);
-      });
+
+      if (widget.workoutInstance.showE1rm == false) {
+        setState(() {
+          e1rmWithSet = "";
+          e1rm = "";
+        });
+      } else {
+        setState(() {
+          e1rmWithSet = setIndex.toString();
+          e1rm = maxE1rmSet.e1rm.toStringAsFixed(1);
+        });
+      }
     } else {
       setState(() {
         e1rmWithSet = "";
         e1rm = "";
       });
+      print(e1rm);
     }
   }
 
@@ -163,7 +173,8 @@ class _WorkoutDetailState extends State<WorkoutDetail> {
                                     child: Text(
                                       "초기화",
                                       style: TextStyle(
-                                          color: palette.cardColorWhite),
+                                        color: palette.cardColorWhite,
+                                      ),
                                     ),
                                   ),
                                   TextButton(
@@ -276,10 +287,10 @@ class _WorkoutDetailState extends State<WorkoutDetail> {
                   },
                 );
               },
-              icon: const LineIcon(
-                color: Colors.red,
-                size: 24,
-                LineIcons.trash,
+              icon: LineIcon(
+                color: palette.cardColorWhite,
+                size: 30,
+                LineIcons.verticalEllipsis,
               ),
             )
           ],
@@ -408,6 +419,9 @@ class _WorkoutDetailState extends State<WorkoutDetail> {
               ),
             ),
           ],
+        ),
+        const SizedBox(
+          height: 50,
         ),
       ],
     );

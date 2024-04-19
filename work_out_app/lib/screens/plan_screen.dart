@@ -31,15 +31,14 @@ class _PlanningScreenState extends State<PlanningScreen> {
   late void Function(maked.Workout) addWorkout;
   late void Function(maked.Workout) removeWorkout;
 
+  bool workoutStart = false;
   final StopWatchTimer stopWatchTimer = StopWatchTimer();
-  var displayTime;
 
   @override
   void initState() {
     super.initState();
     workoutList =
         context.read<provider.UserProgramListStore>().userSelectWorkOut;
-    displayTime = StopWatchTimer.getDisplayTime(1);
   }
 
   @override
@@ -168,20 +167,64 @@ class _PlanningScreenState extends State<PlanningScreen> {
             ),
           ],
         ),
-        SizedBox(
-          height: 50,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              TextButton(
-                onPressed: () {},
-                child: const Text("버튼"),
-              ),
-              TextButton(
-                onPressed: () {},
-                child: const Text("버튼"),
-              ),
-            ],
+        Visibility(
+          visible: workoutList.isNotEmpty,
+          child: SizedBox(
+            height: 50,
+            child: StreamBuilder(
+              stream: stopWatchTimer.rawTime,
+              initialData: 0,
+              builder: (context, snapshot) {
+                final value = snapshot.data;
+                final displayTime = StopWatchTimer.getDisplayTime(
+                  value!,
+                  milliSecond: false,
+                );
+
+                return Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Row(
+                      children: [
+                        TextButton(
+                          onPressed: () {},
+                          child: const Text("버튼"),
+                        ),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        Text(
+                          displayTime,
+                          style: TextStyle(
+                            color: palette.cardColorWhite,
+                          ),
+                        ),
+                        workoutStart
+                            ? TextButton(
+                                onPressed: () {
+                                  stopWatchTimer.onStopTimer();
+                                  setState(() {
+                                    workoutStart = false;
+                                  });
+                                },
+                                child: const Text("운동 완료"),
+                              )
+                            : TextButton(
+                                onPressed: () {
+                                  stopWatchTimer.onStartTimer();
+                                  setState(() {
+                                    workoutStart = true;
+                                  });
+                                },
+                                child: const Text("운동 시작"),
+                              )
+                      ],
+                    ),
+                  ],
+                );
+              },
+            ),
           ),
         ),
       ],

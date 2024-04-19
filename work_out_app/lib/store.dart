@@ -119,80 +119,71 @@ class Store extends ChangeNotifier {
   }
 }
 
-class WorkoutDetail extends ChangeNotifier {
-  final String? workoutName;
-  final DateTime? date;
-  final String? notiMemo;
-  final String? memo;
-  WorkoutDetail({
-    this.workoutName,
-    this.date,
-    this.notiMemo,
-    this.memo,
-  });
+// class WorkoutDetail {
+//   final String name;
+//   bool showE1rm;
 
-  dynamic get detail => {
-        "종목": workoutName,
-        "전체메모": notiMemo,
-        "날짜메모": [
-          {
-            "날짜": date,
-            "내용": memo,
-          },
-        ],
-      };
-
-  void addMemo({DateTime? date, String? memo, required String location}) {
-    if (location == "noti") {
-      detail["전체메모"] = memo;
-    } else if (location == "date") {
-      var writeMemo = {"날짜": date, "내용": memo};
-      detail["날짜메모"].add(writeMemo);
-    }
-    notifyListeners();
-  }
-
-  void editMemo(
-      {required DateTime date, String? memo, required String location}) {
-    if (location == "noti") {
-      detail["전체메모"] = memo;
-    } else if (location == "date") {
-      for (int i = 0; i < detail["날짜메모"].length; i++) {
-        if (detail["날짜메모"]["날짜"] == date) {
-          detail["날짜메모"][date] = date;
-          detail["날짜메모"]["내용"] = memo;
-        }
-      }
-    }
-    notifyListeners();
-  }
-}
+//   WorkoutDetail({
+//     required this.name,
+//     this.showE1rm = false,
+//   });
+// }
 
 class WorkoutListStore extends ChangeNotifier {
   var workouts = {
     "하체": [
-      WorkoutDetail(workoutName: "스쿼트"),
-      WorkoutDetail(workoutName: "데드리프트"),
+      // WorkoutDetail(
+      //   name: "스쿼트",
+      //   showE1rm: true,
+      // ),
+      // WorkoutDetail(
+      //   name: "데드리프트",
+      //   showE1rm: true,
+      // ),
+      maked.Workout(
+        name: "스쿼트",
+        showE1rm: true,
+      ),
+      maked.Workout(
+        name: "데드리프트",
+        showE1rm: true,
+      ),
     ],
     "등": [
-      WorkoutDetail(workoutName: "랫 풀 다운"),
-      WorkoutDetail(workoutName: "바벨 로우"),
+      // WorkoutDetail(name: "랫 풀 다운"),
+      // WorkoutDetail(name: "바벨 로우"),
+      maked.Workout(name: "랫 풀 다운"),
+      maked.Workout(name: "바벨 로우"),
     ],
     "가슴": [
-      WorkoutDetail(workoutName: "벤치프레스"),
-      WorkoutDetail(workoutName: "인클라인 벤치프레스"),
+      // WorkoutDetail(
+      //   name: "벤치프레스",
+      //   showE1rm: true,
+      // ),
+      // WorkoutDetail(name: "인클라인 덤벨 프레스"),
+      maked.Workout(
+        name: "벤치프레스",
+        showE1rm: true,
+      ),
+      maked.Workout(name: "인클라인 덤벨 프레스"),
     ],
     "어깨": [
-      WorkoutDetail(workoutName: "밀리터리 프레스"),
-      WorkoutDetail(workoutName: "사이드 레터럴 레이즈"),
+      // WorkoutDetail(name: "밀리터리 프레스"),
+      // WorkoutDetail(name: "덤벨 숄더 프레스"),
+      maked.Workout(name: "밀리터리 프레스"),
+      maked.Workout(name: "덤벨 숄더 프레스"),
     ],
     "이두": [
-      WorkoutDetail(workoutName: "바벨컬"),
-      WorkoutDetail(workoutName: "해머컬"),
+      // WorkoutDetail(name: "바벨 컬"),
+      // WorkoutDetail(name: "해머 컬"),
+      maked.Workout(name: "바벨 컬"),
+      maked.Workout(name: "해머 컬"),
     ],
     "삼두": [
-      WorkoutDetail(workoutName: "클로즈 그립 벤치프레스"),
-      WorkoutDetail(workoutName: "트라이셉스 푸시 다운"),
+      // WorkoutDetail(name: "클로즈 그립 벤치프레스"),
+      // WorkoutDetail(name: "덤벨 스컬 크러셔"),
+      maked.Workout(name: "클로즈 그립 벤치프레스"),
+      maked.Workout(name: "덤벨 스컬 크러셔"),
     ],
   };
 }

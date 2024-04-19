@@ -30,8 +30,7 @@ class _SelectWorkOutState extends State<SelectWorkOut> {
   List<maked.Workout> tempoList = [];
 
   late maked.Day? day;
-  late Map<String, List<provider.WorkoutDetail>> workoutList;
-  late provider.WorkoutDetail workoutDetail;
+  late Map<String, List<maked.Workout>> workoutList;
 
   void managementTempoList(
       {required maked.Workout workout, required int command}) {
@@ -49,7 +48,6 @@ class _SelectWorkOutState extends State<SelectWorkOut> {
     super.initState();
     day = widget.dayInstance;
     workoutList = context.read<provider.WorkoutListStore>().workouts;
-    workoutDetail = context.read<provider.WorkoutDetail>();
   }
 
   @override
@@ -157,7 +155,7 @@ class _SelectWorkOutState extends State<SelectWorkOut> {
 
 class WorkoutList extends StatelessWidget {
   final String part;
-  final Map<String, List<provider.WorkoutDetail>> workoutList;
+  final Map<String, List<maked.Workout>> workoutList;
   List<maked.Workout> tempoList;
   void Function({required maked.Workout workout, required int command})
       managementTempoList;
@@ -185,7 +183,9 @@ class WorkoutList extends StatelessWidget {
       },
       itemBuilder: (context, index) {
         return SelectBox(
-          workoutName: workoutList[part]![index].detail["종목"],
+          // workoutName: workoutList[part]![index].name!,
+          // showE1rm: workoutList[part]![index].showE1rm,
+          workoutInstance: workoutList[part]![index],
           tempoList: tempoList,
           managementTempoList: managementTempoList,
         );
@@ -195,15 +195,21 @@ class WorkoutList extends StatelessWidget {
 }
 
 class SelectBox extends StatefulWidget {
-  final String workoutName;
+  // final String workoutName;
+  // final bool showE1rm;
+  final maked.Workout workoutInstance;
   List<maked.Workout> tempoList;
 
-  void Function({required maked.Workout workout, required int command})
-      managementTempoList;
+  void Function({
+    required maked.Workout workout,
+    required int command,
+  }) managementTempoList;
 
   SelectBox({
     super.key,
-    required this.workoutName,
+    // required this.workoutName,
+    // required this.showE1rm,
+    required this.workoutInstance,
     required this.tempoList,
     required this.managementTempoList,
   });
@@ -213,8 +219,6 @@ class SelectBox extends StatefulWidget {
 }
 
 class _SelectBoxState extends State<SelectBox> {
-  late maked.Workout workoutInstance;
-
   bool _checker = false;
   late maked.Day? day;
   late void Function({required maked.Workout workout, required int command})
@@ -224,14 +228,13 @@ class _SelectBoxState extends State<SelectBox> {
   void initState() {
     super.initState();
     managementTempoList = widget.managementTempoList;
-    workoutInstance = maked.Workout(name: widget.workoutName);
   }
 
   void addWorkout() {
     setState(() {
       managementTempoList(
         command: 1,
-        workout: workoutInstance,
+        workout: widget.workoutInstance,
       );
     });
     debugPrint("${widget.tempoList}");
@@ -242,7 +245,7 @@ class _SelectBoxState extends State<SelectBox> {
       setState(() {
         managementTempoList(
           command: 0,
-          workout: workoutInstance,
+          workout: widget.workoutInstance,
         );
       });
       debugPrint("${widget.tempoList}");
@@ -278,7 +281,7 @@ class _SelectBoxState extends State<SelectBox> {
         child: Row(
           children: [
             Text(
-              widget.workoutName,
+              widget.workoutInstance.name!,
               style: const TextStyle(
                 fontSize: 18,
                 color: Colors.white,

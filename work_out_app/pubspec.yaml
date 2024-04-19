@@ -44,6 +44,7 @@ dependencies:
   table_calendar: ^3.1.1
   simple_animations: ^5.0.2
   stop_watch_timer: ^3.1.1
+  sliding_up_panel: ^2.0.0+1
 
 dev_dependencies:
   flutter_test:

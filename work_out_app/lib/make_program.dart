@@ -71,11 +71,13 @@ class Day {
 class Workout {
   String? name;
   double targetRpe;
+  bool showE1rm;
   List<Set>? sets = [];
 
   Workout({
     this.name,
     this.targetRpe = 0,
+    this.showE1rm = false,
     List<Set>? sets,
   }) : sets = sets ?? [];
 
@@ -85,6 +87,10 @@ class Workout {
 
   void removeSet(Set set) {
     sets?.remove(set);
+  }
+
+  void emptySetsList() {
+    sets = [];
   }
 
   Set getSet(int index) {

@@ -17,7 +17,6 @@ import 'package:provider/provider.dart';
 import 'package:work_out_app/store.dart' as provider;
 import 'package:animations/animations.dart';
 
-
 //아이콘
 import 'package:line_icons/line_icons.dart';
 import 'package:line_icons/line_icon.dart';
@@ -31,9 +30,6 @@ void main() {
         ),
         ChangeNotifierProvider(
           create: (context) => provider.WorkoutListStore(),
-        ),
-        ChangeNotifierProvider(
-          create: (context) => provider.WorkoutDetail(),
         ),
         ChangeNotifierProvider(
           create: (context) => provider.UserProgramListStore(),
