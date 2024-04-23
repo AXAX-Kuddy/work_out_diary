@@ -32,7 +32,7 @@ void main() {
           create: (context) => provider.WorkoutListStore(),
         ),
         ChangeNotifierProvider(
-          create: (context) => provider.UserProgramListStore(),
+          create: (context) => provider.UserProgramStore(),
         ),
       ],
       child: MaterialApp(

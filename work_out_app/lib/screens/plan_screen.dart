@@ -30,30 +30,51 @@ class _PlanningScreenState extends State<PlanningScreen> {
   late List<maked.Workout> workoutList;
   late void Function(maked.Workout) addWorkout;
   late void Function(maked.Workout) removeWorkout;
-
-  bool workoutStart = false;
-  final StopWatchTimer stopWatchTimer = StopWatchTimer();
+  late void Function() setWorkoutStart;
+  late void Function() setWorkoutFinish;
+  late StopWatchTimer stopWatchTimer;
+  late bool workoutStart;
+  late TextButton timerButton;
 
   @override
   void initState() {
     super.initState();
-    workoutList =
-        context.read<provider.UserProgramListStore>().userSelectWorkOut;
-  }
-
-  @override
-  void dispose() async {
-    super.dispose();
-    await stopWatchTimer.dispose();
+    workoutList = context.read<provider.UserProgramStore>().todayWorkouts;
+    stopWatchTimer = context.read<provider.UserProgramStore>().stopWatchTimer;
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    workoutStart = context.watch<provider.UserProgramStore>().workoutStart;
     addWorkout =
-        context.watch<provider.UserProgramListStore>().addUserSelectWorkout;
+        context.watch<provider.UserProgramStore>().addUserSelectWorkout;
     removeWorkout =
-        context.watch<provider.UserProgramListStore>().removeUserSelectWorkout;
+        context.watch<provider.UserProgramStore>().removeUserSelectWorkout;
+    setWorkoutStart =
+        context.watch<provider.UserProgramStore>().setWorkoutStart;
+    setWorkoutFinish =
+        context.watch<provider.UserProgramStore>().setWorkoutFinish;
+
+    switch (workoutStart) {
+      case true:
+        timerButton = TextButton(
+          onPressed: () {
+            stopWatchTimer.onStopTimer();
+            setWorkoutFinish();
+          },
+          child: const Text("운동 완료"),
+        );
+
+      default:
+        timerButton = TextButton(
+          onPressed: () {
+            stopWatchTimer.onStartTimer();
+            setWorkoutStart();
+          },
+          child: const Text("운동 시작"),
+        );
+    }
   }
 
   @override
@@ -106,7 +127,6 @@ class _PlanningScreenState extends State<PlanningScreen> {
                   return WorkoutDetail(
                     index: index,
                     workoutInstance: workoutList[index],
-                    workoutList: workoutList,
                     removeWorkout: removeWorkout,
                   );
                 }
@@ -200,25 +220,7 @@ class _PlanningScreenState extends State<PlanningScreen> {
                             color: palette.cardColorWhite,
                           ),
                         ),
-                        workoutStart
-                            ? TextButton(
-                                onPressed: () {
-                                  stopWatchTimer.onStopTimer();
-                                  setState(() {
-                                    workoutStart = false;
-                                  });
-                                },
-                                child: const Text("운동 완료"),
-                              )
-                            : TextButton(
-                                onPressed: () {
-                                  stopWatchTimer.onStartTimer();
-                                  setState(() {
-                                    workoutStart = true;
-                                  });
-                                },
-                                child: const Text("운동 시작"),
-                              )
+                        timerButton,
                       ],
                     ),
                   ],

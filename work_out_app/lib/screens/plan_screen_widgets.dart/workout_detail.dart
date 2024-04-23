@@ -15,12 +15,10 @@ class WorkoutDetail extends StatefulWidget {
   final int index;
   final void Function(maked.Workout) removeWorkout;
   final maked.Workout workoutInstance;
-  final List<maked.Workout> workoutList;
 
   const WorkoutDetail({
     super.key,
     required this.index,
-    required this.workoutList,
     required this.removeWorkout,
     required this.workoutInstance,
   });

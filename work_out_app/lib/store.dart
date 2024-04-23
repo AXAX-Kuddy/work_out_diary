@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:work_out_app/make_program.dart' as maked;
+import 'package:stop_watch_timer/stop_watch_timer.dart';
 
 class Store extends ChangeNotifier {
   int pageNum = 0;
@@ -188,16 +189,29 @@ class WorkoutListStore extends ChangeNotifier {
   };
 }
 
-class UserProgramListStore extends ChangeNotifier {
-  List<maked.Workout> userSelectWorkOut = [];
+class UserProgramStore extends ChangeNotifier {
+  final StopWatchTimer stopWatchTimer = StopWatchTimer();
+
+  List<maked.Workout> todayWorkouts = [];
+  bool workoutStart = false;
 
   void addUserSelectWorkout(maked.Workout workout) {
-    userSelectWorkOut.add(workout);
+    todayWorkouts.add(workout);
     notifyListeners();
   }
 
   void removeUserSelectWorkout(maked.Workout workout) {
-    userSelectWorkOut.remove(workout);
+    todayWorkouts.remove(workout);
+    notifyListeners();
+  }
+
+  void setWorkoutStart() {
+    workoutStart = true;
+    notifyListeners();
+  }
+
+  void setWorkoutFinish() {
+    workoutStart = false;
     notifyListeners();
   }
 }
