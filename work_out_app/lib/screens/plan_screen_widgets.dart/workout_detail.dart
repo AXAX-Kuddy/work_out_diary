@@ -10,7 +10,6 @@ import 'package:work_out_app/screens/plan_screen_widgets.dart/top_divider.dart';
 import 'package:work_out_app/widgets/drop_down.dart';
 import 'package:work_out_app/widgets/non_form_text_field.dart';
 
-
 class WorkoutDetail extends StatefulWidget {
   final int index;
   final void Function(maked.Workout) removeWorkout;
@@ -640,11 +639,17 @@ class _SetInputFieldState extends State<SetInputField> {
         }
       },
       onTap: () {
+        if (double.tryParse(controller.text) == null) {
+          controller.text = "";
+          return;
+        }
         if (double.parse(controller.text) <= 0) {
           controller.text = "";
+          return;
         }
         if (widget.onTap != null) {
           widget.onTap?.call();
+          return;
         }
       },
     );

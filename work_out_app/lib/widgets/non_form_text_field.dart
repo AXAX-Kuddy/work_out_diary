@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:work_out_app/palette.dart' as palette;
+import 'package:work_out_app/make_program.dart' as maked;
 
 class CustomTextField2 extends StatefulWidget {
   final double? width;
@@ -14,23 +15,24 @@ class CustomTextField2 extends StatefulWidget {
   final void Function(String)? onChanged;
   final void Function(String)? onSubmitted;
   final void Function()? onTap;
+  final void Function(String)? onFocusout;
 
   bool valid;
 
-  CustomTextField2({
-    super.key,
-    required this.valid,
-    this.width,
-    this.height,
-    this.textInputType,
-    this.textStyle,
-    this.hintText,
-    this.onChanged,
-    this.onSubmitted,
-    this.controller,
-    this.onTap,
-    this.inputFormatters,
-  });
+  CustomTextField2(
+      {super.key,
+      required this.valid,
+      this.width,
+      this.height,
+      this.textInputType,
+      this.textStyle,
+      this.hintText,
+      this.onChanged,
+      this.onSubmitted,
+      this.controller,
+      this.onTap,
+      this.inputFormatters,
+      this.onFocusout});
 
   @override
   State<CustomTextField2> createState() => _CustomTextField2State();
