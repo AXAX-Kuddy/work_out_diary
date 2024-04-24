@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -80,6 +82,11 @@ class _WorkoutDetailState extends State<WorkoutDetail> {
   void initState() {
     super.initState();
     setList = widget.workoutInstance.sets!;
+
+    if (widget.workoutInstance.targetRpe != 0) {
+      target = widget.workoutInstance.targetRpe.toString();
+    }
+    findE1rm();
   }
 
   @override
@@ -499,6 +506,26 @@ class _SetsDetailState extends State<SetsDetail> {
     return value;
   }
 
+  String handleWeightFocusout(String value) {
+    if (double.tryParse(value) == null || double.tryParse(value)! <= 0) {
+      value = "0";
+      widget.setInstance.editWeight(double.parse(value));
+      return value;
+    }
+    widget.setInstance.editWeight(double.parse(value));
+    return value;
+  }
+
+  String handleRepsFocusout(String value) {
+    if (int.tryParse(value) == null || int.tryParse(value)! <= 0) {
+      value = "0";
+      widget.setInstance.editReps(int.parse(value));
+      return value;
+    }
+    widget.setInstance.editReps(int.parse(value));
+    return value;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -529,6 +556,7 @@ class _SetsDetailState extends State<SetsDetail> {
             setInstance: widget.setInstance,
             fieldText: widget.setInstance.weight.toString(),
             onSubmitted: handleWeightSubmitted,
+            onFocusout: handleWeightFocusout,
           ),
         ),
         const SizedBox(
@@ -542,6 +570,7 @@ class _SetsDetailState extends State<SetsDetail> {
             setInstance: widget.setInstance,
             fieldText: widget.setInstance.reps.toString(),
             onSubmitted: handleRepsSubmitted,
+            onFocusout: handleRepsFocusout,
           ),
         ),
         const SizedBox(
@@ -554,6 +583,7 @@ class _SetsDetailState extends State<SetsDetail> {
             height: 40,
             hint: "@",
             textStyle: TextStyle(color: palette.cardColorWhite),
+            nowValue: widget.setInstance.rpe.toString(),
             itemList: widget.rpeList!,
             itemTextStyle: TextStyle(
               color: palette.cardColorWhite,
@@ -601,6 +631,7 @@ class SetInputField extends StatefulWidget {
   final String fieldText;
   final String Function(String)? onSubmitted;
   final void Function()? onTap;
+  final String Function(String)? onFocusout;
 
   const SetInputField({
     super.key,
@@ -608,6 +639,7 @@ class SetInputField extends StatefulWidget {
     required this.fieldText,
     this.onSubmitted,
     this.onTap,
+    this.onFocusout,
   });
 
   @override
@@ -651,6 +683,12 @@ class _SetInputFieldState extends State<SetInputField> {
           widget.onTap?.call();
           return;
         }
+      },
+      onFocusout: (value) {
+        if (widget.onFocusout != null) {
+          return widget.onFocusout!.call(value);
+        }
+        return "0";
       },
     );
   }
