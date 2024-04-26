@@ -191,9 +191,11 @@ class WorkoutListStore extends ChangeNotifier {
 
 class UserProgramStore extends ChangeNotifier {
   final StopWatchTimer stopWatchTimer = StopWatchTimer();
+  final StopWatchTimer restTimer = StopWatchTimer();
 
   List<maked.Workout> todayWorkouts = [];
   bool workoutStart = false;
+  bool onRest = false;
 
   void addUserSelectWorkout(maked.Workout workout) {
     todayWorkouts.add(workout);
@@ -212,6 +214,11 @@ class UserProgramStore extends ChangeNotifier {
 
   void setWorkoutFinish() {
     workoutStart = false;
+    notifyListeners();
+  }
+
+  void setRestTimer(bool value) {
+    onRest = value;
     notifyListeners();
   }
 }

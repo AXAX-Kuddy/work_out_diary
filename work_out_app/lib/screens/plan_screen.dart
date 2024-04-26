@@ -27,26 +27,37 @@ class PlanningScreen extends StatefulWidget {
 }
 
 class _PlanningScreenState extends State<PlanningScreen> {
+  late provider.UserProgramStore userProgramStore;
   late List<maked.Workout> workoutList;
   late void Function(maked.Workout) addWorkout;
   late void Function(maked.Workout) removeWorkout;
   late void Function() setWorkoutStart;
   late void Function() setWorkoutFinish;
+  late void Function(bool) setRestTimer;
   late StopWatchTimer stopWatchTimer;
   late bool workoutStart;
+  late StopWatchTimer restTimer;
+  late bool onRest;
+
   late TextButton timerButton;
 
   @override
   void initState() {
     super.initState();
+    userProgramStore = context.read<provider.UserProgramStore>();
     workoutList = context.read<provider.UserProgramStore>().todayWorkouts;
+
     stopWatchTimer = context.read<provider.UserProgramStore>().stopWatchTimer;
+    restTimer = context.read<provider.UserProgramStore>().restTimer;
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+
     workoutStart = context.watch<provider.UserProgramStore>().workoutStart;
+    onRest = context.watch<provider.UserProgramStore>().onRest;
+
     addWorkout =
         context.watch<provider.UserProgramStore>().addUserSelectWorkout;
     removeWorkout =
@@ -56,6 +67,8 @@ class _PlanningScreenState extends State<PlanningScreen> {
     setWorkoutFinish =
         context.watch<provider.UserProgramStore>().setWorkoutFinish;
 
+    setRestTimer = context.watch<provider.UserProgramStore>().setRestTimer;
+
     switch (workoutStart) {
       case true:
         timerButton = TextButton(
@@ -63,7 +76,23 @@ class _PlanningScreenState extends State<PlanningScreen> {
             stopWatchTimer.onStopTimer();
             setWorkoutFinish();
           },
-          child: const Text("운동 완료"),
+          child: Container(
+            alignment: Alignment.center,
+            width: 100,
+            height: 40,
+            decoration: BoxDecoration(
+              color: palette.cardColorYelGreen,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Text(
+              "운동 완료",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 15,
+                color: palette.bgColor,
+              ),
+            ),
+          ),
         );
 
       default:
@@ -72,7 +101,23 @@ class _PlanningScreenState extends State<PlanningScreen> {
             stopWatchTimer.onStartTimer();
             setWorkoutStart();
           },
-          child: const Text("운동 시작"),
+          child: Container(
+            alignment: Alignment.center,
+            width: 100,
+            height: 40,
+            decoration: BoxDecoration(
+              color: palette.cardColorWhite,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Text(
+              "운동 시작",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 15,
+                color: palette.bgColor,
+              ),
+            ),
+          ),
         );
     }
   }
@@ -189,8 +234,13 @@ class _PlanningScreenState extends State<PlanningScreen> {
         ),
         Visibility(
           visible: workoutList.isNotEmpty,
-          child: SizedBox(
-            height: 50,
+          child: Container(
+            height: 70,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              color: palette.bgFadeColor,
+            ),
             child: StreamBuilder(
               stream: stopWatchTimer.rawTime,
               initialData: 0,
@@ -202,13 +252,62 @@ class _PlanningScreenState extends State<PlanningScreen> {
                 );
 
                 return Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Row(
                       children: [
                         TextButton(
-                          onPressed: () {},
-                          child: const Text("버튼"),
+                          onPressed: () {
+                            showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return Dialog(
+                                    backgroundColor: palette.bgColor,
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(10),
+                                      child: SizedBox(
+                                        width: 100,
+                                        height: 300,
+                                        child: Column(
+                                          children: [
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.end,
+                                              children: [
+                                                Switch(
+                                                  value: onRest,
+                                                  onChanged: (value) {
+                                                    setRestTimer(value);
+                                                  },
+                                                )
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                });
+                          },
+                          child: Row(
+                            children: [
+                              Text(
+                                "휴식시간 설정",
+                                style: TextStyle(
+                                  fontSize: 17,
+                                  color: palette.cardColorWhite,
+                                ),
+                              ),
+                              const SizedBox(
+                                width: 3,
+                              ),
+                              LineIcon(
+                                LineIcons.clock,
+                                color: palette.cardColorYelGreen,
+                                size: 20,
+                              ),
+                            ],
+                          ),
                         ),
                       ],
                     ),
@@ -217,6 +316,7 @@ class _PlanningScreenState extends State<PlanningScreen> {
                         Text(
                           displayTime,
                           style: TextStyle(
+                            fontSize: 20,
                             color: palette.cardColorWhite,
                           ),
                         ),

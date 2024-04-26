@@ -228,6 +228,10 @@ class _SelectBoxState extends State<SelectBox> {
   void initState() {
     super.initState();
     managementTempoList = widget.managementTempoList;
+
+    if (widget.tempoList.contains(widget.workoutInstance)) {
+      _checker = true;
+    }
   }
 
   void addWorkout() {
@@ -237,7 +241,6 @@ class _SelectBoxState extends State<SelectBox> {
         workout: widget.workoutInstance,
       );
     });
-    debugPrint("${widget.tempoList}");
   }
 
   void deleteWorkout() {
@@ -248,7 +251,6 @@ class _SelectBoxState extends State<SelectBox> {
           workout: widget.workoutInstance,
         );
       });
-      debugPrint("${widget.tempoList}");
     }
   }
 
