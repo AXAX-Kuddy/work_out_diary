@@ -28,53 +28,20 @@ class PlanningScreen extends StatefulWidget {
 
 class _PlanningScreenState extends State<PlanningScreen> {
   late provider.UserProgramStore userProgramStore;
-  late List<maked.Workout> workoutList;
-  late void Function(maked.Workout) addWorkout;
-  late void Function(maked.Workout) removeWorkout;
-  late void Function() setWorkoutStart;
-  late void Function() setWorkoutFinish;
-  late void Function(bool) setRestTimer;
-  late StopWatchTimer stopWatchTimer;
-  late bool workoutStart;
-  late StopWatchTimer restTimer;
-  late bool onRest;
-
+  late Widget restTimer;
   late TextButton timerButton;
-
-  @override
-  void initState() {
-    super.initState();
-    userProgramStore = context.read<provider.UserProgramStore>();
-    workoutList = context.read<provider.UserProgramStore>().todayWorkouts;
-
-    stopWatchTimer = context.read<provider.UserProgramStore>().stopWatchTimer;
-    restTimer = context.read<provider.UserProgramStore>().restTimer;
-  }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    userProgramStore = context.watch<provider.UserProgramStore>();
 
-    workoutStart = context.watch<provider.UserProgramStore>().workoutStart;
-    onRest = context.watch<provider.UserProgramStore>().onRest;
-
-    addWorkout =
-        context.watch<provider.UserProgramStore>().addUserSelectWorkout;
-    removeWorkout =
-        context.watch<provider.UserProgramStore>().removeUserSelectWorkout;
-    setWorkoutStart =
-        context.watch<provider.UserProgramStore>().setWorkoutStart;
-    setWorkoutFinish =
-        context.watch<provider.UserProgramStore>().setWorkoutFinish;
-
-    setRestTimer = context.watch<provider.UserProgramStore>().setRestTimer;
-
-    switch (workoutStart) {
+    switch (userProgramStore.workoutStart) {
       case true:
         timerButton = TextButton(
           onPressed: () {
-            stopWatchTimer.onStopTimer();
-            setWorkoutFinish();
+            userProgramStore.stopWatchTimer.onStopTimer();
+            userProgramStore.setWorkoutFinish();
           },
           child: Container(
             alignment: Alignment.center,
@@ -98,8 +65,8 @@ class _PlanningScreenState extends State<PlanningScreen> {
       default:
         timerButton = TextButton(
           onPressed: () {
-            stopWatchTimer.onStartTimer();
-            setWorkoutStart();
+            userProgramStore.stopWatchTimer.onStartTimer();
+            userProgramStore.setWorkoutStart();
           },
           child: Container(
             alignment: Alignment.center,
@@ -120,12 +87,45 @@ class _PlanningScreenState extends State<PlanningScreen> {
           ),
         );
     }
+
+    switch (userProgramStore.onRest) {
+      case true:
+        restTimer = ListWheelScrollView(
+          physics: const FixedExtentScrollPhysics(),
+          onSelectedItemChanged: (index) {},
+          useMagnifier: true,
+          magnification: 1.2,
+          itemExtent: 50,
+          children: List.generate(
+            10,
+            (index) {
+              return Text(
+                "$index번째 아이템",
+                style: TextStyle(
+                  color: palette.cardColorWhite,
+                  fontSize: 18,
+                ),
+              );
+            },
+          ),
+        );
+
+      default:
+        restTimer = Text(
+          "휴식시간을 설정하려면 버튼을 눌러주세요.",
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 14,
+            color: palette.cardColorWhite,
+          ),
+        );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return BasePage(
-      padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
       appBar: AppBar(
         elevation: 0,
         centerTitle: true,
@@ -155,9 +155,11 @@ class _PlanningScreenState extends State<PlanningScreen> {
           child: ScrollConfiguration(
             behavior: const ScrollBehavior().copyWith(overscroll: false),
             child: ListView.builder(
-              itemCount: workoutList.isEmpty ? 1 : workoutList.length,
+              itemCount: userProgramStore.todayWorkouts.isEmpty
+                  ? 1
+                  : userProgramStore.todayWorkouts.length,
               itemBuilder: (BuildContext context, int index) {
-                if (workoutList.isEmpty) {
+                if (userProgramStore.todayWorkouts.isEmpty) {
                   return Center(
                     heightFactor: 20,
                     child: Text(
@@ -171,8 +173,8 @@ class _PlanningScreenState extends State<PlanningScreen> {
                 } else {
                   return WorkoutDetail(
                     index: index,
-                    workoutInstance: workoutList[index],
-                    removeWorkout: removeWorkout,
+                    workoutInstance: userProgramStore.todayWorkouts[index],
+                    removeWorkout: userProgramStore.removeUserSelectWorkout,
                   );
                 }
               },
@@ -191,12 +193,13 @@ class _PlanningScreenState extends State<PlanningScreen> {
                         SelectWorkOut(
                       addFunction: (List<maked.Workout> selectList) {
                         for (int i = 0; i < selectList.length; i++) {
-                          addWorkout(selectList[i]);
+                          userProgramStore.addUserSelectWorkout(selectList[i]);
+                          // addWorkout(selectList[i]);
                         }
                       },
                       changedListner: () {
                         setState(() {
-                          workoutList;
+                          userProgramStore.todayWorkouts;
                         });
                       },
                     ),
@@ -233,7 +236,7 @@ class _PlanningScreenState extends State<PlanningScreen> {
           ],
         ),
         Visibility(
-          visible: workoutList.isNotEmpty,
+          visible: userProgramStore.todayWorkouts.isNotEmpty,
           child: Container(
             height: 70,
             alignment: Alignment.center,
@@ -242,7 +245,7 @@ class _PlanningScreenState extends State<PlanningScreen> {
               color: palette.bgFadeColor,
             ),
             child: StreamBuilder(
-              stream: stopWatchTimer.rawTime,
+              stream: userProgramStore.stopWatchTimer.rawTime,
               initialData: 0,
               builder: (context, snapshot) {
                 final value = snapshot.data;
@@ -261,31 +264,57 @@ class _PlanningScreenState extends State<PlanningScreen> {
                             showDialog(
                                 context: context,
                                 builder: (context) {
-                                  return Dialog(
-                                    backgroundColor: palette.bgColor,
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(10),
-                                      child: SizedBox(
-                                        width: 100,
-                                        height: 300,
-                                        child: Column(
-                                          children: [
-                                            Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.end,
+                                  return Consumer<provider.UserProgramStore>(
+                                    builder:
+                                        (context, userProgramStore, child) {
+                                      return Dialog(
+                                        backgroundColor: palette.bgColor,
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(10),
+                                          child: SizedBox(
+                                            width: 100,
+                                            height: 300,
+                                            child: Column(
                                               children: [
-                                                Switch(
-                                                  value: onRest,
-                                                  onChanged: (value) {
-                                                    setRestTimer(value);
-                                                  },
-                                                )
+                                                Flexible(
+                                                  flex: 1,
+                                                  child: Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment.end,
+                                                    children: [
+                                                      Switch(
+                                                        activeColor: palette
+                                                            .cardColorYelGreen,
+                                                        activeTrackColor:
+                                                            palette.bgFadeColor,
+                                                        inactiveThumbColor:
+                                                            palette
+                                                                .cardColorWhite,
+                                                        inactiveTrackColor:
+                                                            palette.bgColor,
+                                                        value: userProgramStore
+                                                            .onRest,
+                                                        onChanged: (value) {
+                                                          userProgramStore
+                                                              .setRestTimer(
+                                                                  value);
+                                                        },
+                                                      )
+                                                    ],
+                                                  ),
+                                                ),
+                                                Expanded(
+                                                  flex: 2,
+                                                  child: Center(
+                                                    child: restTimer,
+                                                  ),
+                                                ),
                                               ],
                                             ),
-                                          ],
+                                          ),
                                         ),
-                                      ),
-                                    ),
+                                      );
+                                    },
                                   );
                                 });
                           },
@@ -294,7 +323,7 @@ class _PlanningScreenState extends State<PlanningScreen> {
                               Text(
                                 "휴식시간 설정",
                                 style: TextStyle(
-                                  fontSize: 17,
+                                  fontSize: 14,
                                   color: palette.cardColorWhite,
                                 ),
                               ),
@@ -304,7 +333,7 @@ class _PlanningScreenState extends State<PlanningScreen> {
                               LineIcon(
                                 LineIcons.clock,
                                 color: palette.cardColorYelGreen,
-                                size: 20,
+                                size: 18,
                               ),
                             ],
                           ),
@@ -316,7 +345,7 @@ class _PlanningScreenState extends State<PlanningScreen> {
                         Text(
                           displayTime,
                           style: TextStyle(
-                            fontSize: 20,
+                            fontSize: 18,
                             color: palette.cardColorWhite,
                           ),
                         ),

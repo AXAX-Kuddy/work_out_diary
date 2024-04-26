@@ -1,4 +1,6 @@
 //기본
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
 import 'package:work_out_app/widgets/base_page.dart';
@@ -66,10 +68,12 @@ class _MyAppState extends State<MyApp> {
   bool notWriteUserInfo = true;
   late Map<String, dynamic> userInfo;
   late bool Function(Map<String, dynamic>) infoChecker;
+  late provider.Store store;
 
   @override
   void initState() {
     super.initState();
+
     userInfo = context.read<provider.Store>().userInfo;
     infoChecker = context.read<provider.Store>().infoChecker;
 
@@ -92,6 +96,7 @@ class _MyAppState extends State<MyApp> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    store = context.watch<provider.Store>();
   }
 
   void updateUserInfo(bool infoCondition) {
@@ -108,11 +113,12 @@ class _MyAppState extends State<MyApp> {
         // const PlanningScreen(),
         const WorkOutScreen(),
         const DotsPointScreen(),
-      ][context.watch<provider.Store>().pageNum],
+      ][store.pageNum],
       bottomNavigationBar: BottomNavigationBar(
-        currentIndex: context.watch<provider.Store>().pageNum,
+        currentIndex: store.pageNum,
         onTap: (pageIndex) {
-          context.read<provider.Store>().changePage(pageIndex);
+          // context.read<provider.Store>().changePage(pageIndex);
+          store.changePage(pageIndex);
         },
         backgroundColor: palette.bgFadeColor,
         selectedItemColor: Colors.white,
