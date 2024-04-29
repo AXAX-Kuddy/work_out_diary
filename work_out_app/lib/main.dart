@@ -1,6 +1,7 @@
 //기본
 import 'dart:io';
 
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
 import 'package:work_out_app/widgets/base_page.dart';
@@ -38,6 +39,7 @@ void main() {
         ),
       ],
       child: MaterialApp(
+        scrollBehavior: CustomScrollBehavior(),
         theme: ThemeData(
             fontFamily: "Pretendard",
             splashFactory: NoSplash.splashFactory,
@@ -66,25 +68,20 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   bool notWriteUserInfo = true;
-  late Map<String, dynamic> userInfo;
-  late bool Function(Map<String, dynamic>) infoChecker;
   late provider.Store store;
 
   @override
   void initState() {
     super.initState();
 
-    userInfo = context.read<provider.Store>().userInfo;
-    infoChecker = context.read<provider.Store>().infoChecker;
-
     // WidgetsBinding.instance.addPostFrameCallback((_) {
-    //   if (infoChecker(userInfo) == false && notWriteUserInfo) {
+    //   if (store.infoChecker(store.userInfo) == false && notWriteUserInfo) {
     //     Navigator.push(
     //       context,
     //       MaterialPageRoute(
     //         builder: (context) => UserInfoPage(
     //           updateInfo: updateUserInfo,
-    //           userInfo: userInfo,
+    //           userInfo: store.userInfo,
     //           notWriteUserInfo: notWriteUserInfo,
     //         ),
     //       ),
@@ -145,4 +142,12 @@ class _MyAppState extends State<MyApp> {
       ),
     );
   }
+}
+
+class CustomScrollBehavior extends MaterialScrollBehavior {
+  @override
+  Set<PointerDeviceKind> get dragDevices => {
+        PointerDeviceKind.touch,
+        PointerDeviceKind.mouse,
+      };
 }

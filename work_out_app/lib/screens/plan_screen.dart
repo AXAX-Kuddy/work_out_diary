@@ -90,33 +90,107 @@ class _PlanningScreenState extends State<PlanningScreen> {
 
     switch (userProgramStore.onRest) {
       case true:
-        restTimer = ListWheelScrollView(
-          physics: const FixedExtentScrollPhysics(),
-          onSelectedItemChanged: (index) {},
-          useMagnifier: true,
-          magnification: 1.2,
-          itemExtent: 50,
-          children: List.generate(
-            10,
-            (index) {
-              return Text(
-                "$index번째 아이템",
-                style: TextStyle(
-                  color: palette.cardColorWhite,
-                  fontSize: 18,
-                ),
+        restTimer = StreamBuilder(
+            stream: userProgramStore.restTimer.rawTime,
+            initialData: 0,
+            builder: (context, snapshot) {
+              final value = snapshot.data;
+              final displayMin = StopWatchTimer.getDisplayTimeMinute(value!);
+              final displaySec = StopWatchTimer.getDisplayTimeSecond(value);
+
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      RestTimeScrollList(
+                        onSelectedItemChanged: (index) {
+                         
+                        },
+                        children: List.generate(
+                          21,
+                          (index) {
+                            return Text(
+                              "$index분",
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: palette.cardColorWhite,
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                      RestTimeScrollList(
+                        onSelectedItemChanged: (index) {
+                          userProgramStore.restTimer.setPresetSecondTime(
+                            index,
+                            add: false,
+                          );
+                        },
+                        children: List.generate(
+                          61,
+                          (index) {
+                            return Text(
+                              "$index초",
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: palette.cardColorWhite,
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SizedBox(
+                        width: 90,
+                        child: Text(
+                          displayMin,
+                          style: TextStyle(
+                            fontSize: 20,
+                            color: palette.cardColorWhite,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                      SizedBox(
+                        width: 90,
+                        child: Text(
+                          displaySec,
+                          style: TextStyle(
+                            fontSize: 20,
+                            color: palette.cardColorWhite,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               );
-            },
-          ),
-        );
+            });
 
       default:
-        restTimer = Text(
-          "휴식시간을 설정하려면 버튼을 눌러주세요.",
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            fontSize: 14,
-            color: palette.cardColorWhite,
+        restTimer = Expanded(
+          child: Center(
+            child: Text(
+              "휴식시간을 설정하려면 버튼을 눌러주세요.",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 14,
+                color: palette.cardColorWhite,
+              ),
+            ),
           ),
         );
     }
@@ -273,42 +347,36 @@ class _PlanningScreenState extends State<PlanningScreen> {
                                           padding: const EdgeInsets.all(10),
                                           child: SizedBox(
                                             width: 100,
-                                            height: 300,
+                                            height: 400,
                                             child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.center,
                                               children: [
-                                                Flexible(
-                                                  flex: 1,
-                                                  child: Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment.end,
-                                                    children: [
-                                                      Switch(
-                                                        activeColor: palette
-                                                            .cardColorYelGreen,
-                                                        activeTrackColor:
-                                                            palette.bgFadeColor,
-                                                        inactiveThumbColor:
-                                                            palette
-                                                                .cardColorWhite,
-                                                        inactiveTrackColor:
-                                                            palette.bgColor,
-                                                        value: userProgramStore
-                                                            .onRest,
-                                                        onChanged: (value) {
-                                                          userProgramStore
-                                                              .setRestTimer(
-                                                                  value);
-                                                        },
-                                                      )
-                                                    ],
-                                                  ),
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.end,
+                                                  children: [
+                                                    Switch(
+                                                      activeColor: palette
+                                                          .cardColorYelGreen,
+                                                      activeTrackColor:
+                                                          palette.bgFadeColor,
+                                                      inactiveThumbColor:
+                                                          palette
+                                                              .cardColorWhite,
+                                                      inactiveTrackColor:
+                                                          palette.bgColor,
+                                                      value: userProgramStore
+                                                          .onRest,
+                                                      onChanged: (value) {
+                                                        userProgramStore
+                                                            .setRestTimer(
+                                                                value);
+                                                      },
+                                                    )
+                                                  ],
                                                 ),
-                                                Expanded(
-                                                  flex: 2,
-                                                  child: Center(
-                                                    child: restTimer,
-                                                  ),
-                                                ),
+                                                restTimer,
                                               ],
                                             ),
                                           ),
@@ -359,6 +427,48 @@ class _PlanningScreenState extends State<PlanningScreen> {
           ),
         ),
       ],
+    );
+  }
+}
+
+class RestTimeScrollList extends StatefulWidget {
+  final double width;
+  final double height;
+  final List<Widget> children;
+  final void Function(int)? onSelectedItemChanged;
+
+  const RestTimeScrollList({
+    super.key,
+    this.width = 90,
+    this.height = 140,
+    required this.children,
+    this.onSelectedItemChanged,
+  });
+
+  @override
+  State<RestTimeScrollList> createState() => _RestTimeScrollListState();
+}
+
+class _RestTimeScrollListState extends State<RestTimeScrollList> {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: widget.width,
+      height: widget.height,
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+          border: Border.symmetric(
+              horizontal: BorderSide(
+        color: palette.cardColorYelGreen,
+      ))),
+      child: ListWheelScrollView(
+        physics: const FixedExtentScrollPhysics(),
+        onSelectedItemChanged: widget.onSelectedItemChanged,
+        useMagnifier: true,
+        magnification: 1.2,
+        itemExtent: 40,
+        children: widget.children,
+      ),
     );
   }
 }
