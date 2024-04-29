@@ -90,95 +90,83 @@ class _PlanningScreenState extends State<PlanningScreen> {
 
     switch (userProgramStore.onRest) {
       case true:
-        restTimer = StreamBuilder(
-            stream: userProgramStore.restTimer.rawTime,
-            initialData: 0,
-            builder: (context, snapshot) {
-              final value = snapshot.data;
-              final displayMin = StopWatchTimer.getDisplayTimeMinute(value!);
-              final displaySec = StopWatchTimer.getDisplayTimeSecond(value);
-
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      RestTimeScrollList(
-                        onSelectedItemChanged: (index) {
-                         
-                        },
-                        children: List.generate(
-                          21,
-                          (index) {
-                            return Text(
-                              "$index분",
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: palette.cardColorWhite,
-                              ),
-                            );
-                          },
+        restTimer = Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            const SizedBox(
+              height: 10,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                RestTimeScrollList(
+                  onSelectedItemChanged: (index) {
+                    userProgramStore.restTimeMin = index;
+                  },
+                  children: List.generate(
+                    21,
+                    (index) {
+                      return Text(
+                        "$index분",
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: palette.cardColorWhite,
                         ),
-                      ),
-                      RestTimeScrollList(
-                        onSelectedItemChanged: (index) {
-                          userProgramStore.restTimer.setPresetSecondTime(
-                            index,
-                            add: false,
-                          );
-                        },
-                        children: List.generate(
-                          61,
-                          (index) {
-                            return Text(
-                              "$index초",
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: palette.cardColorWhite,
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                    ],
+                      );
+                    },
                   ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      SizedBox(
-                        width: 90,
-                        child: Text(
-                          displayMin,
-                          style: TextStyle(
-                            fontSize: 20,
-                            color: palette.cardColorWhite,
-                          ),
-                          textAlign: TextAlign.center,
+                ),
+                RestTimeScrollList(
+                  onSelectedItemChanged: (index) {
+                    userProgramStore.restTimeSec = index;
+                  },
+                  children: List.generate(
+                    60,
+                    (index) {
+                      return Text(
+                        "$index초",
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: palette.cardColorWhite,
                         ),
-                      ),
-                      SizedBox(
-                        width: 90,
-                        child: Text(
-                          displaySec,
-                          style: TextStyle(
-                            fontSize: 20,
-                            color: palette.cardColorWhite,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                    ],
+                      );
+                    },
                   ),
-                ],
-              );
-            });
+                ),
+              ],
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox(
+                  width: 90,
+                  child: Text(
+                    userProgramStore.restTimeMin.toString(),
+                    style: TextStyle(
+                      fontSize: 20,
+                      color: palette.cardColorWhite,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+                SizedBox(
+                  width: 90,
+                  child: Text(
+                    userProgramStore.restTimeSec.toString(),
+                    style: TextStyle(
+                      fontSize: 20,
+                      color: palette.cardColorWhite,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        );
 
       default:
         restTimer = Expanded(

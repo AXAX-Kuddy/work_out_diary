@@ -4,6 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:work_out_app/make_program.dart' as maked;
 import 'package:stop_watch_timer/stop_watch_timer.dart';
 
+enum UserInfoKey {
+  userName,
+  dotsPoint,
+}
+
 class Store extends ChangeNotifier {
   int pageNum = 0;
 
@@ -192,8 +197,12 @@ class WorkoutListStore extends ChangeNotifier {
 class UserProgramStore extends ChangeNotifier {
   final StopWatchTimer stopWatchTimer = StopWatchTimer();
   final StopWatchTimer restTimer = StopWatchTimer();
+  int restTimeMin = 0;
+  int restTimeSec = 0;
+  int restTimeTotal = 0;
 
   List<maked.Workout> todayWorkouts = [];
+
   bool workoutStart = false;
   bool onRest = false;
 
@@ -222,4 +231,15 @@ class UserProgramStore extends ChangeNotifier {
     notifyListeners();
   }
 
+  void setRestTimeMin(int value) {
+    restTimeMin = value;
+    notifyListeners();
+  }
+
+  void setRestTimeSec(int value) {
+    restTimeSec = value;
+    notifyListeners();
+  }
+
+  void totalRest() {}
 }
