@@ -196,7 +196,9 @@ class WorkoutListStore extends ChangeNotifier {
 
 class UserProgramStore extends ChangeNotifier {
   final StopWatchTimer stopWatchTimer = StopWatchTimer();
-  final StopWatchTimer restTimer = StopWatchTimer();
+  final  StopWatchTimer restTimer = StopWatchTimer(
+    mode: StopWatchMode.countDown,
+  );
   int restTimeMin = 0;
   int restTimeSec = 0;
   int restTimeTotal = 0;
@@ -241,5 +243,15 @@ class UserProgramStore extends ChangeNotifier {
     notifyListeners();
   }
 
-  void totalRest() {}
+  void totalRest() {
+    int min = restTimeMin * 1000 * 60;
+    int sec = restTimeSec * 1000;
+    restTimeTotal = min + sec;
+
+    restTimer.setPresetTime(
+      mSec: restTimeTotal,
+      add: false,
+    );
+    notifyListeners();
+  }
 }

@@ -29,7 +29,50 @@ class PlanningScreen extends StatefulWidget {
 class _PlanningScreenState extends State<PlanningScreen> {
   late provider.UserProgramStore userProgramStore;
   late Widget restTimer;
+  late Widget restTimerButton;
   late TextButton timerButton;
+
+  Future<dynamic> showRestTimerDialog() {
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return Consumer<provider.UserProgramStore>(
+            builder: (context, userProgramStore, child) {
+              return Dialog(
+                backgroundColor: palette.bgColor,
+                child: Padding(
+                  padding: const EdgeInsets.all(10),
+                  child: SizedBox(
+                    width: 100,
+                    height: 360,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            Switch(
+                              activeColor: palette.cardColorYelGreen,
+                              activeTrackColor: palette.bgFadeColor,
+                              inactiveThumbColor: palette.cardColorWhite,
+                              inactiveTrackColor: palette.bgColor,
+                              value: userProgramStore.onRest,
+                              onChanged: (value) {
+                                userProgramStore.setRestTimer(value);
+                              },
+                            )
+                          ],
+                        ),
+                        restTimer,
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            },
+          );
+        });
+  }
 
   @override
   void didChangeDependencies() {
@@ -101,10 +144,10 @@ class _PlanningScreenState extends State<PlanningScreen> {
               children: [
                 RestTimeScrollList(
                   onSelectedItemChanged: (index) {
-                    userProgramStore.restTimeMin = index;
+                    userProgramStore.setRestTimeMin(index);
                   },
                   children: List.generate(
-                    21,
+                    11,
                     (index) {
                       return Text(
                         "$index분",
@@ -118,7 +161,7 @@ class _PlanningScreenState extends State<PlanningScreen> {
                 ),
                 RestTimeScrollList(
                   onSelectedItemChanged: (index) {
-                    userProgramStore.restTimeSec = index;
+                    userProgramStore.setRestTimeSec(index);
                   },
                   children: List.generate(
                     60,
@@ -142,7 +185,7 @@ class _PlanningScreenState extends State<PlanningScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 SizedBox(
-                  width: 90,
+                  width: 70,
                   child: Text(
                     userProgramStore.restTimeMin.toString(),
                     style: TextStyle(
@@ -152,8 +195,16 @@ class _PlanningScreenState extends State<PlanningScreen> {
                     textAlign: TextAlign.center,
                   ),
                 ),
+                Text(
+                  ":",
+                  style: TextStyle(
+                    fontSize: 20,
+                    color: palette.cardColorWhite,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
                 SizedBox(
-                  width: 90,
+                  width: 70,
                   child: Text(
                     userProgramStore.restTimeSec.toString(),
                     style: TextStyle(
@@ -163,6 +214,26 @@ class _PlanningScreenState extends State<PlanningScreen> {
                     textAlign: TextAlign.center,
                   ),
                 ),
+              ],
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                TextButton(
+                    onPressed: () {
+                      userProgramStore.totalRest();
+                      Navigator.pop(context);
+                    },
+                    child: Text(
+                      "설정하기",
+                      style: TextStyle(
+                        color: palette.cardColorWhite,
+                        fontSize: 17,
+                      ),
+                    ))
               ],
             ),
           ],
@@ -181,6 +252,38 @@ class _PlanningScreenState extends State<PlanningScreen> {
             ),
           ),
         );
+    }
+
+    if (userProgramStore.restTimeTotal <= 0) {
+      restTimerButton = TextButton(
+        onPressed: () {
+          showRestTimerDialog();
+        },
+        child: Row(
+          children: [
+            Text(
+              "휴식시간 설정",
+              style: TextStyle(
+                fontSize: 14,
+                color: palette.cardColorWhite,
+              ),
+            ),
+            const SizedBox(
+              width: 3,
+            ),
+            LineIcon(
+              LineIcons.clock,
+              color: palette.cardColorYelGreen,
+              size: 18,
+            ),
+          ],
+        ),
+      );
+    } else {
+      restTimerButton = RestTimeWidget(
+        userProgramStore: userProgramStore,
+        showRestTimerDialog: showRestTimerDialog,
+      );
     }
   }
 
@@ -306,113 +409,104 @@ class _PlanningScreenState extends State<PlanningScreen> {
               borderRadius: BorderRadius.circular(10),
               color: palette.bgFadeColor,
             ),
-            child: StreamBuilder(
-              stream: userProgramStore.stopWatchTimer.rawTime,
-              initialData: 0,
-              builder: (context, snapshot) {
-                final value = snapshot.data;
-                final displayTime = StopWatchTimer.getDisplayTime(
-                  value!,
-                  milliSecond: false,
-                );
-
-                return Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        TextButton(
-                          onPressed: () {
-                            showDialog(
-                                context: context,
-                                builder: (context) {
-                                  return Consumer<provider.UserProgramStore>(
-                                    builder:
-                                        (context, userProgramStore, child) {
-                                      return Dialog(
-                                        backgroundColor: palette.bgColor,
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(10),
-                                          child: SizedBox(
-                                            width: 100,
-                                            height: 400,
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.center,
-                                              children: [
-                                                Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.end,
-                                                  children: [
-                                                    Switch(
-                                                      activeColor: palette
-                                                          .cardColorYelGreen,
-                                                      activeTrackColor:
-                                                          palette.bgFadeColor,
-                                                      inactiveThumbColor:
-                                                          palette
-                                                              .cardColorWhite,
-                                                      inactiveTrackColor:
-                                                          palette.bgColor,
-                                                      value: userProgramStore
-                                                          .onRest,
-                                                      onChanged: (value) {
-                                                        userProgramStore
-                                                            .setRestTimer(
-                                                                value);
-                                                      },
-                                                    )
-                                                  ],
-                                                ),
-                                                restTimer,
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                  );
-                                });
-                          },
-                          child: Row(
-                            children: [
-                              Text(
-                                "휴식시간 설정",
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: palette.cardColorWhite,
-                                ),
-                              ),
-                              const SizedBox(
-                                width: 3,
-                              ),
-                              LineIcon(
-                                LineIcons.clock,
-                                color: palette.cardColorYelGreen,
-                                size: 18,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        Text(
-                          displayTime,
-                          style: TextStyle(
-                            fontSize: 18,
-                            color: palette.cardColorWhite,
-                          ),
-                        ),
-                        timerButton,
-                      ],
-                    ),
-                  ],
-                );
-              },
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                restTimerButton,
+                WorkoutTimeWidget(
+                    userProgramStore: userProgramStore,
+                    timerButton: timerButton),
+              ],
             ),
           ),
+        ),
+      ],
+    );
+  }
+}
+
+class WorkoutTimeWidget extends StatelessWidget {
+  const WorkoutTimeWidget({
+    super.key,
+    required this.userProgramStore,
+    required this.timerButton,
+  });
+
+  final provider.UserProgramStore userProgramStore;
+  final TextButton timerButton;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        StreamBuilder(
+          stream: userProgramStore.stopWatchTimer.rawTime,
+          initialData: 0,
+          builder: (context, snapshot) {
+            final value = snapshot.data;
+            final displayTime = StopWatchTimer.getDisplayTime(
+              value!,
+              milliSecond: false,
+            );
+            return Row(
+              children: [
+                Text(
+                  displayTime,
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: palette.cardColorWhite,
+                  ),
+                ),
+                timerButton,
+              ],
+            );
+          },
+        ),
+      ],
+    );
+  }
+}
+
+class RestTimeWidget extends StatelessWidget {
+  final provider.UserProgramStore userProgramStore;
+  final Future<dynamic> Function() showRestTimerDialog;
+
+  const RestTimeWidget({
+    super.key,
+    required this.userProgramStore,
+    required this.showRestTimerDialog,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        StreamBuilder(
+          stream: userProgramStore.restTimer.rawTime,
+          initialData: 0,
+          builder: (context, snapshot) {
+            final value = snapshot.data;
+            final displayTime = StopWatchTimer.getDisplayTime(
+              value!,
+              milliSecond: false,
+            );
+            return GestureDetector(
+              onTap: () {
+                showRestTimerDialog();
+              },
+              child: Row(
+                children: [
+                  Text(
+                    displayTime,
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: palette.cardColorWhite,
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
         ),
       ],
     );

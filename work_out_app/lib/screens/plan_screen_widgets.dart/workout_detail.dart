@@ -3,6 +3,7 @@ import 'dart:ffi';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:provider/provider.dart';
 import 'package:work_out_app/make_program.dart' as maked;
 import 'package:work_out_app/palette.dart' as palette;
 import 'package:line_icons/line_icon.dart';
@@ -11,6 +12,7 @@ import 'package:work_out_app/screens/plan_screen.dart';
 import 'package:work_out_app/screens/plan_screen_widgets.dart/top_divider.dart';
 import 'package:work_out_app/widgets/drop_down.dart';
 import 'package:work_out_app/widgets/non_form_text_field.dart';
+import 'package:work_out_app/store.dart' as provider;
 
 class WorkoutDetail extends StatefulWidget {
   final int index;
@@ -451,6 +453,8 @@ class SetsDetail extends StatefulWidget {
 }
 
 class _SetsDetailState extends State<SetsDetail> {
+  late provider.UserProgramStore userProgramStore;
+
   String handleWeightSubmitted(String value) {
     //숫자 이외의 다른 값이 있을 경우
     if (double.tryParse(value) == null) {
@@ -533,6 +537,12 @@ class _SetsDetailState extends State<SetsDetail> {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    userProgramStore = context.watch<provider.UserProgramStore>();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -600,6 +610,7 @@ class _SetsDetailState extends State<SetsDetail> {
             padding: EdgeInsets.zero,
             visualDensity: VisualDensity.compact,
             onPressed: () {
+              userProgramStore.restTimer.onStartTimer();
               if (widget.setInstance.setComplete == false) {
                 setState(() {
                   widget.setInstance.setComplete = true;
