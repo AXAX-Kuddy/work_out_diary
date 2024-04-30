@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -477,6 +479,26 @@ class RestTimeWidget extends StatelessWidget {
     required this.showRestTimerDialog,
   });
 
+  void _showTimerFinishedAlert(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Rest Timer"),
+          content: const Text("The rest timer has finished!"),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text("OK"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -485,11 +507,19 @@ class RestTimeWidget extends StatelessWidget {
           stream: userProgramStore.restTimer.rawTime,
           initialData: 0,
           builder: (context, snapshot) {
-            final value = snapshot.data;
+            int value = snapshot.data as int;
             final displayTime = StopWatchTimer.getDisplayTime(
-              value!,
+              value,
+              hours: false,
               milliSecond: false,
             );
+
+            if (value == 0) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                userProgramStore.totalRest();
+              });
+              _showTimerFinishedAlert(context);
+            }
             return GestureDetector(
               onTap: () {
                 showRestTimerDialog();
