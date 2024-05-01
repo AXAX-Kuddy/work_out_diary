@@ -469,7 +469,7 @@ class WorkoutTimeWidget extends StatelessWidget {
   }
 }
 
-class RestTimeWidget extends StatelessWidget {
+class RestTimeWidget extends StatefulWidget {
   final provider.UserProgramStore userProgramStore;
   final Future<dynamic> Function() showRestTimerDialog;
 
@@ -478,6 +478,13 @@ class RestTimeWidget extends StatelessWidget {
     required this.userProgramStore,
     required this.showRestTimerDialog,
   });
+
+  @override
+  State<RestTimeWidget> createState() => _RestTimeWidgetState();
+}
+
+class _RestTimeWidgetState extends State<RestTimeWidget> {
+  StreamSubscription? _subscription;
 
   void _showTimerFinishedAlert(BuildContext context) {
     showDialog(
@@ -500,40 +507,52 @@ class RestTimeWidget extends StatelessWidget {
   }
 
   @override
+  void initState() {
+    super.initState();
+    widget.userProgramStore.restTimer.fetchEnded.listen((value) {
+      _showTimerFinishedAlert(context);
+      widget.userProgramStore.restTimer.onResetTimer();
+    });
+  }
+
+  @override
+  void dispose() async {
+    await widget.userProgramStore.restTimer.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Row(
       children: [
         StreamBuilder(
-          stream: userProgramStore.restTimer.rawTime,
+          stream: widget.userProgramStore.restTimer.rawTime,
           initialData: 0,
           builder: (context, snapshot) {
-            int value = snapshot.data as int;
+            final value = snapshot.data as int;
             final displayTime = StopWatchTimer.getDisplayTime(
               value,
               hours: false,
               milliSecond: false,
             );
-
-            if (value == 0) {
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                userProgramStore.totalRest();
-              });
-              _showTimerFinishedAlert(context);
-            }
             return GestureDetector(
               onTap: () {
-                showRestTimerDialog();
+                widget.showRestTimerDialog();
               },
-              child: Row(
-                children: [
-                  Text(
-                    displayTime,
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: palette.cardColorWhite,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  children: [
+                    const Text("휴식시간 ON"),
+                    Text(
+                      displayTime,
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: palette.cardColorWhite,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             );
           },
