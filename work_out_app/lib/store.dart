@@ -4,92 +4,62 @@ import 'package:flutter/material.dart';
 import 'package:work_out_app/make_program.dart' as maked;
 import 'package:stop_watch_timer/stop_watch_timer.dart';
 
-enum UserInfoKey {
-  userName,
-  dotsPoint,
+class PageNumber {
+  static int pageNum = 0;
+
+  static changePage(int selectPage) {
+    pageNum = selectPage;
+  }
 }
 
-class Store extends ChangeNotifier {
-  int pageNum = 0;
+enum UserInfoField {
+  userName,
+  userSBD,
+  dotsPoint,
+  age,
+  weight,
+  isFemale,
+}
 
-  void changePage(int selectPage) {
-    pageNum = selectPage;
-    print("페이지 전환 : $pageNum 페이지");
-    notifyListeners();
-  }
+enum SBDkeys {
+  squat,
+  benchPress,
+  deadlift,
+}
 
-  ///```
-  ///userInfo는 Map<String, dynamic>형식으로 되어있으며 Key값을 사용하여 자료를 쓸 수 있다.
-  ///```
-  ///
-  ///```
-  ///"userName" : String 유저이름
-  ///```
-  ///
-  ///```
-  ///"userSBD" : {"스쿼트": String, "벤치프레스": String, "데드리프트": String} 사용 시 num 으로 바꿔야함.
-  ///```
-  ///
-  ///```
-  ///"dotsPoint" : String 닷츠포인트
-  ///```
-  ///
-  ///```
-  ///"age" : String 나이
-  ///```
-  ///
-  ///```
-  ///"weight" : String 몸무게
-  ///```
-  ///
-  ///```
-  ///"isFemale" : bool 성별 유무
-  ///```
-  Map<String, dynamic> userInfo = {
-    "editing": false,
-    "userName": "유저",
-    "userSBD": {
-      "스쿼트": "0",
-      "벤치프레스": "0",
-      "데드리프트": "0",
+typedef UserInfo = Map<UserInfoField, dynamic>;
+
+class MainStore {
+  UserInfo userInfo = {
+    UserInfoField.userName: "유저",
+    UserInfoField.userSBD: {
+      SBDkeys.squat: 0 as double,
+      SBDkeys.benchPress: 0 as double,
+      SBDkeys.deadlift: 0 as double,
     },
-    "dotsPoint": "0",
-    "age": "99",
-    "weight": "100",
-    "isFemale": false,
+    UserInfoField.dotsPoint: 0 as double,
+    UserInfoField.age: 20,
+    UserInfoField.weight: 100 as double,
+    UserInfoField.isFemale: false,
   };
+}
 
-  void addInfo({required String command, dynamic value}) {
-    if (command == "name") {
-      userInfo["userName"] = value;
-    } else if (command == "sbd") {
-      userInfo["userSBD"] = value;
-    } else if (command == "dots") {
-      userInfo["dotsPoint"] = value;
-    } else if (command == "age") {
-      userInfo["age"] = value;
-    } else if (command == "weight") {
-      userInfo["weight"] = value;
-    } else if (command == "isFemale") {
-      userInfo["isFemale"] = value;
-    }
+class MainStoreProvider extends ChangeNotifier {
+  final MainStore _mainStore;
+  MainStoreProvider(
+    this._mainStore,
+  );
+  MainStore get mainStore => _mainStore;
+  UserInfo get userInfo => _mainStore.userInfo;
+
+  void setUserInfo({
+    required UserInfoField userInfoField,
+    dynamic value,
+  }) {
+    _mainStore.userInfo[userInfoField] = value;
   }
 
-  bool infoChecker(Map<String, dynamic> userInfo) {
-    var editCheck = userInfo["editing"];
-    if (editCheck == false) {
-      return false;
-    } else {
-      return true;
-    }
-  }
-
-  void updateUserInfo(userInfo) {
-    userInfo;
-    notifyListeners();
-  }
-
-  double dotsCal({
+  static double dotsCal({
     required num bodyWeight,
     required num weightLifted,
     required bool isFemale,
@@ -125,27 +95,9 @@ class Store extends ChangeNotifier {
   }
 }
 
-// class WorkoutDetail {
-//   final String name;
-//   bool showE1rm;
-
-//   WorkoutDetail({
-//     required this.name,
-//     this.showE1rm = false,
-//   });
-// }
-
 class WorkoutListStore extends ChangeNotifier {
   var workouts = {
     "하체": [
-      // WorkoutDetail(
-      //   name: "스쿼트",
-      //   showE1rm: true,
-      // ),
-      // WorkoutDetail(
-      //   name: "데드리프트",
-      //   showE1rm: true,
-      // ),
       maked.Workout(
         name: "스쿼트",
         showE1rm: true,
@@ -156,17 +108,10 @@ class WorkoutListStore extends ChangeNotifier {
       ),
     ],
     "등": [
-      // WorkoutDetail(name: "랫 풀 다운"),
-      // WorkoutDetail(name: "바벨 로우"),
       maked.Workout(name: "랫 풀 다운"),
       maked.Workout(name: "바벨 로우"),
     ],
     "가슴": [
-      // WorkoutDetail(
-      //   name: "벤치프레스",
-      //   showE1rm: true,
-      // ),
-      // WorkoutDetail(name: "인클라인 덤벨 프레스"),
       maked.Workout(
         name: "벤치프레스",
         showE1rm: true,
@@ -174,27 +119,21 @@ class WorkoutListStore extends ChangeNotifier {
       maked.Workout(name: "인클라인 덤벨 프레스"),
     ],
     "어깨": [
-      // WorkoutDetail(name: "밀리터리 프레스"),
-      // WorkoutDetail(name: "덤벨 숄더 프레스"),
       maked.Workout(name: "밀리터리 프레스"),
       maked.Workout(name: "덤벨 숄더 프레스"),
     ],
     "이두": [
-      // WorkoutDetail(name: "바벨 컬"),
-      // WorkoutDetail(name: "해머 컬"),
       maked.Workout(name: "바벨 컬"),
       maked.Workout(name: "해머 컬"),
     ],
     "삼두": [
-      // WorkoutDetail(name: "클로즈 그립 벤치프레스"),
-      // WorkoutDetail(name: "덤벨 스컬 크러셔"),
       maked.Workout(name: "클로즈 그립 벤치프레스"),
       maked.Workout(name: "덤벨 스컬 크러셔"),
     ],
   };
 }
 
-class UserProgramStore extends ChangeNotifier {
+class Routine {
   final StopWatchTimer stopWatchTimer = StopWatchTimer();
   final StopWatchTimer restTimer = StopWatchTimer(
     mode: StopWatchMode.countDown,
@@ -207,52 +146,101 @@ class UserProgramStore extends ChangeNotifier {
 
   bool workoutStart = false;
   bool onRest = false;
+}
+
+class RoutineProvider extends ChangeNotifier {
+  final Routine _routine;
+  RoutineProvider(this._routine);
+  Routine get routine => _routine;
+
+  List<maked.Workout> get todayWorkouts => _routine.todayWorkouts;
+
+  StopWatchTimer get stopWatchTimer => _routine.stopWatchTimer;
+  bool get workoutStart => _routine.workoutStart;
+
+  StopWatchTimer get restTimer => _routine.restTimer;
+  dynamic get restTimerRawTime => restTimer.rawTime;
+  bool get onRest => _routine.onRest;
+  int get restTimeTotal => _routine.restTimeTotal;
+  int get restTimeMin => _routine.restTimeMin;
+  int get restTimeSec => _routine.restTimeSec;
 
   void addUserSelectWorkout(maked.Workout workout) {
-    todayWorkouts.add(workout);
+    _routine.todayWorkouts.add(workout);
     notifyListeners();
   }
 
   void removeUserSelectWorkout(maked.Workout workout) {
-    todayWorkouts.remove(workout);
+    _routine.todayWorkouts.remove(workout);
     notifyListeners();
   }
 
   void setWorkoutStart() {
-    workoutStart = true;
+    _routine.workoutStart = true;
     notifyListeners();
   }
 
   void setWorkoutFinish() {
-    workoutStart = false;
+    _routine.workoutStart = false;
+    notifyListeners();
+  }
+
+  void onWorkoutTimerStart() {
+    _routine.stopWatchTimer.onStartTimer();
+    notifyListeners();
+  }
+
+  void onWorkoutTimerStopped() {
+    _routine.stopWatchTimer.onStopTimer();
+    notifyListeners();
+  }
+
+  void onRestTimerEndedListner(
+    void Function(bool)? onData,
+  ) {
+    _routine.restTimer.fetchEnded.listen(onData);
     notifyListeners();
   }
 
   void setRestTimer(bool value) {
-    onRest = value;
+    _routine.onRest = value;
     notifyListeners();
   }
 
   void setRestTimeMin(int value) {
-    restTimeMin = value;
+    _routine.restTimeMin = value;
     notifyListeners();
   }
 
   void setRestTimeSec(int value) {
-    restTimeSec = value;
+    _routine.restTimeSec = value;
     notifyListeners();
   }
 
   void totalRest() {
-    int min = restTimeMin * 1000 * 60;
-    int sec = restTimeSec * 1000;
-    restTimeTotal = min + sec;
+    int min = _routine.restTimeMin * 1000 * 60;
+    int sec = _routine.restTimeSec * 1000;
+    _routine.restTimeTotal = min + sec;
 
-    restTimer.setPresetTime(
-      mSec: restTimeTotal,
+    _routine.restTimer.setPresetTime(
+      mSec: _routine.restTimeTotal,
       add: false,
     );
     notifyListeners();
   }
 
+  void onRestStart() {
+    _routine.restTimer.onStartTimer();
+    notifyListeners();
+  }
+
+  void onRestReset() {
+    _routine.restTimer.onResetTimer();
+    notifyListeners();
+  }
+
+  Future<void> onRestDispose() async {
+    await _routine.restTimer.dispose();
+    notifyListeners();
+  }
 }

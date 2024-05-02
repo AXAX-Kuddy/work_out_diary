@@ -13,7 +13,7 @@ import 'package:work_out_app/screens/home_screen.dart';
 import 'package:work_out_app/screens/plan_screen.dart';
 import 'package:work_out_app/screens/work_out_screen.dart';
 import 'package:work_out_app/screens/dots_point_screen.dart';
-import 'package:work_out_app/screens/input_userInfo.dart';
+import 'package:work_out_app/dump/input_userInfo.dart';
 
 //패키지들
 import 'package:provider/provider.dart';
@@ -29,13 +29,13 @@ void main() {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(
-          create: (context) => provider.Store(),
+          create: (context) => provider.MainStoreProvider(provider.MainStore()),
         ),
         ChangeNotifierProvider(
           create: (context) => provider.WorkoutListStore(),
         ),
         ChangeNotifierProvider(
-          create: (context) => provider.UserProgramStore(),
+          create: (context) => provider.RoutineProvider(provider.Routine()),
         ),
       ],
       child: MaterialApp(
@@ -68,7 +68,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   bool notWriteUserInfo = true;
-  late provider.Store store;
+  late provider.MainStoreProvider mainStoreProvider;
 
   @override
   void initState() {
@@ -93,7 +93,7 @@ class _MyAppState extends State<MyApp> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    store = context.watch<provider.Store>();
+    mainStoreProvider = context.watch<provider.MainStoreProvider>();
   }
 
   void updateUserInfo(bool infoCondition) {
@@ -110,12 +110,13 @@ class _MyAppState extends State<MyApp> {
         // const PlanningScreen(),
         const WorkOutScreen(),
         const DotsPointScreen(),
-      ][store.pageNum],
+      ][provider.PageNumber.pageNum],
       bottomNavigationBar: BottomNavigationBar(
-        currentIndex: store.pageNum,
+        currentIndex: provider.PageNumber.pageNum,
         onTap: (pageIndex) {
-          // context.read<provider.Store>().changePage(pageIndex);
-          store.changePage(pageIndex);
+          setState(() {
+            provider.PageNumber.changePage(pageIndex);
+          });
         },
         backgroundColor: palette.bgFadeColor,
         selectedItemColor: Colors.white,

@@ -15,11 +15,10 @@ class ProfileCard extends StatefulWidget {
 }
 
 class _ProfileCardState extends State<ProfileCard> {
-  late String userName;
-  late String _squatWeight;
-  late String _benchWeight;
-  late String _deadWeight;
-  late String _dotsPoint;
+  late double squat;
+  late double bench;
+  late double dl;
+  late double dots;
 
   List<String> tierList = [
     "초보자",
@@ -40,15 +39,13 @@ class _ProfileCardState extends State<ProfileCard> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    userName = context.watch<provider.Store>().userInfo["userName"] ?? "유저";
-    _squatWeight =
-        context.watch<provider.Store>().userInfo["userSBD"]["스쿼트"] ?? "100.5";
-    _benchWeight =
-        context.watch<provider.Store>().userInfo["userSBD"]["벤치프레스"] ?? "100.5";
-    _deadWeight =
-        context.watch<provider.Store>().userInfo["userSBD"]["데드리프트"] ?? "100.5";
-    _dotsPoint =
-        context.watch<provider.Store>().userInfo["dotsPoint"] ?? "1000";
+    Map<provider.UserInfoField, dynamic> userInfo =
+        context.read<provider.MainStoreProvider>().userInfo;
+    squat = userInfo[provider.UserInfoField.userSBD][provider.SBDkeys.squat];
+    bench =
+        userInfo[provider.UserInfoField.userSBD][provider.SBDkeys.benchPress];
+    dl = userInfo[provider.UserInfoField.userSBD][provider.SBDkeys.deadlift];
+    dots = userInfo[provider.UserInfoField.dotsPoint];
   }
 
   int userTier(String dotsPoint) {
@@ -84,7 +81,7 @@ class _ProfileCardState extends State<ProfileCard> {
                   ),
                 ),
                 Text(
-                  _squatWeight,
+                  squat.toString(),
                   style: const TextStyle(
                     fontSize: 18,
                   ),
@@ -104,7 +101,7 @@ class _ProfileCardState extends State<ProfileCard> {
                   ),
                 ),
                 Text(
-                  _benchWeight,
+                  bench.toString(),
                   style: const TextStyle(
                     fontSize: 18,
                   ),
@@ -124,7 +121,7 @@ class _ProfileCardState extends State<ProfileCard> {
                   ),
                 ),
                 Text(
-                  _deadWeight,
+                  dl.toString(),
                   style: const TextStyle(
                     fontSize: 18,
                   ),
@@ -139,7 +136,7 @@ class _ProfileCardState extends State<ProfileCard> {
             Row(
               children: [
                 Text(
-                  tierList[userTier(_dotsPoint)],
+                  tierList[userTier(dots.toString())],
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
@@ -152,7 +149,7 @@ class _ProfileCardState extends State<ProfileCard> {
                   width: 15,
                   height: 15,
                   decoration: BoxDecoration(
-                    color: colorList[userTier(_dotsPoint)],
+                    color: colorList[userTier(dots.toString())],
                     borderRadius: BorderRadius.circular(50),
                   ),
                 ),
@@ -161,7 +158,7 @@ class _ProfileCardState extends State<ProfileCard> {
             Row(
               children: [
                 Text(
-                  "$_dotsPoint PT",
+                  "$dots PT",
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.normal,

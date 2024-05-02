@@ -37,7 +37,7 @@ class _TodayWorkOutCardState extends State<TodayWorkOutCard> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _userName = context.watch<provider.Store>().userInfo["userName"];
+    _userName = context.watch<provider.MainStoreProvider>().userInfo[provider.UserInfoField.userName];
   }
 
   @override

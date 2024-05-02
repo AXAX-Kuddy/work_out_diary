@@ -453,7 +453,7 @@ class SetsDetail extends StatefulWidget {
 }
 
 class _SetsDetailState extends State<SetsDetail> {
-  late provider.UserProgramStore userProgramStore;
+  late provider.RoutineProvider routineProvider;
 
   String handleWeightSubmitted(String value) {
     //숫자 이외의 다른 값이 있을 경우
@@ -539,7 +539,7 @@ class _SetsDetailState extends State<SetsDetail> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    userProgramStore = context.watch<provider.UserProgramStore>();
+    routineProvider = context.watch<provider.RoutineProvider>();
   }
 
   @override
@@ -611,7 +611,7 @@ class _SetsDetailState extends State<SetsDetail> {
             visualDensity: VisualDensity.compact,
             onPressed: () {
               if (widget.setInstance.setComplete == false) {
-                userProgramStore.restTimer.onStartTimer();
+                routineProvider.onRestStart();
                 setState(() {
                   widget.setInstance.setComplete = true;
                 });

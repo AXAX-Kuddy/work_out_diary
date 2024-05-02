@@ -29,7 +29,7 @@ class PlanningScreen extends StatefulWidget {
 }
 
 class _PlanningScreenState extends State<PlanningScreen> {
-  late provider.UserProgramStore userProgramStore;
+  late provider.RoutineProvider routineProvider;
   late Widget restTimer;
   late Widget restTimerButton;
   late TextButton timerButton;
@@ -38,8 +38,8 @@ class _PlanningScreenState extends State<PlanningScreen> {
     return showDialog(
         context: context,
         builder: (context) {
-          return Consumer<provider.UserProgramStore>(
-            builder: (context, userProgramStore, child) {
+          return Consumer<provider.RoutineProvider>(
+            builder: (context, routineProvider, child) {
               return Dialog(
                 backgroundColor: palette.bgColor,
                 child: Padding(
@@ -58,9 +58,9 @@ class _PlanningScreenState extends State<PlanningScreen> {
                               activeTrackColor: palette.bgFadeColor,
                               inactiveThumbColor: palette.cardColorWhite,
                               inactiveTrackColor: palette.bgColor,
-                              value: userProgramStore.onRest,
+                              value: routineProvider.onRest,
                               onChanged: (value) {
-                                userProgramStore.setRestTimer(value);
+                                routineProvider.setRestTimer(value);
                               },
                             )
                           ],
@@ -79,14 +79,14 @@ class _PlanningScreenState extends State<PlanningScreen> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    userProgramStore = context.watch<provider.UserProgramStore>();
+    routineProvider = context.watch<provider.RoutineProvider>();
 
-    switch (userProgramStore.workoutStart) {
+    switch (routineProvider.workoutStart) {
       case true:
         timerButton = TextButton(
           onPressed: () {
-            userProgramStore.stopWatchTimer.onStopTimer();
-            userProgramStore.setWorkoutFinish();
+            routineProvider.onWorkoutTimerStopped();
+            routineProvider.setWorkoutFinish();
           },
           child: Container(
             alignment: Alignment.center,
@@ -110,8 +110,8 @@ class _PlanningScreenState extends State<PlanningScreen> {
       default:
         timerButton = TextButton(
           onPressed: () {
-            userProgramStore.stopWatchTimer.onStartTimer();
-            userProgramStore.setWorkoutStart();
+            routineProvider.onWorkoutTimerStart();
+            routineProvider.setWorkoutStart();
           },
           child: Container(
             alignment: Alignment.center,
@@ -133,7 +133,7 @@ class _PlanningScreenState extends State<PlanningScreen> {
         );
     }
 
-    switch (userProgramStore.onRest) {
+    switch (routineProvider.onRest) {
       case true:
         restTimer = Column(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -146,7 +146,7 @@ class _PlanningScreenState extends State<PlanningScreen> {
               children: [
                 RestTimeScrollList(
                   onSelectedItemChanged: (index) {
-                    userProgramStore.setRestTimeMin(index);
+                    routineProvider.setRestTimeMin(index);
                   },
                   children: List.generate(
                     11,
@@ -163,7 +163,7 @@ class _PlanningScreenState extends State<PlanningScreen> {
                 ),
                 RestTimeScrollList(
                   onSelectedItemChanged: (index) {
-                    userProgramStore.setRestTimeSec(index);
+                    routineProvider.setRestTimeSec(index);
                   },
                   children: List.generate(
                     60,
@@ -189,7 +189,7 @@ class _PlanningScreenState extends State<PlanningScreen> {
                 SizedBox(
                   width: 70,
                   child: Text(
-                    userProgramStore.restTimeMin.toString(),
+                    routineProvider.restTimeMin.toString(),
                     style: TextStyle(
                       fontSize: 20,
                       color: palette.cardColorWhite,
@@ -208,7 +208,7 @@ class _PlanningScreenState extends State<PlanningScreen> {
                 SizedBox(
                   width: 70,
                   child: Text(
-                    userProgramStore.restTimeSec.toString(),
+                    routineProvider.restTimeSec.toString(),
                     style: TextStyle(
                       fontSize: 20,
                       color: palette.cardColorWhite,
@@ -226,7 +226,7 @@ class _PlanningScreenState extends State<PlanningScreen> {
               children: [
                 TextButton(
                     onPressed: () {
-                      userProgramStore.totalRest();
+                      routineProvider.totalRest();
                       Navigator.pop(context);
                     },
                     child: Text(
@@ -256,7 +256,7 @@ class _PlanningScreenState extends State<PlanningScreen> {
         );
     }
 
-    if (userProgramStore.restTimeTotal <= 0) {
+    if (routineProvider.restTimeTotal <= 0) {
       restTimerButton = TextButton(
         onPressed: () {
           showRestTimerDialog();
@@ -283,7 +283,7 @@ class _PlanningScreenState extends State<PlanningScreen> {
       );
     } else {
       restTimerButton = RestTimeWidget(
-        userProgramStore: userProgramStore,
+        routineProvider: routineProvider,
         showRestTimerDialog: showRestTimerDialog,
       );
     }
@@ -322,11 +322,11 @@ class _PlanningScreenState extends State<PlanningScreen> {
           child: ScrollConfiguration(
             behavior: const ScrollBehavior().copyWith(overscroll: false),
             child: ListView.builder(
-              itemCount: userProgramStore.todayWorkouts.isEmpty
+              itemCount: routineProvider.todayWorkouts.isEmpty
                   ? 1
-                  : userProgramStore.todayWorkouts.length,
+                  : routineProvider.todayWorkouts.length,
               itemBuilder: (BuildContext context, int index) {
-                if (userProgramStore.todayWorkouts.isEmpty) {
+                if (routineProvider.todayWorkouts.isEmpty) {
                   return Center(
                     heightFactor: 20,
                     child: Text(
@@ -340,8 +340,8 @@ class _PlanningScreenState extends State<PlanningScreen> {
                 } else {
                   return WorkoutDetail(
                     index: index,
-                    workoutInstance: userProgramStore.todayWorkouts[index],
-                    removeWorkout: userProgramStore.removeUserSelectWorkout,
+                    workoutInstance: routineProvider.todayWorkouts[index],
+                    removeWorkout: routineProvider.removeUserSelectWorkout,
                   );
                 }
               },
@@ -360,13 +360,13 @@ class _PlanningScreenState extends State<PlanningScreen> {
                         SelectWorkOut(
                       addFunction: (List<maked.Workout> selectList) {
                         for (int i = 0; i < selectList.length; i++) {
-                          userProgramStore.addUserSelectWorkout(selectList[i]);
+                          routineProvider.addUserSelectWorkout(selectList[i]);
                           // addWorkout(selectList[i]);
                         }
                       },
                       changedListner: () {
                         setState(() {
-                          userProgramStore.todayWorkouts;
+                          routineProvider.todayWorkouts;
                         });
                       },
                     ),
@@ -403,7 +403,7 @@ class _PlanningScreenState extends State<PlanningScreen> {
           ],
         ),
         Visibility(
-          visible: userProgramStore.todayWorkouts.isNotEmpty,
+          visible: routineProvider.todayWorkouts.isNotEmpty,
           child: Container(
             height: 70,
             alignment: Alignment.center,
@@ -416,8 +416,7 @@ class _PlanningScreenState extends State<PlanningScreen> {
               children: [
                 restTimerButton,
                 WorkoutTimeWidget(
-                    userProgramStore: userProgramStore,
-                    timerButton: timerButton),
+                    routineProvider: routineProvider, timerButton: timerButton),
               ],
             ),
           ),
@@ -430,11 +429,11 @@ class _PlanningScreenState extends State<PlanningScreen> {
 class WorkoutTimeWidget extends StatelessWidget {
   const WorkoutTimeWidget({
     super.key,
-    required this.userProgramStore,
+    required this.routineProvider,
     required this.timerButton,
   });
 
-  final provider.UserProgramStore userProgramStore;
+  final provider.RoutineProvider routineProvider;
   final TextButton timerButton;
 
   @override
@@ -442,7 +441,7 @@ class WorkoutTimeWidget extends StatelessWidget {
     return Row(
       children: [
         StreamBuilder(
-          stream: userProgramStore.stopWatchTimer.rawTime,
+          stream: routineProvider.stopWatchTimer.rawTime,
           initialData: 0,
           builder: (context, snapshot) {
             final value = snapshot.data;
@@ -470,12 +469,12 @@ class WorkoutTimeWidget extends StatelessWidget {
 }
 
 class RestTimeWidget extends StatefulWidget {
-  final provider.UserProgramStore userProgramStore;
+  final provider.RoutineProvider routineProvider;
   final Future<dynamic> Function() showRestTimerDialog;
 
   const RestTimeWidget({
     super.key,
-    required this.userProgramStore,
+    required this.routineProvider,
     required this.showRestTimerDialog,
   });
 
@@ -484,8 +483,6 @@ class RestTimeWidget extends StatefulWidget {
 }
 
 class _RestTimeWidgetState extends State<RestTimeWidget> {
-  StreamSubscription? _subscription;
-
   void _showTimerFinishedAlert(BuildContext context) {
     showDialog(
       context: context,
@@ -509,16 +506,18 @@ class _RestTimeWidgetState extends State<RestTimeWidget> {
   @override
   void initState() {
     super.initState();
-    widget.userProgramStore.restTimer.fetchEnded.listen((value) {
-      _showTimerFinishedAlert(context);
-      widget.userProgramStore.restTimer.onResetTimer();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      widget.routineProvider.onRestTimerEndedListner((value) {
+        _showTimerFinishedAlert(context);
+        widget.routineProvider.onRestReset();
+      });
     });
   }
 
   @override
   void dispose() async {
-    await widget.userProgramStore.restTimer.dispose();
     super.dispose();
+    await widget.routineProvider.onRestDispose();
   }
 
   @override
@@ -526,7 +525,7 @@ class _RestTimeWidgetState extends State<RestTimeWidget> {
     return Row(
       children: [
         StreamBuilder(
-          stream: widget.userProgramStore.restTimer.rawTime,
+          stream: widget.routineProvider.restTimerRawTime,
           initialData: 0,
           builder: (context, snapshot) {
             final value = snapshot.data as int;
@@ -535,6 +534,7 @@ class _RestTimeWidgetState extends State<RestTimeWidget> {
               hours: false,
               milliSecond: false,
             );
+
             return GestureDetector(
               onTap: () {
                 widget.showRestTimerDialog();
