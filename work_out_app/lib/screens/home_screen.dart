@@ -74,12 +74,12 @@ class HomeScreen extends StatelessWidget {
           ),
         ),
       ),
-      children: const [
+      children: [
         ProfileCard(),
-        SizedBox(
+        const SizedBox(
           height: 15,
         ),
-        TodayWorkOutCard(),
+        const TodayWorkOutCard(),
       ],
     );
   }

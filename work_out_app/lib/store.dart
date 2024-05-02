@@ -30,7 +30,7 @@ enum SBDkeys {
 typedef UserInfo = Map<UserInfoField, dynamic>;
 
 class MainStore {
-  UserInfo userInfo = {
+ static UserInfo userInfo = {
     UserInfoField.userName: "유저",
     UserInfoField.userSBD: {
       SBDkeys.squat: 0 as double,
@@ -50,13 +50,12 @@ class MainStoreProvider extends ChangeNotifier {
     this._mainStore,
   );
   MainStore get mainStore => _mainStore;
-  UserInfo get userInfo => _mainStore.userInfo;
 
   void setUserInfo({
     required UserInfoField userInfoField,
     dynamic value,
   }) {
-    _mainStore.userInfo[userInfoField] = value;
+ MainStore.userInfo[userInfoField] = value;
   }
 
   static double dotsCal({

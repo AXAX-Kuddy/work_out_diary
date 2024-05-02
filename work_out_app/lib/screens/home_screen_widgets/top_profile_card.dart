@@ -5,22 +5,21 @@ import 'package:work_out_app/widgets/widget_box.dart';
 import 'package:provider/provider.dart';
 import 'package:work_out_app/store.dart' as provider;
 
-class ProfileCard extends StatefulWidget {
-  const ProfileCard({
-    super.key,
-  });
+class ProfileCard extends StatelessWidget {
+  ProfileCard({super.key});
+  final double squat = provider.MainStore
+      .userInfo[provider.UserInfoField.userSBD][provider.SBDkeys.squat];
 
-  @override
-  State<ProfileCard> createState() => _ProfileCardState();
-}
+  final double bench = provider.MainStore
+      .userInfo[provider.UserInfoField.userSBD][provider.SBDkeys.benchPress];
 
-class _ProfileCardState extends State<ProfileCard> {
-  late double squat;
-  late double bench;
-  late double dl;
-  late double dots;
+  final double dl = provider.MainStore.userInfo[provider.UserInfoField.userSBD]
+      [provider.SBDkeys.deadlift];
 
-  List<String> tierList = [
+  final double dots =
+      provider.MainStore.userInfo[provider.UserInfoField.dotsPoint];
+
+  final List<String> tierList = [
     "초보자",
     "입문자",
     "중급자",
@@ -28,25 +27,13 @@ class _ProfileCardState extends State<ProfileCard> {
     "고급자",
   ];
 
-  List<Color> colorList = [
+  final List<Color> colorList = [
     palette.tierLow,
     palette.tierMiddleLow,
     palette.tierMiddle,
     palette.tierMiddleHigh,
     palette.tierHigh,
   ];
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    Map<provider.UserInfoField, dynamic> userInfo =
-        context.read<provider.MainStoreProvider>().userInfo;
-    squat = userInfo[provider.UserInfoField.userSBD][provider.SBDkeys.squat];
-    bench =
-        userInfo[provider.UserInfoField.userSBD][provider.SBDkeys.benchPress];
-    dl = userInfo[provider.UserInfoField.userSBD][provider.SBDkeys.deadlift];
-    dots = userInfo[provider.UserInfoField.dotsPoint];
-  }
 
   int userTier(String dotsPoint) {
     var point = num.parse(dotsPoint);
