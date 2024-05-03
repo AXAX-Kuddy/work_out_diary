@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:work_out_app/palette.dart' as palette;
 import 'package:work_out_app/widgets/widget_box.dart';
 import 'package:provider/provider.dart';
+import 'package:work_out_app/keys.dart';
 import 'package:work_out_app/store.dart' as provider;
 
 class TodayWorkOutCard extends StatefulWidget {
@@ -37,7 +38,7 @@ class _TodayWorkOutCardState extends State<TodayWorkOutCard> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _userName = provider.MainStore.userInfo[provider.UserInfoField.userName];
+    _userName = provider.MainStore.userInfo[UserInfoField.userName];
   }
 
   @override

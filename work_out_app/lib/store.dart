@@ -2,44 +2,22 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:work_out_app/make_program.dart' as maked;
+import 'package:work_out_app/keys.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
-
-class PageNumber {
-  static int pageNum = 0;
-
-  static changePage(int selectPage) {
-    pageNum = selectPage;
-  }
-}
-
-enum UserInfoField {
-  userName,
-  userSBD,
-  dotsPoint,
-  age,
-  weight,
-  isFemale,
-}
-
-enum SBDkeys {
-  squat,
-  benchPress,
-  deadlift,
-}
 
 typedef UserInfo = Map<UserInfoField, dynamic>;
 
 class MainStore {
- static UserInfo userInfo = {
+  static UserInfo userInfo = {
     UserInfoField.userName: "유저",
     UserInfoField.userSBD: {
-      SBDkeys.squat: 0 as double,
-      SBDkeys.benchPress: 0 as double,
-      SBDkeys.deadlift: 0 as double,
+      SBDkeys.squat: 0.0,
+      SBDkeys.benchPress: 0.0,
+      SBDkeys.deadlift: 0.0,
     },
-    UserInfoField.dotsPoint: 0 as double,
+    UserInfoField.dotsPoint: 0.0,
     UserInfoField.age: 20,
-    UserInfoField.weight: 100 as double,
+    UserInfoField.weight: 100.0,
     UserInfoField.isFemale: false,
   };
 }
@@ -55,7 +33,7 @@ class MainStoreProvider extends ChangeNotifier {
     required UserInfoField userInfoField,
     dynamic value,
   }) {
- MainStore.userInfo[userInfoField] = value;
+    MainStore.userInfo[userInfoField] = value;
   }
 
   static double dotsCal({
@@ -134,9 +112,7 @@ class WorkoutListStore extends ChangeNotifier {
 
 class Routine {
   final StopWatchTimer stopWatchTimer = StopWatchTimer();
-  final StopWatchTimer restTimer = StopWatchTimer(
-    mode: StopWatchMode.countDown,
-  );
+
   int restTimeMin = 0;
   int restTimeSec = 0;
   int restTimeTotal = 0;
@@ -157,8 +133,6 @@ class RoutineProvider extends ChangeNotifier {
   StopWatchTimer get stopWatchTimer => _routine.stopWatchTimer;
   bool get workoutStart => _routine.workoutStart;
 
-  StopWatchTimer get restTimer => _routine.restTimer;
-  dynamic get restTimerRawTime => restTimer.rawTime;
   bool get onRest => _routine.onRest;
   int get restTimeTotal => _routine.restTimeTotal;
   int get restTimeMin => _routine.restTimeMin;
@@ -194,13 +168,6 @@ class RoutineProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void onRestTimerEndedListner(
-    void Function(bool)? onData,
-  ) {
-    _routine.restTimer.fetchEnded.listen(onData);
-    notifyListeners();
-  }
-
   void setRestTimer(bool value) {
     _routine.onRest = value;
     notifyListeners();
@@ -221,25 +188,7 @@ class RoutineProvider extends ChangeNotifier {
     int sec = _routine.restTimeSec * 1000;
     _routine.restTimeTotal = min + sec;
 
-    _routine.restTimer.setPresetTime(
-      mSec: _routine.restTimeTotal,
-      add: false,
-    );
     notifyListeners();
   }
 
-  void onRestStart() {
-    _routine.restTimer.onStartTimer();
-    notifyListeners();
-  }
-
-  void onRestReset() {
-    _routine.restTimer.onResetTimer();
-    notifyListeners();
-  }
-
-  Future<void> onRestDispose() async {
-    await _routine.restTimer.dispose();
-    notifyListeners();
-  }
 }

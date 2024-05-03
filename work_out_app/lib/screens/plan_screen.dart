@@ -30,9 +30,10 @@ class PlanningScreen extends StatefulWidget {
 
 class _PlanningScreenState extends State<PlanningScreen> {
   late provider.RoutineProvider routineProvider;
-  late Widget restTimer;
+
+  late Widget restTimerWidget;
   late Widget restTimerButton;
-  late TextButton timerButton;
+  late TextButton workoutTimerButton;
 
   Future<dynamic> showRestTimerDialog() {
     return showDialog(
@@ -65,7 +66,7 @@ class _PlanningScreenState extends State<PlanningScreen> {
                             )
                           ],
                         ),
-                        restTimer,
+                        restTimerWidget,
                       ],
                     ),
                   ),
@@ -83,7 +84,7 @@ class _PlanningScreenState extends State<PlanningScreen> {
 
     switch (routineProvider.workoutStart) {
       case true:
-        timerButton = TextButton(
+        workoutTimerButton = TextButton(
           onPressed: () {
             routineProvider.onWorkoutTimerStopped();
             routineProvider.setWorkoutFinish();
@@ -108,7 +109,7 @@ class _PlanningScreenState extends State<PlanningScreen> {
         );
 
       default:
-        timerButton = TextButton(
+        workoutTimerButton = TextButton(
           onPressed: () {
             routineProvider.onWorkoutTimerStart();
             routineProvider.setWorkoutStart();
@@ -135,7 +136,7 @@ class _PlanningScreenState extends State<PlanningScreen> {
 
     switch (routineProvider.onRest) {
       case true:
-        restTimer = Column(
+        restTimerWidget = Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             const SizedBox(
@@ -226,7 +227,9 @@ class _PlanningScreenState extends State<PlanningScreen> {
               children: [
                 TextButton(
                     onPressed: () {
-                      routineProvider.totalRest();
+                      setState(() {
+                        routineProvider.totalRest();
+                      });
                       Navigator.pop(context);
                     },
                     child: Text(
@@ -242,7 +245,7 @@ class _PlanningScreenState extends State<PlanningScreen> {
         );
 
       default:
-        restTimer = Expanded(
+        restTimerWidget = Expanded(
           child: Center(
             child: Text(
               "휴식시간을 설정하려면 버튼을 눌러주세요.",
@@ -283,7 +286,6 @@ class _PlanningScreenState extends State<PlanningScreen> {
       );
     } else {
       restTimerButton = RestTimeWidget(
-        routineProvider: routineProvider,
         showRestTimerDialog: showRestTimerDialog,
       );
     }
@@ -416,7 +418,8 @@ class _PlanningScreenState extends State<PlanningScreen> {
               children: [
                 restTimerButton,
                 WorkoutTimeWidget(
-                    routineProvider: routineProvider, timerButton: timerButton),
+                    routineProvider: routineProvider,
+                    workoutTimerButton: workoutTimerButton),
               ],
             ),
           ),
@@ -427,14 +430,14 @@ class _PlanningScreenState extends State<PlanningScreen> {
 }
 
 class WorkoutTimeWidget extends StatelessWidget {
+  final provider.RoutineProvider routineProvider;
+  final TextButton workoutTimerButton;
+
   const WorkoutTimeWidget({
     super.key,
     required this.routineProvider,
-    required this.timerButton,
+    required this.workoutTimerButton,
   });
-
-  final provider.RoutineProvider routineProvider;
-  final TextButton timerButton;
 
   @override
   Widget build(BuildContext context) {
@@ -458,7 +461,7 @@ class WorkoutTimeWidget extends StatelessWidget {
                     color: palette.cardColorWhite,
                   ),
                 ),
-                timerButton,
+                workoutTimerButton,
               ],
             );
           },
@@ -469,12 +472,10 @@ class WorkoutTimeWidget extends StatelessWidget {
 }
 
 class RestTimeWidget extends StatefulWidget {
-  final provider.RoutineProvider routineProvider;
   final Future<dynamic> Function() showRestTimerDialog;
 
   const RestTimeWidget({
     super.key,
-    required this.routineProvider,
     required this.showRestTimerDialog,
   });
 
@@ -483,6 +484,9 @@ class RestTimeWidget extends StatefulWidget {
 }
 
 class _RestTimeWidgetState extends State<RestTimeWidget> {
+  late StopWatchTimer _restTimer;
+  late provider.RoutineProvider routineProvider;
+
   void _showTimerFinishedAlert(BuildContext context) {
     showDialog(
       context: context,
@@ -506,18 +510,34 @@ class _RestTimeWidgetState extends State<RestTimeWidget> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      widget.routineProvider.onRestTimerEndedListner((value) {
+
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    //   routineProvider.onRestTimerEndedListner((value) {
+    //     _showTimerFinishedAlert(context);
+    //     routineProvider.onRestReset();
+    //   });
+    // });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    routineProvider = context.watch<provider.RoutineProvider>();
+
+    _restTimer = StopWatchTimer(
+      mode: StopWatchMode.countDown,
+      onEnded: () {
+        _restTimer.onResetTimer();
         _showTimerFinishedAlert(context);
-        widget.routineProvider.onRestReset();
-      });
-    });
+      },
+    );
+    _restTimer.setPresetTime(mSec: routineProvider.restTimeTotal);
   }
 
   @override
   void dispose() async {
     super.dispose();
-    await widget.routineProvider.onRestDispose();
+    // await _restTimer.dispose();
   }
 
   @override
@@ -525,7 +545,7 @@ class _RestTimeWidgetState extends State<RestTimeWidget> {
     return Row(
       children: [
         StreamBuilder(
-          stream: widget.routineProvider.restTimerRawTime,
+          stream: _restTimer.rawTime,
           initialData: 0,
           builder: (context, snapshot) {
             final value = snapshot.data as int;
@@ -543,7 +563,6 @@ class _RestTimeWidgetState extends State<RestTimeWidget> {
                 padding: const EdgeInsets.all(8.0),
                 child: Row(
                   children: [
-                    const Text("휴식시간 ON"),
                     Text(
                       displayTime,
                       style: TextStyle(
@@ -551,6 +570,14 @@ class _RestTimeWidgetState extends State<RestTimeWidget> {
                         color: palette.cardColorWhite,
                       ),
                     ),
+                    IconButton(
+                        onPressed: () {
+                          _restTimer.onStartTimer();
+                        },
+                        icon: LineIcon(
+                          LineIcons.angleDoubleRight,
+                          color: palette.cardColorYelGreen,
+                        )),
                   ],
                 ),
               ),

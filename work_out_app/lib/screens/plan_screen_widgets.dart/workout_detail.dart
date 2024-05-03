@@ -611,7 +611,7 @@ class _SetsDetailState extends State<SetsDetail> {
             visualDensity: VisualDensity.compact,
             onPressed: () {
               if (widget.setInstance.setComplete == false) {
-                routineProvider.onRestStart();
+                // routineProvider.onRestStart();
                 setState(() {
                   widget.setInstance.setComplete = true;
                 });

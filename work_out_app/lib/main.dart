@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:work_out_app/widgets/base_page.dart';
 import 'package:work_out_app/make_program.dart' as maked;
 import 'package:work_out_app/palette.dart' as palette;
+import 'package:work_out_app/keys.dart';
 
 //화면 위젯
 import 'package:work_out_app/screens/home_screen.dart';
@@ -57,6 +58,14 @@ void main() {
       ),
     ),
   );
+}
+
+class CustomScrollBehavior extends MaterialScrollBehavior {
+  @override
+  Set<PointerDeviceKind> get dragDevices => {
+        PointerDeviceKind.touch,
+        PointerDeviceKind.mouse,
+      };
 }
 
 class MyApp extends StatefulWidget {
@@ -110,12 +119,12 @@ class _MyAppState extends State<MyApp> {
         // const PlanningScreen(),
         const WorkOutScreen(),
         const DotsPointScreen(),
-      ][provider.PageNumber.pageNum],
+      ][PageNumber.pageNum],
       bottomNavigationBar: BottomNavigationBar(
-        currentIndex: provider.PageNumber.pageNum,
+        currentIndex: PageNumber.pageNum,
         onTap: (pageIndex) {
           setState(() {
-            provider.PageNumber.changePage(pageIndex);
+            PageNumber.changePage(pageIndex);
           });
         },
         backgroundColor: palette.bgFadeColor,
@@ -143,12 +152,4 @@ class _MyAppState extends State<MyApp> {
       ),
     );
   }
-}
-
-class CustomScrollBehavior extends MaterialScrollBehavior {
-  @override
-  Set<PointerDeviceKind> get dragDevices => {
-        PointerDeviceKind.touch,
-        PointerDeviceKind.mouse,
-      };
 }

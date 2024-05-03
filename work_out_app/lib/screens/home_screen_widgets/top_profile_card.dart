@@ -4,20 +4,21 @@ import 'package:work_out_app/palette.dart' as palette;
 import 'package:work_out_app/widgets/widget_box.dart';
 import 'package:provider/provider.dart';
 import 'package:work_out_app/store.dart' as provider;
+import 'package:work_out_app/keys.dart';
 
 class ProfileCard extends StatelessWidget {
   ProfileCard({super.key});
   final double squat = provider.MainStore
-      .userInfo[provider.UserInfoField.userSBD][provider.SBDkeys.squat];
+      .userInfo[UserInfoField.userSBD][SBDkeys.squat];
 
   final double bench = provider.MainStore
-      .userInfo[provider.UserInfoField.userSBD][provider.SBDkeys.benchPress];
+      .userInfo[UserInfoField.userSBD][SBDkeys.benchPress];
 
-  final double dl = provider.MainStore.userInfo[provider.UserInfoField.userSBD]
-      [provider.SBDkeys.deadlift];
+  final double dl = provider.MainStore.userInfo[UserInfoField.userSBD]
+      [SBDkeys.deadlift];
 
   final double dots =
-      provider.MainStore.userInfo[provider.UserInfoField.dotsPoint];
+      provider.MainStore.userInfo[UserInfoField.dotsPoint];
 
   final List<String> tierList = [
     "초보자",
