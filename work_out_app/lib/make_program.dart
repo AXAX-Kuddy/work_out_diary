@@ -1,3 +1,7 @@
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:work_out_app/store.dart' as provider;
+
 class Program {
   late String? programName;
   late List<Week>? weeks;

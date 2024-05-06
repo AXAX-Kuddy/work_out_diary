@@ -111,7 +111,13 @@ class WorkoutListStore extends ChangeNotifier {
 }
 
 class Routine {
-  final StopWatchTimer stopWatchTimer = StopWatchTimer();
+  static final StopWatchTimer stopWatchTimer = StopWatchTimer();
+  static final StopWatchTimer restTimer = StopWatchTimer(
+    mode: StopWatchMode.countDown,
+    onEnded: () {
+      restTimer.onResetTimer();
+    },
+  );
 
   int restTimeMin = 0;
   int restTimeSec = 0;
@@ -119,6 +125,7 @@ class Routine {
 
   List<maked.Workout> todayWorkouts = [];
 
+  NowRestState restState = NowRestState.beforeRest;
   bool workoutStart = false;
   bool onRest = false;
 }
@@ -130,7 +137,6 @@ class RoutineProvider extends ChangeNotifier {
 
   List<maked.Workout> get todayWorkouts => _routine.todayWorkouts;
 
-  StopWatchTimer get stopWatchTimer => _routine.stopWatchTimer;
   bool get workoutStart => _routine.workoutStart;
 
   bool get onRest => _routine.onRest;
@@ -159,12 +165,17 @@ class RoutineProvider extends ChangeNotifier {
   }
 
   void onWorkoutTimerStart() {
-    _routine.stopWatchTimer.onStartTimer();
+    Routine.stopWatchTimer.onStartTimer();
     notifyListeners();
   }
 
   void onWorkoutTimerStopped() {
-    _routine.stopWatchTimer.onStopTimer();
+    Routine.stopWatchTimer.onStopTimer();
+    notifyListeners();
+  }
+
+  void onStartedRestTimer() {
+    Routine.restTimer.onStartTimer();
     notifyListeners();
   }
 
@@ -188,7 +199,7 @@ class RoutineProvider extends ChangeNotifier {
     int sec = _routine.restTimeSec * 1000;
     _routine.restTimeTotal = min + sec;
 
+    Routine.restTimer.setPresetTime(mSec: _routine.restTimeTotal, add: false);
     notifyListeners();
   }
-
 }

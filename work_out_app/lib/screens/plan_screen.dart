@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -444,7 +445,7 @@ class WorkoutTimeWidget extends StatelessWidget {
     return Row(
       children: [
         StreamBuilder(
-          stream: routineProvider.stopWatchTimer.rawTime,
+          stream: provider.Routine.stopWatchTimer.rawTime,
           initialData: 0,
           builder: (context, snapshot) {
             final value = snapshot.data;
@@ -484,68 +485,34 @@ class RestTimeWidget extends StatefulWidget {
 }
 
 class _RestTimeWidgetState extends State<RestTimeWidget> {
-  late StopWatchTimer _restTimer;
   late provider.RoutineProvider routineProvider;
 
-  void _showTimerFinishedAlert(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text("Rest Timer"),
-          content: const Text("The rest timer has finished!"),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text("OK"),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  @override
-  void initState() {
-    super.initState();
-
-    // WidgetsBinding.instance.addPostFrameCallback((_) {
-    //   routineProvider.onRestTimerEndedListner((value) {
-    //     _showTimerFinishedAlert(context);
-    //     routineProvider.onRestReset();
-    //   });
-    // });
+  Color _changedTimerColor(int time) {
+    if (time < 5000) {
+      return Colors.red;
+    } else {
+      return palette.cardColorWhite;
+    }
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     routineProvider = context.watch<provider.RoutineProvider>();
-
-    _restTimer = StopWatchTimer(
-      mode: StopWatchMode.countDown,
-      onEnded: () {
-        _restTimer.onResetTimer();
-        _showTimerFinishedAlert(context);
-      },
-    );
-    _restTimer.setPresetTime(mSec: routineProvider.restTimeTotal);
   }
 
-  @override
-  void dispose() async {
-    super.dispose();
-    // await _restTimer.dispose();
-  }
+  // @override
+  // void dispose() async {
+  //   super.dispose();
+  //   await provider.Routine.restTimer.dispose();
+  // }
 
   @override
   Widget build(BuildContext context) {
     return Row(
       children: [
         StreamBuilder(
-          stream: _restTimer.rawTime,
+          stream: provider.Routine.restTimer.rawTime,
           initialData: 0,
           builder: (context, snapshot) {
             final value = snapshot.data as int;
@@ -554,6 +521,7 @@ class _RestTimeWidgetState extends State<RestTimeWidget> {
               hours: false,
               milliSecond: false,
             );
+            
 
             return GestureDetector(
               onTap: () {
@@ -567,12 +535,12 @@ class _RestTimeWidgetState extends State<RestTimeWidget> {
                       displayTime,
                       style: TextStyle(
                         fontSize: 18,
-                        color: palette.cardColorWhite,
+                        color: _changedTimerColor(value),
                       ),
                     ),
                     IconButton(
                         onPressed: () {
-                          _restTimer.onStartTimer();
+                          provider.Routine.restTimer.onStartTimer();
                         },
                         icon: LineIcon(
                           LineIcons.angleDoubleRight,

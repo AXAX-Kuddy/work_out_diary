@@ -23,3 +23,9 @@ enum SBDkeys {
   benchPress,
   deadlift,
 }
+
+enum NowRestState {
+  beforeRest,
+  resting,
+  restEnded,
+}
