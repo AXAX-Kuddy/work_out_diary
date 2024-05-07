@@ -610,9 +610,8 @@ class _SetsDetailState extends State<SetsDetail> {
             padding: EdgeInsets.zero,
             visualDensity: VisualDensity.compact,
             onPressed: () {
-              routineProvider.onStartedRestTimer();
-
               if (widget.setInstance.setComplete == false) {
+                routineProvider.onStartedRestTimer();
                 widget.setInstance.changedSetComp(true);
               } else {
                 widget.setInstance.changedSetComp(false);

@@ -1,10 +1,7 @@
 import 'dart:async';
 
 import 'package:animated_snack_bar/animated_snack_bar.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:line_icons/line_icon.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:work_out_app/palette.dart' as palette;
@@ -165,13 +162,13 @@ class _PlanningScreenState extends State<PlanningScreen> {
                 ),
                 RestTimeScrollList(
                   onSelectedItemChanged: (index) {
-                    routineProvider.setRestTimeSec(index);
+                    routineProvider.setRestTimeSec(index * 10);
                   },
                   children: List.generate(
-                    60,
+                    6,
                     (index) {
                       return Text(
-                        "$index초",
+                        "${index * 10}초",
                         style: TextStyle(
                           fontSize: 14,
                           color: palette.cardColorWhite,
@@ -488,7 +485,7 @@ class _RestTimeWidgetState extends State<RestTimeWidget> {
   late provider.RoutineProvider routineProvider;
 
   Color _changedTimerColor(int time) {
-    if (time < 5000) {
+    if (time < 6000) {
       return Colors.red;
     } else {
       return palette.cardColorWhite;
@@ -501,18 +498,12 @@ class _RestTimeWidgetState extends State<RestTimeWidget> {
     routineProvider = context.watch<provider.RoutineProvider>();
   }
 
-  // @override
-  // void dispose() async {
-  //   super.dispose();
-  //   await provider.Routine.restTimer.dispose();
-  // }
-
   @override
   Widget build(BuildContext context) {
     return Row(
       children: [
         StreamBuilder(
-          stream: provider.Routine.restTimer.rawTime,
+          stream: routineProvider.restRawTime,
           initialData: 0,
           builder: (context, snapshot) {
             final value = snapshot.data as int;
@@ -521,7 +512,33 @@ class _RestTimeWidgetState extends State<RestTimeWidget> {
               hours: false,
               milliSecond: false,
             );
-            
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (value <= 100) {
+                routineProvider.resetRestSnackbarShown();
+              }
+
+              if (routineProvider.onRestStart &&
+                  !routineProvider.hasShowSnackbar) {
+                if (value <= 6000 && value >= 200) {
+                  AnimatedSnackBar(
+                    builder: ((context) {
+                      return MaterialAnimatedSnackBar(
+                        titleText: "곧 휴식시간이 종료됩니다!",
+                        messageText: '다음 세트에 돌입할 준비를 하세요!',
+                        type: AnimatedSnackBarType.info,
+                        backgroundColor: palette.cardColorYelGreen,
+                        foregroundColor: palette.bgColor,
+                        titleTextStyle: TextStyle(
+                          color: palette.bgColor,
+                        ),
+                      );
+                    }),
+                  ).show(context);
+
+                  routineProvider.setRestSnackbarState(true);
+                }
+              }
+            });
 
             return GestureDetector(
               onTap: () {
@@ -538,9 +555,16 @@ class _RestTimeWidgetState extends State<RestTimeWidget> {
                         color: _changedTimerColor(value),
                       ),
                     ),
+                    // Text(
+                    //   value.toString(),
+                    //   style: TextStyle(
+                    //     fontSize: 18,
+                    //     color: _changedTimerColor(value),
+                    //   ),
+                    // ),
                     IconButton(
                         onPressed: () {
-                          provider.Routine.restTimer.onStartTimer();
+                          routineProvider.onStartedRestTimer();
                         },
                         icon: LineIcon(
                           LineIcons.angleDoubleRight,
