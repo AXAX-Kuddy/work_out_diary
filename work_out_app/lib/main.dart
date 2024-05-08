@@ -20,6 +20,8 @@ import 'package:work_out_app/dump/input_userInfo.dart';
 import 'package:provider/provider.dart';
 import 'package:work_out_app/store.dart' as provider;
 import 'package:animations/animations.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:drift/drift.dart';
 
 //아이콘
 import 'package:line_icons/line_icons.dart';
