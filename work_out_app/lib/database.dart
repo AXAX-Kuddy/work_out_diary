@@ -1,58 +1,71 @@
-import 'package:drift/drift.dart';
-
-// These additional imports are necessary to open the sqlite3 database
 import 'dart:io';
-import 'package:drift/native.dart';
+import 'dart:ffi';
+
+import 'package:drift/drift.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
-import 'package:sqlite3/sqlite3.dart';
-import 'package:sqlite3_flutter_libs/sqlite3_flutter_libs.dart';
+import 'package:drift/native.dart';
 
-part 'database.g.dart';
-
-class TodoItems extends Table {
-  IntColumn get id => integer().autoIncrement()();
-  TextColumn get title => text().withLength(min: 6, max: 32)();
-  TextColumn get content => text().named('body')();
-  IntColumn get category =>
-      integer().nullable().references(TodoCategory, #id)();
-  DateTimeColumn get createdAt => dateTime().nullable()();
-}
-
-class TodoCategory extends Table {
-  IntColumn get id => integer().autoIncrement()();
-  TextColumn get description => text()();
-}
-
-
-@DriftDatabase(tables: [TodoItems, TodoCategory])
-class AppDatabase extends _$AppDatabase {
-  AppDatabase() : super(_openConnection());
-
-  @override
-  int get schemaVersion => 1;
-}
+// part 'database.g.dart';
 
 LazyDatabase _openConnection() {
-  // the LazyDatabase util lets us find the right location for the file async.
   return LazyDatabase(() async {
-    // put the database file, called db.sqlite here, into the documents folder
-    // for your app.
     final dbFolder = await getApplicationDocumentsDirectory();
     final file = File(p.join(dbFolder.path, 'db.sqlite'));
-
-    // Also work around limitations on old Android versions
-    if (Platform.isAndroid) {
-      await applyWorkaroundToOpenSqlite3OnOldAndroidVersions();
-    }
-
-    // Make sqlite3 pick a more suitable location for temporary files - the
-    // one from the system may be inaccessible due to sandboxing.
-    final cachebase = (await getTemporaryDirectory()).path;
-    // We can't access /tmp on Android, which sqlite3 would try by default.
-    // Explicitly tell it about the correct temporary directory.
-    sqlite3.tempDirectory = cachebase;
-
-    return NativeDatabase.createInBackground(file);
+    return NativeDatabase(file);
   });
+}
+
+// @DriftDatabase(tables: [RoutineStorage, Routine, Workouts, Sets])
+// class AppDatabase extends _$AppDatabase {
+//   AppDatabase() : super(_openConnection());
+
+//   @override
+//   int get schemaVersion => 1;
+// }
+
+/// 사용자가 저장한 루틴 db
+@DataClassName("RoutineStorage")
+class RoutineStorage extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  TextColumn get storageName =>
+      text().withDefault(const Constant('RoutineStorage'))();
+}
+
+/// 오늘 완료한 루틴, 루틴 저장소에 종속되어야 함
+@DataClassName("Routine")
+class Routine extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  IntColumn get storageId =>
+      integer().customConstraint('REFERENCES routine_storage(id)').nullable()();
+
+  DateTimeColumn get date => dateTime().nullable()();
+  BoolColumn get isFavor => boolean().withDefault(const Constant(false))();
+}
+
+///루틴 안 운동, 루틴에 종속되어야 함
+@DataClassName("Workouts")
+class Workouts extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  IntColumn get routineId =>
+      integer().customConstraint('REFERENCES routine(id)').nullable()();
+
+  TextColumn get name => text().nullable()();
+  RealColumn get targetRpe => real().withDefault(const Constant(0))();
+  BoolColumn get showE1rm => boolean().withDefault(const Constant(false))();
+}
+
+/// 운동 안 세트, 운동에 종속되어야 함
+@DataClassName("Sets")
+class Sets extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  IntColumn get workoutId =>
+      integer().customConstraint('REFERENCES workouts(id)').nullable()();
+
+  IntColumn get setIndex => integer()();
+  RealColumn get weight => real()();
+  IntColumn get reps => integer()();
+  RealColumn get rpe => real()();
+  RealColumn get e1rm => real()();
+  BoolColumn get setComplete => boolean()();
 }

@@ -27,7 +27,11 @@ import 'package:drift/drift.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:line_icons/line_icon.dart';
 
+//데이터베이스
+import 'package:work_out_app/database.dart';
+
 void main() {
+
   runApp(
     MultiProvider(
       providers: [
