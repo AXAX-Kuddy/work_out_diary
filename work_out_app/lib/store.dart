@@ -115,19 +115,21 @@ class Routine {
   static final StopWatchTimer restTimer = StopWatchTimer(
     mode: StopWatchMode.countDown,
     onEnded: () {
+      onRestStart = false;
       restTimer.onResetTimer();
     },
   );
 
-  int restTimeMin = 0;
-  int restTimeSec = 0;
-  int restTimeTotal = 0;
+  static int restTimeMin = 0;
+  static int restTimeSec = 0;
+  static int restTimeTotal = 0;
 
   List<maked.Workout> todayWorkouts = [];
 
-  NowRestState restState = NowRestState.beforeRest;
-  bool workoutStart = false;
-  bool onRest = false;
+  static bool onRestStart = false;
+  static bool workoutStart = false;
+  static bool onRest = false;
+  static bool hasShowSnackbar = false;
 }
 
 class RoutineProvider extends ChangeNotifier {
@@ -136,13 +138,15 @@ class RoutineProvider extends ChangeNotifier {
   Routine get routine => _routine;
 
   List<maked.Workout> get todayWorkouts => _routine.todayWorkouts;
+  bool get workoutStart => Routine.workoutStart;
 
-  bool get workoutStart => _routine.workoutStart;
-
-  bool get onRest => _routine.onRest;
-  int get restTimeTotal => _routine.restTimeTotal;
-  int get restTimeMin => _routine.restTimeMin;
-  int get restTimeSec => _routine.restTimeSec;
+  bool get onRest => Routine.onRest;
+  bool get hasShowSnackbar => Routine.hasShowSnackbar;
+  bool get onRestStart => Routine.onRestStart;
+  dynamic get restRawTime => Routine.restTimer.rawTime;
+  int get restTimeTotal => Routine.restTimeTotal;
+  int get restTimeMin => Routine.restTimeMin;
+  int get restTimeSec => Routine.restTimeSec;
 
   void addUserSelectWorkout(maked.Workout workout) {
     _routine.todayWorkouts.add(workout);
@@ -155,12 +159,12 @@ class RoutineProvider extends ChangeNotifier {
   }
 
   void setWorkoutStart() {
-    _routine.workoutStart = true;
+    Routine.workoutStart = true;
     notifyListeners();
   }
 
   void setWorkoutFinish() {
-    _routine.workoutStart = false;
+    Routine.workoutStart = false;
     notifyListeners();
   }
 
@@ -175,31 +179,59 @@ class RoutineProvider extends ChangeNotifier {
   }
 
   void onStartedRestTimer() {
+    Routine.onRestStart = true;
     Routine.restTimer.onStartTimer();
     notifyListeners();
   }
 
   void setRestTimer(bool value) {
-    _routine.onRest = value;
+    Routine.onRest = value;
     notifyListeners();
   }
 
   void setRestTimeMin(int value) {
-    _routine.restTimeMin = value;
+    Routine.restTimeMin = value;
     notifyListeners();
   }
 
   void setRestTimeSec(int value) {
-    _routine.restTimeSec = value;
+    Routine.restTimeSec = value;
     notifyListeners();
   }
 
   void totalRest() {
-    int min = _routine.restTimeMin * 1000 * 60;
-    int sec = _routine.restTimeSec * 1000;
-    _routine.restTimeTotal = min + sec;
+    int min = Routine.restTimeMin * 1000 * 60;
+    int sec = Routine.restTimeSec * 1000;
+    Routine.restTimeTotal = min + sec;
 
-    Routine.restTimer.setPresetTime(mSec: _routine.restTimeTotal, add: false);
+    Routine.restTimer.setPresetTime(mSec: Routine.restTimeTotal, add: false);
+    notifyListeners();
+  }
+
+  void onStoppedRestTimer() {
+    Routine.onRestStart = false;
+    Routine.restTimer.onStopTimer();
+    notifyListeners();
+  }
+
+  void onResetRestTimer() {
+    Routine.onRestStart = false;
+    Routine.restTimer.onResetTimer();
+    notifyListeners();
+  }
+
+  Future<void> onDisposeRestTimer() async {
+    await Routine.restTimer.dispose();
+    notifyListeners();
+  }
+
+  void setRestSnackbarState(bool value) {
+    Routine.hasShowSnackbar = value;
+    notifyListeners();
+  }
+
+  void resetRestSnackbarShown() {
+    Routine.hasShowSnackbar = false;
     notifyListeners();
   }
 }

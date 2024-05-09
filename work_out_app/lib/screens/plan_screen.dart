@@ -521,6 +521,33 @@ class _RestTimeWidgetState extends State<RestTimeWidget> {
               hours: false,
               milliSecond: false,
             );
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (value <= 100) {
+                routineProvider.resetRestSnackbarShown();
+              }
+
+              if (routineProvider.onRestStart &&
+                  !routineProvider.hasShowSnackbar) {
+                if (value <= 6000 && value >= 200) {
+                  AnimatedSnackBar(
+                    builder: ((context) {
+                      return MaterialAnimatedSnackBar(
+                        titleText: "곧 휴식시간이 종료됩니다!",
+                        messageText: '다음 세트에 돌입할 준비를 하세요!',
+                        type: AnimatedSnackBarType.info,
+                        backgroundColor: palette.cardColorYelGreen,
+                        foregroundColor: palette.bgColor,
+                        titleTextStyle: TextStyle(
+                          color: palette.bgColor,
+                        ),
+                      );
+                    }),
+                  ).show(context);
+
+                  routineProvider.setRestSnackbarState(true);
+                }
+              }
+            });
 
             return GestureDetector(
               onTap: () {
