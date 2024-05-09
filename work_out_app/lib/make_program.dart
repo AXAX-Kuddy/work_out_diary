@@ -107,7 +107,7 @@ class Workout {
 }
 
 class Set {
-  int setIndex;
+  late int? setIndex;
   int reps;
   double weight;
   double rpe;
@@ -116,7 +116,7 @@ class Set {
   Function? onUpdate;
 
   Set({
-    this.setIndex = 0,
+    this.setIndex,
     this.reps = 0,
     this.rpe = 0,
     this.weight = 0,

@@ -21,7 +21,6 @@ import 'package:work_out_app/store.dart' as provider;
 import 'package:stop_watch_timer/stop_watch_timer.dart';
 
 import 'package:work_out_app/make_program.dart' as maked;
-import 'package:shared_preferences/shared_preferences.dart';
 
 class PlanningScreen extends StatefulWidget {
   const PlanningScreen({super.key});
@@ -522,7 +521,6 @@ class _RestTimeWidgetState extends State<RestTimeWidget> {
               hours: false,
               milliSecond: false,
             );
-            
 
             return GestureDetector(
               onTap: () {
@@ -541,7 +539,7 @@ class _RestTimeWidgetState extends State<RestTimeWidget> {
                     ),
                     IconButton(
                         onPressed: () {
-                          provider.Routine.restTimer.onStartTimer();
+                          routineProvider.onStartedRestTimer();
                         },
                         icon: LineIcon(
                           LineIcons.angleDoubleRight,

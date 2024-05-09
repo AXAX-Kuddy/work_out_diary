@@ -1,11 +1,9 @@
-import 'dart:convert';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:work_out_app/make_program.dart' as maked;
 import 'package:work_out_app/keys.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 typedef UserInfo = Map<UserInfoField, dynamic>;
 
@@ -203,11 +201,5 @@ class RoutineProvider extends ChangeNotifier {
 
     Routine.restTimer.setPresetTime(mSec: _routine.restTimeTotal, add: false);
     notifyListeners();
-  }
-
-  void saveRoutine(List<maked.Workout> routine) async {
-    for (int i = 0; i < routine.length; i++) {
-      print(routine[i].sets?[i].reps);
-    }
   }
 }
