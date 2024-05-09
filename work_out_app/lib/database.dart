@@ -9,7 +9,7 @@ import 'package:sqlite3_flutter_libs/sqlite3_flutter_libs.dart';
 
 part 'database.g.dart';
 
-@DriftDatabase(tables: [RoutineStorage, Routine, Workouts, Sets])
+@DriftDatabase(tables: [RoutineStorage, Routines, Workouts, WorkoutSets])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
@@ -32,7 +32,6 @@ LazyDatabase _openConnection() {
 }
 
 /// 사용자가 저장한 루틴 db
-@DataClassName("RoutineStorage")
 class RoutineStorage extends Table {
   IntColumn get id => integer().autoIncrement()();
   TextColumn get storageName =>
@@ -40,8 +39,7 @@ class RoutineStorage extends Table {
 }
 
 /// 오늘 완료한 루틴, 루틴 저장소에 종속되어야 함
-@DataClassName("Routine")
-class Routine extends Table {
+class Routines extends Table {
   IntColumn get id => integer().autoIncrement()();
   IntColumn get storageId =>
       integer().customConstraint('REFERENCES routine_storage(id)').nullable()();
@@ -51,11 +49,10 @@ class Routine extends Table {
 }
 
 ///루틴 안 운동, 루틴에 종속되어야 함
-@DataClassName("Workouts")
 class Workouts extends Table {
   IntColumn get id => integer().autoIncrement()();
   IntColumn get routineId =>
-      integer().customConstraint('REFERENCES routine(id)').nullable()();
+      integer().customConstraint('REFERENCES routines(id)').nullable()();
 
   TextColumn get name => text().nullable()();
   RealColumn get targetRpe => real().withDefault(const Constant(0))();
@@ -63,8 +60,7 @@ class Workouts extends Table {
 }
 
 /// 운동 안 세트, 운동에 종속되어야 함
-@DataClassName("Sets")
-class Sets extends Table {
+class WorkoutSets extends Table {
   IntColumn get id => integer().autoIncrement()();
   IntColumn get workoutId =>
       integer().customConstraint('REFERENCES workouts(id)').nullable()();

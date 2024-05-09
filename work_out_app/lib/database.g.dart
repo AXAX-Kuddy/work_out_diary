@@ -4,7 +4,7 @@ part of 'database.dart';
 
 // ignore_for_file: type=lint
 class $RoutineStorageTable extends RoutineStorage
-    with TableInfo<$RoutineStorageTable, RoutineStorage> {
+    with TableInfo<$RoutineStorageTable, RoutineStorageData> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
@@ -34,7 +34,7 @@ class $RoutineStorageTable extends RoutineStorage
   String get actualTableName => $name;
   static const String $name = 'routine_storage';
   @override
-  VerificationContext validateIntegrity(Insertable<RoutineStorage> instance,
+  VerificationContext validateIntegrity(Insertable<RoutineStorageData> instance,
       {bool isInserting = false}) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
@@ -53,9 +53,9 @@ class $RoutineStorageTable extends RoutineStorage
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  RoutineStorage map(Map<String, dynamic> data, {String? tablePrefix}) {
+  RoutineStorageData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return RoutineStorage(
+    return RoutineStorageData(
       id: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
       storageName: attachedDatabase.typeMapping
@@ -69,10 +69,11 @@ class $RoutineStorageTable extends RoutineStorage
   }
 }
 
-class RoutineStorage extends DataClass implements Insertable<RoutineStorage> {
+class RoutineStorageData extends DataClass
+    implements Insertable<RoutineStorageData> {
   final int id;
   final String storageName;
-  const RoutineStorage({required this.id, required this.storageName});
+  const RoutineStorageData({required this.id, required this.storageName});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -88,10 +89,10 @@ class RoutineStorage extends DataClass implements Insertable<RoutineStorage> {
     );
   }
 
-  factory RoutineStorage.fromJson(Map<String, dynamic> json,
+  factory RoutineStorageData.fromJson(Map<String, dynamic> json,
       {ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-    return RoutineStorage(
+    return RoutineStorageData(
       id: serializer.fromJson<int>(json['id']),
       storageName: serializer.fromJson<String>(json['storageName']),
     );
@@ -105,13 +106,14 @@ class RoutineStorage extends DataClass implements Insertable<RoutineStorage> {
     };
   }
 
-  RoutineStorage copyWith({int? id, String? storageName}) => RoutineStorage(
+  RoutineStorageData copyWith({int? id, String? storageName}) =>
+      RoutineStorageData(
         id: id ?? this.id,
         storageName: storageName ?? this.storageName,
       );
   @override
   String toString() {
-    return (StringBuffer('RoutineStorage(')
+    return (StringBuffer('RoutineStorageData(')
           ..write('id: $id, ')
           ..write('storageName: $storageName')
           ..write(')'))
@@ -123,12 +125,12 @@ class RoutineStorage extends DataClass implements Insertable<RoutineStorage> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is RoutineStorage &&
+      (other is RoutineStorageData &&
           other.id == this.id &&
           other.storageName == this.storageName);
 }
 
-class RoutineStorageCompanion extends UpdateCompanion<RoutineStorage> {
+class RoutineStorageCompanion extends UpdateCompanion<RoutineStorageData> {
   final Value<int> id;
   final Value<String> storageName;
   const RoutineStorageCompanion({
@@ -139,7 +141,7 @@ class RoutineStorageCompanion extends UpdateCompanion<RoutineStorage> {
     this.id = const Value.absent(),
     this.storageName = const Value.absent(),
   });
-  static Insertable<RoutineStorage> custom({
+  static Insertable<RoutineStorageData> custom({
     Expression<int>? id,
     Expression<String>? storageName,
   }) {
@@ -179,11 +181,11 @@ class RoutineStorageCompanion extends UpdateCompanion<RoutineStorage> {
   }
 }
 
-class $RoutineTable extends Routine with TableInfo<$RoutineTable, Routine> {
+class $RoutinesTable extends Routines with TableInfo<$RoutinesTable, Routine> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  $RoutineTable(this.attachedDatabase, [this._alias]);
+  $RoutinesTable(this.attachedDatabase, [this._alias]);
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
   late final GeneratedColumn<int> id = GeneratedColumn<int>(
@@ -222,7 +224,7 @@ class $RoutineTable extends Routine with TableInfo<$RoutineTable, Routine> {
   String get aliasedName => _alias ?? actualTableName;
   @override
   String get actualTableName => $name;
-  static const String $name = 'routine';
+  static const String $name = 'routines';
   @override
   VerificationContext validateIntegrity(Insertable<Routine> instance,
       {bool isInserting = false}) {
@@ -264,8 +266,8 @@ class $RoutineTable extends Routine with TableInfo<$RoutineTable, Routine> {
   }
 
   @override
-  $RoutineTable createAlias(String alias) {
-    return $RoutineTable(attachedDatabase, alias);
+  $RoutinesTable createAlias(String alias) {
+    return $RoutinesTable(attachedDatabase, alias);
   }
 }
 
@@ -290,8 +292,8 @@ class Routine extends DataClass implements Insertable<Routine> {
     return map;
   }
 
-  RoutineCompanion toCompanion(bool nullToAbsent) {
-    return RoutineCompanion(
+  RoutinesCompanion toCompanion(bool nullToAbsent) {
+    return RoutinesCompanion(
       id: Value(id),
       storageId: storageId == null && nullToAbsent
           ? const Value.absent()
@@ -356,18 +358,18 @@ class Routine extends DataClass implements Insertable<Routine> {
           other.isFavor == this.isFavor);
 }
 
-class RoutineCompanion extends UpdateCompanion<Routine> {
+class RoutinesCompanion extends UpdateCompanion<Routine> {
   final Value<int> id;
   final Value<int?> storageId;
   final Value<DateTime?> date;
   final Value<bool> isFavor;
-  const RoutineCompanion({
+  const RoutinesCompanion({
     this.id = const Value.absent(),
     this.storageId = const Value.absent(),
     this.date = const Value.absent(),
     this.isFavor = const Value.absent(),
   });
-  RoutineCompanion.insert({
+  RoutinesCompanion.insert({
     this.id = const Value.absent(),
     this.storageId = const Value.absent(),
     this.date = const Value.absent(),
@@ -387,12 +389,12 @@ class RoutineCompanion extends UpdateCompanion<Routine> {
     });
   }
 
-  RoutineCompanion copyWith(
+  RoutinesCompanion copyWith(
       {Value<int>? id,
       Value<int?>? storageId,
       Value<DateTime?>? date,
       Value<bool>? isFavor}) {
-    return RoutineCompanion(
+    return RoutinesCompanion(
       id: id ?? this.id,
       storageId: storageId ?? this.storageId,
       date: date ?? this.date,
@@ -420,7 +422,7 @@ class RoutineCompanion extends UpdateCompanion<Routine> {
 
   @override
   String toString() {
-    return (StringBuffer('RoutineCompanion(')
+    return (StringBuffer('RoutinesCompanion(')
           ..write('id: $id, ')
           ..write('storageId: $storageId, ')
           ..write('date: $date, ')
@@ -430,7 +432,7 @@ class RoutineCompanion extends UpdateCompanion<Routine> {
   }
 }
 
-class $WorkoutsTable extends Workouts with TableInfo<$WorkoutsTable, Workouts> {
+class $WorkoutsTable extends Workouts with TableInfo<$WorkoutsTable, Workout> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
@@ -451,7 +453,7 @@ class $WorkoutsTable extends Workouts with TableInfo<$WorkoutsTable, Workouts> {
       'routine_id', aliasedName, true,
       type: DriftSqlType.int,
       requiredDuringInsert: false,
-      $customConstraints: 'REFERENCES routine(id)');
+      $customConstraints: 'REFERENCES routines(id)');
   static const VerificationMeta _nameMeta = const VerificationMeta('name');
   @override
   late final GeneratedColumn<String> name = GeneratedColumn<String>(
@@ -484,7 +486,7 @@ class $WorkoutsTable extends Workouts with TableInfo<$WorkoutsTable, Workouts> {
   String get actualTableName => $name;
   static const String $name = 'workouts';
   @override
-  VerificationContext validateIntegrity(Insertable<Workouts> instance,
+  VerificationContext validateIntegrity(Insertable<Workout> instance,
       {bool isInserting = false}) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
@@ -513,9 +515,9 @@ class $WorkoutsTable extends Workouts with TableInfo<$WorkoutsTable, Workouts> {
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  Workouts map(Map<String, dynamic> data, {String? tablePrefix}) {
+  Workout map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return Workouts(
+    return Workout(
       id: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
       routineId: attachedDatabase.typeMapping
@@ -535,13 +537,13 @@ class $WorkoutsTable extends Workouts with TableInfo<$WorkoutsTable, Workouts> {
   }
 }
 
-class Workouts extends DataClass implements Insertable<Workouts> {
+class Workout extends DataClass implements Insertable<Workout> {
   final int id;
   final int? routineId;
   final String? name;
   final double targetRpe;
   final bool showE1rm;
-  const Workouts(
+  const Workout(
       {required this.id,
       this.routineId,
       this.name,
@@ -574,10 +576,10 @@ class Workouts extends DataClass implements Insertable<Workouts> {
     );
   }
 
-  factory Workouts.fromJson(Map<String, dynamic> json,
+  factory Workout.fromJson(Map<String, dynamic> json,
       {ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-    return Workouts(
+    return Workout(
       id: serializer.fromJson<int>(json['id']),
       routineId: serializer.fromJson<int?>(json['routineId']),
       name: serializer.fromJson<String?>(json['name']),
@@ -597,13 +599,13 @@ class Workouts extends DataClass implements Insertable<Workouts> {
     };
   }
 
-  Workouts copyWith(
+  Workout copyWith(
           {int? id,
           Value<int?> routineId = const Value.absent(),
           Value<String?> name = const Value.absent(),
           double? targetRpe,
           bool? showE1rm}) =>
-      Workouts(
+      Workout(
         id: id ?? this.id,
         routineId: routineId.present ? routineId.value : this.routineId,
         name: name.present ? name.value : this.name,
@@ -612,7 +614,7 @@ class Workouts extends DataClass implements Insertable<Workouts> {
       );
   @override
   String toString() {
-    return (StringBuffer('Workouts(')
+    return (StringBuffer('Workout(')
           ..write('id: $id, ')
           ..write('routineId: $routineId, ')
           ..write('name: $name, ')
@@ -627,7 +629,7 @@ class Workouts extends DataClass implements Insertable<Workouts> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is Workouts &&
+      (other is Workout &&
           other.id == this.id &&
           other.routineId == this.routineId &&
           other.name == this.name &&
@@ -635,7 +637,7 @@ class Workouts extends DataClass implements Insertable<Workouts> {
           other.showE1rm == this.showE1rm);
 }
 
-class WorkoutsCompanion extends UpdateCompanion<Workouts> {
+class WorkoutsCompanion extends UpdateCompanion<Workout> {
   final Value<int> id;
   final Value<int?> routineId;
   final Value<String?> name;
@@ -655,7 +657,7 @@ class WorkoutsCompanion extends UpdateCompanion<Workouts> {
     this.targetRpe = const Value.absent(),
     this.showE1rm = const Value.absent(),
   });
-  static Insertable<Workouts> custom({
+  static Insertable<Workout> custom({
     Expression<int>? id,
     Expression<int>? routineId,
     Expression<String>? name,
@@ -720,11 +722,12 @@ class WorkoutsCompanion extends UpdateCompanion<Workouts> {
   }
 }
 
-class $SetsTable extends Sets with TableInfo<$SetsTable, Sets> {
+class $WorkoutSetsTable extends WorkoutSets
+    with TableInfo<$WorkoutSetsTable, WorkoutSet> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  $SetsTable(this.attachedDatabase, [this._alias]);
+  $WorkoutSetsTable(this.attachedDatabase, [this._alias]);
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
   late final GeneratedColumn<int> id = GeneratedColumn<int>(
@@ -784,9 +787,9 @@ class $SetsTable extends Sets with TableInfo<$SetsTable, Sets> {
   String get aliasedName => _alias ?? actualTableName;
   @override
   String get actualTableName => $name;
-  static const String $name = 'sets';
+  static const String $name = 'workout_sets';
   @override
-  VerificationContext validateIntegrity(Insertable<Sets> instance,
+  VerificationContext validateIntegrity(Insertable<WorkoutSet> instance,
       {bool isInserting = false}) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
@@ -841,9 +844,9 @@ class $SetsTable extends Sets with TableInfo<$SetsTable, Sets> {
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  Sets map(Map<String, dynamic> data, {String? tablePrefix}) {
+  WorkoutSet map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return Sets(
+    return WorkoutSet(
       id: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
       workoutId: attachedDatabase.typeMapping
@@ -864,12 +867,12 @@ class $SetsTable extends Sets with TableInfo<$SetsTable, Sets> {
   }
 
   @override
-  $SetsTable createAlias(String alias) {
-    return $SetsTable(attachedDatabase, alias);
+  $WorkoutSetsTable createAlias(String alias) {
+    return $WorkoutSetsTable(attachedDatabase, alias);
   }
 }
 
-class Sets extends DataClass implements Insertable<Sets> {
+class WorkoutSet extends DataClass implements Insertable<WorkoutSet> {
   final int id;
   final int? workoutId;
   final int setIndex;
@@ -878,7 +881,7 @@ class Sets extends DataClass implements Insertable<Sets> {
   final double rpe;
   final double e1rm;
   final bool setComplete;
-  const Sets(
+  const WorkoutSet(
       {required this.id,
       this.workoutId,
       required this.setIndex,
@@ -903,8 +906,8 @@ class Sets extends DataClass implements Insertable<Sets> {
     return map;
   }
 
-  SetsCompanion toCompanion(bool nullToAbsent) {
-    return SetsCompanion(
+  WorkoutSetsCompanion toCompanion(bool nullToAbsent) {
+    return WorkoutSetsCompanion(
       id: Value(id),
       workoutId: workoutId == null && nullToAbsent
           ? const Value.absent()
@@ -918,10 +921,10 @@ class Sets extends DataClass implements Insertable<Sets> {
     );
   }
 
-  factory Sets.fromJson(Map<String, dynamic> json,
+  factory WorkoutSet.fromJson(Map<String, dynamic> json,
       {ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-    return Sets(
+    return WorkoutSet(
       id: serializer.fromJson<int>(json['id']),
       workoutId: serializer.fromJson<int?>(json['workoutId']),
       setIndex: serializer.fromJson<int>(json['setIndex']),
@@ -947,7 +950,7 @@ class Sets extends DataClass implements Insertable<Sets> {
     };
   }
 
-  Sets copyWith(
+  WorkoutSet copyWith(
           {int? id,
           Value<int?> workoutId = const Value.absent(),
           int? setIndex,
@@ -956,7 +959,7 @@ class Sets extends DataClass implements Insertable<Sets> {
           double? rpe,
           double? e1rm,
           bool? setComplete}) =>
-      Sets(
+      WorkoutSet(
         id: id ?? this.id,
         workoutId: workoutId.present ? workoutId.value : this.workoutId,
         setIndex: setIndex ?? this.setIndex,
@@ -968,7 +971,7 @@ class Sets extends DataClass implements Insertable<Sets> {
       );
   @override
   String toString() {
-    return (StringBuffer('Sets(')
+    return (StringBuffer('WorkoutSet(')
           ..write('id: $id, ')
           ..write('workoutId: $workoutId, ')
           ..write('setIndex: $setIndex, ')
@@ -987,7 +990,7 @@ class Sets extends DataClass implements Insertable<Sets> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is Sets &&
+      (other is WorkoutSet &&
           other.id == this.id &&
           other.workoutId == this.workoutId &&
           other.setIndex == this.setIndex &&
@@ -998,7 +1001,7 @@ class Sets extends DataClass implements Insertable<Sets> {
           other.setComplete == this.setComplete);
 }
 
-class SetsCompanion extends UpdateCompanion<Sets> {
+class WorkoutSetsCompanion extends UpdateCompanion<WorkoutSet> {
   final Value<int> id;
   final Value<int?> workoutId;
   final Value<int> setIndex;
@@ -1007,7 +1010,7 @@ class SetsCompanion extends UpdateCompanion<Sets> {
   final Value<double> rpe;
   final Value<double> e1rm;
   final Value<bool> setComplete;
-  const SetsCompanion({
+  const WorkoutSetsCompanion({
     this.id = const Value.absent(),
     this.workoutId = const Value.absent(),
     this.setIndex = const Value.absent(),
@@ -1017,7 +1020,7 @@ class SetsCompanion extends UpdateCompanion<Sets> {
     this.e1rm = const Value.absent(),
     this.setComplete = const Value.absent(),
   });
-  SetsCompanion.insert({
+  WorkoutSetsCompanion.insert({
     this.id = const Value.absent(),
     this.workoutId = const Value.absent(),
     required int setIndex,
@@ -1032,7 +1035,7 @@ class SetsCompanion extends UpdateCompanion<Sets> {
         rpe = Value(rpe),
         e1rm = Value(e1rm),
         setComplete = Value(setComplete);
-  static Insertable<Sets> custom({
+  static Insertable<WorkoutSet> custom({
     Expression<int>? id,
     Expression<int>? workoutId,
     Expression<int>? setIndex,
@@ -1054,7 +1057,7 @@ class SetsCompanion extends UpdateCompanion<Sets> {
     });
   }
 
-  SetsCompanion copyWith(
+  WorkoutSetsCompanion copyWith(
       {Value<int>? id,
       Value<int?>? workoutId,
       Value<int>? setIndex,
@@ -1063,7 +1066,7 @@ class SetsCompanion extends UpdateCompanion<Sets> {
       Value<double>? rpe,
       Value<double>? e1rm,
       Value<bool>? setComplete}) {
-    return SetsCompanion(
+    return WorkoutSetsCompanion(
       id: id ?? this.id,
       workoutId: workoutId ?? this.workoutId,
       setIndex: setIndex ?? this.setIndex,
@@ -1107,7 +1110,7 @@ class SetsCompanion extends UpdateCompanion<Sets> {
 
   @override
   String toString() {
-    return (StringBuffer('SetsCompanion(')
+    return (StringBuffer('WorkoutSetsCompanion(')
           ..write('id: $id, ')
           ..write('workoutId: $workoutId, ')
           ..write('setIndex: $setIndex, ')
@@ -1125,15 +1128,15 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   _$AppDatabaseManager get managers => _$AppDatabaseManager(this);
   late final $RoutineStorageTable routineStorage = $RoutineStorageTable(this);
-  late final $RoutineTable routine = $RoutineTable(this);
+  late final $RoutinesTable routines = $RoutinesTable(this);
   late final $WorkoutsTable workouts = $WorkoutsTable(this);
-  late final $SetsTable sets = $SetsTable(this);
+  late final $WorkoutSetsTable workoutSets = $WorkoutSetsTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities =>
-      [routineStorage, routine, workouts, sets];
+      [routineStorage, routines, workouts, workoutSets];
 }
 
 typedef $$RoutineStorageTableInsertCompanionBuilder = RoutineStorageCompanion
@@ -1150,7 +1153,7 @@ typedef $$RoutineStorageTableUpdateCompanionBuilder = RoutineStorageCompanion
 class $$RoutineStorageTableTableManager extends RootTableManager<
     _$AppDatabase,
     $RoutineStorageTable,
-    RoutineStorage,
+    RoutineStorageData,
     $$RoutineStorageTableFilterComposer,
     $$RoutineStorageTableOrderingComposer,
     $$RoutineStorageTableProcessedTableManager,
@@ -1189,7 +1192,7 @@ class $$RoutineStorageTableTableManager extends RootTableManager<
 class $$RoutineStorageTableProcessedTableManager extends ProcessedTableManager<
     _$AppDatabase,
     $RoutineStorageTable,
-    RoutineStorage,
+    RoutineStorageData,
     $$RoutineStorageTableFilterComposer,
     $$RoutineStorageTableOrderingComposer,
     $$RoutineStorageTableProcessedTableManager,
@@ -1211,16 +1214,16 @@ class $$RoutineStorageTableFilterComposer
       builder: (column, joinBuilders) =>
           ColumnFilters(column, joinBuilders: joinBuilders));
 
-  ComposableFilter routineRefs(
-      ComposableFilter Function($$RoutineTableFilterComposer f) f) {
-    final $$RoutineTableFilterComposer composer = $state.composerBuilder(
+  ComposableFilter routinesRefs(
+      ComposableFilter Function($$RoutinesTableFilterComposer f) f) {
+    final $$RoutinesTableFilterComposer composer = $state.composerBuilder(
         composer: this,
         getCurrentColumn: (t) => t.id,
-        referencedTable: $state.db.routine,
+        referencedTable: $state.db.routines,
         getReferencedColumn: (t) => t.storageId,
-        builder: (joinBuilder, parentComposers) => $$RoutineTableFilterComposer(
-            ComposerState(
-                $state.db, $state.db.routine, joinBuilder, parentComposers)));
+        builder: (joinBuilder, parentComposers) =>
+            $$RoutinesTableFilterComposer(ComposerState(
+                $state.db, $state.db.routines, joinBuilder, parentComposers)));
     return f(composer);
   }
 }
@@ -1239,44 +1242,45 @@ class $$RoutineStorageTableOrderingComposer
           ColumnOrderings(column, joinBuilders: joinBuilders));
 }
 
-typedef $$RoutineTableInsertCompanionBuilder = RoutineCompanion Function({
+typedef $$RoutinesTableInsertCompanionBuilder = RoutinesCompanion Function({
   Value<int> id,
   Value<int?> storageId,
   Value<DateTime?> date,
   Value<bool> isFavor,
 });
-typedef $$RoutineTableUpdateCompanionBuilder = RoutineCompanion Function({
+typedef $$RoutinesTableUpdateCompanionBuilder = RoutinesCompanion Function({
   Value<int> id,
   Value<int?> storageId,
   Value<DateTime?> date,
   Value<bool> isFavor,
 });
 
-class $$RoutineTableTableManager extends RootTableManager<
+class $$RoutinesTableTableManager extends RootTableManager<
     _$AppDatabase,
-    $RoutineTable,
+    $RoutinesTable,
     Routine,
-    $$RoutineTableFilterComposer,
-    $$RoutineTableOrderingComposer,
-    $$RoutineTableProcessedTableManager,
-    $$RoutineTableInsertCompanionBuilder,
-    $$RoutineTableUpdateCompanionBuilder> {
-  $$RoutineTableTableManager(_$AppDatabase db, $RoutineTable table)
+    $$RoutinesTableFilterComposer,
+    $$RoutinesTableOrderingComposer,
+    $$RoutinesTableProcessedTableManager,
+    $$RoutinesTableInsertCompanionBuilder,
+    $$RoutinesTableUpdateCompanionBuilder> {
+  $$RoutinesTableTableManager(_$AppDatabase db, $RoutinesTable table)
       : super(TableManagerState(
           db: db,
           table: table,
           filteringComposer:
-              $$RoutineTableFilterComposer(ComposerState(db, table)),
+              $$RoutinesTableFilterComposer(ComposerState(db, table)),
           orderingComposer:
-              $$RoutineTableOrderingComposer(ComposerState(db, table)),
-          getChildManagerBuilder: (p) => $$RoutineTableProcessedTableManager(p),
+              $$RoutinesTableOrderingComposer(ComposerState(db, table)),
+          getChildManagerBuilder: (p) =>
+              $$RoutinesTableProcessedTableManager(p),
           getUpdateCompanionBuilder: ({
             Value<int> id = const Value.absent(),
             Value<int?> storageId = const Value.absent(),
             Value<DateTime?> date = const Value.absent(),
             Value<bool> isFavor = const Value.absent(),
           }) =>
-              RoutineCompanion(
+              RoutinesCompanion(
             id: id,
             storageId: storageId,
             date: date,
@@ -1288,7 +1292,7 @@ class $$RoutineTableTableManager extends RootTableManager<
             Value<DateTime?> date = const Value.absent(),
             Value<bool> isFavor = const Value.absent(),
           }) =>
-              RoutineCompanion.insert(
+              RoutinesCompanion.insert(
             id: id,
             storageId: storageId,
             date: date,
@@ -1297,21 +1301,21 @@ class $$RoutineTableTableManager extends RootTableManager<
         ));
 }
 
-class $$RoutineTableProcessedTableManager extends ProcessedTableManager<
+class $$RoutinesTableProcessedTableManager extends ProcessedTableManager<
     _$AppDatabase,
-    $RoutineTable,
+    $RoutinesTable,
     Routine,
-    $$RoutineTableFilterComposer,
-    $$RoutineTableOrderingComposer,
-    $$RoutineTableProcessedTableManager,
-    $$RoutineTableInsertCompanionBuilder,
-    $$RoutineTableUpdateCompanionBuilder> {
-  $$RoutineTableProcessedTableManager(super.$state);
+    $$RoutinesTableFilterComposer,
+    $$RoutinesTableOrderingComposer,
+    $$RoutinesTableProcessedTableManager,
+    $$RoutinesTableInsertCompanionBuilder,
+    $$RoutinesTableUpdateCompanionBuilder> {
+  $$RoutinesTableProcessedTableManager(super.$state);
 }
 
-class $$RoutineTableFilterComposer
-    extends FilterComposer<_$AppDatabase, $RoutineTable> {
-  $$RoutineTableFilterComposer(super.$state);
+class $$RoutinesTableFilterComposer
+    extends FilterComposer<_$AppDatabase, $RoutinesTable> {
+  $$RoutinesTableFilterComposer(super.$state);
   ColumnFilters<int> get id => $state.composableBuilder(
       column: $state.table.id,
       builder: (column, joinBuilders) =>
@@ -1353,9 +1357,9 @@ class $$RoutineTableFilterComposer
   }
 }
 
-class $$RoutineTableOrderingComposer
-    extends OrderingComposer<_$AppDatabase, $RoutineTable> {
-  $$RoutineTableOrderingComposer(super.$state);
+class $$RoutinesTableOrderingComposer
+    extends OrderingComposer<_$AppDatabase, $RoutinesTable> {
+  $$RoutinesTableOrderingComposer(super.$state);
   ColumnOrderings<int> get id => $state.composableBuilder(
       column: $state.table.id,
       builder: (column, joinBuilders) =>
@@ -1403,7 +1407,7 @@ typedef $$WorkoutsTableUpdateCompanionBuilder = WorkoutsCompanion Function({
 class $$WorkoutsTableTableManager extends RootTableManager<
     _$AppDatabase,
     $WorkoutsTable,
-    Workouts,
+    Workout,
     $$WorkoutsTableFilterComposer,
     $$WorkoutsTableOrderingComposer,
     $$WorkoutsTableProcessedTableManager,
@@ -1453,7 +1457,7 @@ class $$WorkoutsTableTableManager extends RootTableManager<
 class $$WorkoutsTableProcessedTableManager extends ProcessedTableManager<
     _$AppDatabase,
     $WorkoutsTable,
-    Workouts,
+    Workout,
     $$WorkoutsTableFilterComposer,
     $$WorkoutsTableOrderingComposer,
     $$WorkoutsTableProcessedTableManager,
@@ -1485,28 +1489,28 @@ class $$WorkoutsTableFilterComposer
       builder: (column, joinBuilders) =>
           ColumnFilters(column, joinBuilders: joinBuilders));
 
-  $$RoutineTableFilterComposer get routineId {
-    final $$RoutineTableFilterComposer composer = $state.composerBuilder(
+  $$RoutinesTableFilterComposer get routineId {
+    final $$RoutinesTableFilterComposer composer = $state.composerBuilder(
         composer: this,
         getCurrentColumn: (t) => t.routineId,
-        referencedTable: $state.db.routine,
+        referencedTable: $state.db.routines,
         getReferencedColumn: (t) => t.id,
-        builder: (joinBuilder, parentComposers) => $$RoutineTableFilterComposer(
-            ComposerState(
-                $state.db, $state.db.routine, joinBuilder, parentComposers)));
+        builder: (joinBuilder, parentComposers) =>
+            $$RoutinesTableFilterComposer(ComposerState(
+                $state.db, $state.db.routines, joinBuilder, parentComposers)));
     return composer;
   }
 
-  ComposableFilter setsRefs(
-      ComposableFilter Function($$SetsTableFilterComposer f) f) {
-    final $$SetsTableFilterComposer composer = $state.composerBuilder(
+  ComposableFilter workoutSetsRefs(
+      ComposableFilter Function($$WorkoutSetsTableFilterComposer f) f) {
+    final $$WorkoutSetsTableFilterComposer composer = $state.composerBuilder(
         composer: this,
         getCurrentColumn: (t) => t.id,
-        referencedTable: $state.db.sets,
+        referencedTable: $state.db.workoutSets,
         getReferencedColumn: (t) => t.workoutId,
-        builder: (joinBuilder, parentComposers) => $$SetsTableFilterComposer(
-            ComposerState(
-                $state.db, $state.db.sets, joinBuilder, parentComposers)));
+        builder: (joinBuilder, parentComposers) =>
+            $$WorkoutSetsTableFilterComposer(ComposerState($state.db,
+                $state.db.workoutSets, joinBuilder, parentComposers)));
     return f(composer);
   }
 }
@@ -1534,20 +1538,21 @@ class $$WorkoutsTableOrderingComposer
       builder: (column, joinBuilders) =>
           ColumnOrderings(column, joinBuilders: joinBuilders));
 
-  $$RoutineTableOrderingComposer get routineId {
-    final $$RoutineTableOrderingComposer composer = $state.composerBuilder(
+  $$RoutinesTableOrderingComposer get routineId {
+    final $$RoutinesTableOrderingComposer composer = $state.composerBuilder(
         composer: this,
         getCurrentColumn: (t) => t.routineId,
-        referencedTable: $state.db.routine,
+        referencedTable: $state.db.routines,
         getReferencedColumn: (t) => t.id,
         builder: (joinBuilder, parentComposers) =>
-            $$RoutineTableOrderingComposer(ComposerState(
-                $state.db, $state.db.routine, joinBuilder, parentComposers)));
+            $$RoutinesTableOrderingComposer(ComposerState(
+                $state.db, $state.db.routines, joinBuilder, parentComposers)));
     return composer;
   }
 }
 
-typedef $$SetsTableInsertCompanionBuilder = SetsCompanion Function({
+typedef $$WorkoutSetsTableInsertCompanionBuilder = WorkoutSetsCompanion
+    Function({
   Value<int> id,
   Value<int?> workoutId,
   required int setIndex,
@@ -1557,7 +1562,8 @@ typedef $$SetsTableInsertCompanionBuilder = SetsCompanion Function({
   required double e1rm,
   required bool setComplete,
 });
-typedef $$SetsTableUpdateCompanionBuilder = SetsCompanion Function({
+typedef $$WorkoutSetsTableUpdateCompanionBuilder = WorkoutSetsCompanion
+    Function({
   Value<int> id,
   Value<int?> workoutId,
   Value<int> setIndex,
@@ -1568,24 +1574,25 @@ typedef $$SetsTableUpdateCompanionBuilder = SetsCompanion Function({
   Value<bool> setComplete,
 });
 
-class $$SetsTableTableManager extends RootTableManager<
+class $$WorkoutSetsTableTableManager extends RootTableManager<
     _$AppDatabase,
-    $SetsTable,
-    Sets,
-    $$SetsTableFilterComposer,
-    $$SetsTableOrderingComposer,
-    $$SetsTableProcessedTableManager,
-    $$SetsTableInsertCompanionBuilder,
-    $$SetsTableUpdateCompanionBuilder> {
-  $$SetsTableTableManager(_$AppDatabase db, $SetsTable table)
+    $WorkoutSetsTable,
+    WorkoutSet,
+    $$WorkoutSetsTableFilterComposer,
+    $$WorkoutSetsTableOrderingComposer,
+    $$WorkoutSetsTableProcessedTableManager,
+    $$WorkoutSetsTableInsertCompanionBuilder,
+    $$WorkoutSetsTableUpdateCompanionBuilder> {
+  $$WorkoutSetsTableTableManager(_$AppDatabase db, $WorkoutSetsTable table)
       : super(TableManagerState(
           db: db,
           table: table,
           filteringComposer:
-              $$SetsTableFilterComposer(ComposerState(db, table)),
+              $$WorkoutSetsTableFilterComposer(ComposerState(db, table)),
           orderingComposer:
-              $$SetsTableOrderingComposer(ComposerState(db, table)),
-          getChildManagerBuilder: (p) => $$SetsTableProcessedTableManager(p),
+              $$WorkoutSetsTableOrderingComposer(ComposerState(db, table)),
+          getChildManagerBuilder: (p) =>
+              $$WorkoutSetsTableProcessedTableManager(p),
           getUpdateCompanionBuilder: ({
             Value<int> id = const Value.absent(),
             Value<int?> workoutId = const Value.absent(),
@@ -1596,7 +1603,7 @@ class $$SetsTableTableManager extends RootTableManager<
             Value<double> e1rm = const Value.absent(),
             Value<bool> setComplete = const Value.absent(),
           }) =>
-              SetsCompanion(
+              WorkoutSetsCompanion(
             id: id,
             workoutId: workoutId,
             setIndex: setIndex,
@@ -1616,7 +1623,7 @@ class $$SetsTableTableManager extends RootTableManager<
             required double e1rm,
             required bool setComplete,
           }) =>
-              SetsCompanion.insert(
+              WorkoutSetsCompanion.insert(
             id: id,
             workoutId: workoutId,
             setIndex: setIndex,
@@ -1629,21 +1636,21 @@ class $$SetsTableTableManager extends RootTableManager<
         ));
 }
 
-class $$SetsTableProcessedTableManager extends ProcessedTableManager<
+class $$WorkoutSetsTableProcessedTableManager extends ProcessedTableManager<
     _$AppDatabase,
-    $SetsTable,
-    Sets,
-    $$SetsTableFilterComposer,
-    $$SetsTableOrderingComposer,
-    $$SetsTableProcessedTableManager,
-    $$SetsTableInsertCompanionBuilder,
-    $$SetsTableUpdateCompanionBuilder> {
-  $$SetsTableProcessedTableManager(super.$state);
+    $WorkoutSetsTable,
+    WorkoutSet,
+    $$WorkoutSetsTableFilterComposer,
+    $$WorkoutSetsTableOrderingComposer,
+    $$WorkoutSetsTableProcessedTableManager,
+    $$WorkoutSetsTableInsertCompanionBuilder,
+    $$WorkoutSetsTableUpdateCompanionBuilder> {
+  $$WorkoutSetsTableProcessedTableManager(super.$state);
 }
 
-class $$SetsTableFilterComposer
-    extends FilterComposer<_$AppDatabase, $SetsTable> {
-  $$SetsTableFilterComposer(super.$state);
+class $$WorkoutSetsTableFilterComposer
+    extends FilterComposer<_$AppDatabase, $WorkoutSetsTable> {
+  $$WorkoutSetsTableFilterComposer(super.$state);
   ColumnFilters<int> get id => $state.composableBuilder(
       column: $state.table.id,
       builder: (column, joinBuilders) =>
@@ -1692,9 +1699,9 @@ class $$SetsTableFilterComposer
   }
 }
 
-class $$SetsTableOrderingComposer
-    extends OrderingComposer<_$AppDatabase, $SetsTable> {
-  $$SetsTableOrderingComposer(super.$state);
+class $$WorkoutSetsTableOrderingComposer
+    extends OrderingComposer<_$AppDatabase, $WorkoutSetsTable> {
+  $$WorkoutSetsTableOrderingComposer(super.$state);
   ColumnOrderings<int> get id => $state.composableBuilder(
       column: $state.table.id,
       builder: (column, joinBuilders) =>
@@ -1748,9 +1755,10 @@ class _$AppDatabaseManager {
   _$AppDatabaseManager(this._db);
   $$RoutineStorageTableTableManager get routineStorage =>
       $$RoutineStorageTableTableManager(_db, _db.routineStorage);
-  $$RoutineTableTableManager get routine =>
-      $$RoutineTableTableManager(_db, _db.routine);
+  $$RoutinesTableTableManager get routines =>
+      $$RoutinesTableTableManager(_db, _db.routines);
   $$WorkoutsTableTableManager get workouts =>
       $$WorkoutsTableTableManager(_db, _db.workouts);
-  $$SetsTableTableManager get sets => $$SetsTableTableManager(_db, _db.sets);
+  $$WorkoutSetsTableTableManager get workoutSets =>
+      $$WorkoutSetsTableTableManager(_db, _db.workoutSets);
 }
