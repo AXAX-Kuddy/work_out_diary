@@ -749,37 +749,46 @@ class $WorkoutSetsTable extends WorkoutSets
       const VerificationMeta('setIndex');
   @override
   late final GeneratedColumn<int> setIndex = GeneratedColumn<int>(
-      'set_index', aliasedName, false,
-      type: DriftSqlType.int, requiredDuringInsert: true);
+      'set_index', aliasedName, true,
+      type: DriftSqlType.int, requiredDuringInsert: false);
   static const VerificationMeta _weightMeta = const VerificationMeta('weight');
   @override
   late final GeneratedColumn<double> weight = GeneratedColumn<double>(
       'weight', aliasedName, false,
-      type: DriftSqlType.double, requiredDuringInsert: true);
+      type: DriftSqlType.double,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(0));
   static const VerificationMeta _repsMeta = const VerificationMeta('reps');
   @override
   late final GeneratedColumn<int> reps = GeneratedColumn<int>(
       'reps', aliasedName, false,
-      type: DriftSqlType.int, requiredDuringInsert: true);
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(0));
   static const VerificationMeta _rpeMeta = const VerificationMeta('rpe');
   @override
   late final GeneratedColumn<double> rpe = GeneratedColumn<double>(
       'rpe', aliasedName, false,
-      type: DriftSqlType.double, requiredDuringInsert: true);
+      type: DriftSqlType.double,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(0));
   static const VerificationMeta _e1rmMeta = const VerificationMeta('e1rm');
   @override
   late final GeneratedColumn<double> e1rm = GeneratedColumn<double>(
       'e1rm', aliasedName, false,
-      type: DriftSqlType.double, requiredDuringInsert: true);
+      type: DriftSqlType.double,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(0));
   static const VerificationMeta _setCompleteMeta =
       const VerificationMeta('setComplete');
   @override
   late final GeneratedColumn<bool> setComplete = GeneratedColumn<bool>(
       'set_complete', aliasedName, false,
       type: DriftSqlType.bool,
-      requiredDuringInsert: true,
+      requiredDuringInsert: false,
       defaultConstraints: GeneratedColumn.constraintIsAlways(
-          'CHECK ("set_complete" IN (0, 1))'));
+          'CHECK ("set_complete" IN (0, 1))'),
+      defaultValue: const Constant(false));
   @override
   List<GeneratedColumn> get $columns =>
       [id, workoutId, setIndex, weight, reps, rpe, e1rm, setComplete];
@@ -803,40 +812,28 @@ class $WorkoutSetsTable extends WorkoutSets
     if (data.containsKey('set_index')) {
       context.handle(_setIndexMeta,
           setIndex.isAcceptableOrUnknown(data['set_index']!, _setIndexMeta));
-    } else if (isInserting) {
-      context.missing(_setIndexMeta);
     }
     if (data.containsKey('weight')) {
       context.handle(_weightMeta,
           weight.isAcceptableOrUnknown(data['weight']!, _weightMeta));
-    } else if (isInserting) {
-      context.missing(_weightMeta);
     }
     if (data.containsKey('reps')) {
       context.handle(
           _repsMeta, reps.isAcceptableOrUnknown(data['reps']!, _repsMeta));
-    } else if (isInserting) {
-      context.missing(_repsMeta);
     }
     if (data.containsKey('rpe')) {
       context.handle(
           _rpeMeta, rpe.isAcceptableOrUnknown(data['rpe']!, _rpeMeta));
-    } else if (isInserting) {
-      context.missing(_rpeMeta);
     }
     if (data.containsKey('e1rm')) {
       context.handle(
           _e1rmMeta, e1rm.isAcceptableOrUnknown(data['e1rm']!, _e1rmMeta));
-    } else if (isInserting) {
-      context.missing(_e1rmMeta);
     }
     if (data.containsKey('set_complete')) {
       context.handle(
           _setCompleteMeta,
           setComplete.isAcceptableOrUnknown(
               data['set_complete']!, _setCompleteMeta));
-    } else if (isInserting) {
-      context.missing(_setCompleteMeta);
     }
     return context;
   }
@@ -852,7 +849,7 @@ class $WorkoutSetsTable extends WorkoutSets
       workoutId: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}workout_id']),
       setIndex: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}set_index'])!,
+          .read(DriftSqlType.int, data['${effectivePrefix}set_index']),
       weight: attachedDatabase.typeMapping
           .read(DriftSqlType.double, data['${effectivePrefix}weight'])!,
       reps: attachedDatabase.typeMapping
@@ -875,7 +872,7 @@ class $WorkoutSetsTable extends WorkoutSets
 class WorkoutSet extends DataClass implements Insertable<WorkoutSet> {
   final int id;
   final int? workoutId;
-  final int setIndex;
+  final int? setIndex;
   final double weight;
   final int reps;
   final double rpe;
@@ -884,7 +881,7 @@ class WorkoutSet extends DataClass implements Insertable<WorkoutSet> {
   const WorkoutSet(
       {required this.id,
       this.workoutId,
-      required this.setIndex,
+      this.setIndex,
       required this.weight,
       required this.reps,
       required this.rpe,
@@ -897,7 +894,9 @@ class WorkoutSet extends DataClass implements Insertable<WorkoutSet> {
     if (!nullToAbsent || workoutId != null) {
       map['workout_id'] = Variable<int>(workoutId);
     }
-    map['set_index'] = Variable<int>(setIndex);
+    if (!nullToAbsent || setIndex != null) {
+      map['set_index'] = Variable<int>(setIndex);
+    }
     map['weight'] = Variable<double>(weight);
     map['reps'] = Variable<int>(reps);
     map['rpe'] = Variable<double>(rpe);
@@ -912,7 +911,9 @@ class WorkoutSet extends DataClass implements Insertable<WorkoutSet> {
       workoutId: workoutId == null && nullToAbsent
           ? const Value.absent()
           : Value(workoutId),
-      setIndex: Value(setIndex),
+      setIndex: setIndex == null && nullToAbsent
+          ? const Value.absent()
+          : Value(setIndex),
       weight: Value(weight),
       reps: Value(reps),
       rpe: Value(rpe),
@@ -927,7 +928,7 @@ class WorkoutSet extends DataClass implements Insertable<WorkoutSet> {
     return WorkoutSet(
       id: serializer.fromJson<int>(json['id']),
       workoutId: serializer.fromJson<int?>(json['workoutId']),
-      setIndex: serializer.fromJson<int>(json['setIndex']),
+      setIndex: serializer.fromJson<int?>(json['setIndex']),
       weight: serializer.fromJson<double>(json['weight']),
       reps: serializer.fromJson<int>(json['reps']),
       rpe: serializer.fromJson<double>(json['rpe']),
@@ -941,7 +942,7 @@ class WorkoutSet extends DataClass implements Insertable<WorkoutSet> {
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
       'workoutId': serializer.toJson<int?>(workoutId),
-      'setIndex': serializer.toJson<int>(setIndex),
+      'setIndex': serializer.toJson<int?>(setIndex),
       'weight': serializer.toJson<double>(weight),
       'reps': serializer.toJson<int>(reps),
       'rpe': serializer.toJson<double>(rpe),
@@ -953,7 +954,7 @@ class WorkoutSet extends DataClass implements Insertable<WorkoutSet> {
   WorkoutSet copyWith(
           {int? id,
           Value<int?> workoutId = const Value.absent(),
-          int? setIndex,
+          Value<int?> setIndex = const Value.absent(),
           double? weight,
           int? reps,
           double? rpe,
@@ -962,7 +963,7 @@ class WorkoutSet extends DataClass implements Insertable<WorkoutSet> {
       WorkoutSet(
         id: id ?? this.id,
         workoutId: workoutId.present ? workoutId.value : this.workoutId,
-        setIndex: setIndex ?? this.setIndex,
+        setIndex: setIndex.present ? setIndex.value : this.setIndex,
         weight: weight ?? this.weight,
         reps: reps ?? this.reps,
         rpe: rpe ?? this.rpe,
@@ -1004,7 +1005,7 @@ class WorkoutSet extends DataClass implements Insertable<WorkoutSet> {
 class WorkoutSetsCompanion extends UpdateCompanion<WorkoutSet> {
   final Value<int> id;
   final Value<int?> workoutId;
-  final Value<int> setIndex;
+  final Value<int?> setIndex;
   final Value<double> weight;
   final Value<int> reps;
   final Value<double> rpe;
@@ -1023,18 +1024,13 @@ class WorkoutSetsCompanion extends UpdateCompanion<WorkoutSet> {
   WorkoutSetsCompanion.insert({
     this.id = const Value.absent(),
     this.workoutId = const Value.absent(),
-    required int setIndex,
-    required double weight,
-    required int reps,
-    required double rpe,
-    required double e1rm,
-    required bool setComplete,
-  })  : setIndex = Value(setIndex),
-        weight = Value(weight),
-        reps = Value(reps),
-        rpe = Value(rpe),
-        e1rm = Value(e1rm),
-        setComplete = Value(setComplete);
+    this.setIndex = const Value.absent(),
+    this.weight = const Value.absent(),
+    this.reps = const Value.absent(),
+    this.rpe = const Value.absent(),
+    this.e1rm = const Value.absent(),
+    this.setComplete = const Value.absent(),
+  });
   static Insertable<WorkoutSet> custom({
     Expression<int>? id,
     Expression<int>? workoutId,
@@ -1060,7 +1056,7 @@ class WorkoutSetsCompanion extends UpdateCompanion<WorkoutSet> {
   WorkoutSetsCompanion copyWith(
       {Value<int>? id,
       Value<int?>? workoutId,
-      Value<int>? setIndex,
+      Value<int?>? setIndex,
       Value<double>? weight,
       Value<int>? reps,
       Value<double>? rpe,
@@ -1555,18 +1551,18 @@ typedef $$WorkoutSetsTableInsertCompanionBuilder = WorkoutSetsCompanion
     Function({
   Value<int> id,
   Value<int?> workoutId,
-  required int setIndex,
-  required double weight,
-  required int reps,
-  required double rpe,
-  required double e1rm,
-  required bool setComplete,
+  Value<int?> setIndex,
+  Value<double> weight,
+  Value<int> reps,
+  Value<double> rpe,
+  Value<double> e1rm,
+  Value<bool> setComplete,
 });
 typedef $$WorkoutSetsTableUpdateCompanionBuilder = WorkoutSetsCompanion
     Function({
   Value<int> id,
   Value<int?> workoutId,
-  Value<int> setIndex,
+  Value<int?> setIndex,
   Value<double> weight,
   Value<int> reps,
   Value<double> rpe,
@@ -1596,7 +1592,7 @@ class $$WorkoutSetsTableTableManager extends RootTableManager<
           getUpdateCompanionBuilder: ({
             Value<int> id = const Value.absent(),
             Value<int?> workoutId = const Value.absent(),
-            Value<int> setIndex = const Value.absent(),
+            Value<int?> setIndex = const Value.absent(),
             Value<double> weight = const Value.absent(),
             Value<int> reps = const Value.absent(),
             Value<double> rpe = const Value.absent(),
@@ -1616,12 +1612,12 @@ class $$WorkoutSetsTableTableManager extends RootTableManager<
           getInsertCompanionBuilder: ({
             Value<int> id = const Value.absent(),
             Value<int?> workoutId = const Value.absent(),
-            required int setIndex,
-            required double weight,
-            required int reps,
-            required double rpe,
-            required double e1rm,
-            required bool setComplete,
+            Value<int?> setIndex = const Value.absent(),
+            Value<double> weight = const Value.absent(),
+            Value<int> reps = const Value.absent(),
+            Value<double> rpe = const Value.absent(),
+            Value<double> e1rm = const Value.absent(),
+            Value<bool> setComplete = const Value.absent(),
           }) =>
               WorkoutSetsCompanion.insert(
             id: id,

@@ -9,12 +9,19 @@ import 'package:sqlite3_flutter_libs/sqlite3_flutter_libs.dart';
 
 part 'database.g.dart';
 
+/// 루틴 데이터 베이스 임당
 @DriftDatabase(tables: [RoutineStorage, Routines, Workouts, WorkoutSets])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
   @override
   int get schemaVersion => 1;
+
+  Future<int> insertWorkout(Insertable<Workout> workout) =>
+      into(workouts).insert(workout);
+
+  Future<int> insertSet(Insertable<WorkoutSet> set) =>
+      into(workoutSets).insert(set);
 }
 
 LazyDatabase _openConnection() {
@@ -65,10 +72,10 @@ class WorkoutSets extends Table {
   IntColumn get workoutId =>
       integer().customConstraint('REFERENCES workouts(id)').nullable()();
 
-  IntColumn get setIndex => integer()();
-  RealColumn get weight => real()();
-  IntColumn get reps => integer()();
-  RealColumn get rpe => real()();
-  RealColumn get e1rm => real()();
-  BoolColumn get setComplete => boolean()();
+  IntColumn get setIndex => integer().nullable()();
+  RealColumn get weight => real().withDefault(const Constant(0))();
+  IntColumn get reps => integer().withDefault(const Constant(0))();
+  RealColumn get rpe => real().withDefault(const Constant(0))();
+  RealColumn get e1rm => real().withDefault(const Constant(0))();
+  BoolColumn get setComplete => boolean().withDefault(const Constant(false))();
 }

@@ -1,6 +1,8 @@
+import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:work_out_app/store.dart' as provider;
+import 'package:work_out_app/database.dart';
 
 class Program {
   late String? programName;
@@ -85,6 +87,14 @@ class Workout {
     List<Set>? sets,
   }) : sets = sets ?? [];
 
+  WorkoutsCompanion toWorkoutCompanion(Workout workout) {
+    return WorkoutsCompanion.insert(
+      name: Value(workout.name),
+      targetRpe: Value(workout.targetRpe),
+      showE1rm: Value(workout.showE1rm),
+    );
+  }
+
   void addSet(Set set) {
     sets?.add(set);
   }
@@ -124,6 +134,17 @@ class Set {
     this.setComplete = false,
     this.onUpdate,
   });
+
+  WorkoutSetsCompanion toSetCompanion(Set set) {
+    return WorkoutSetsCompanion.insert(
+      setIndex: Value(set.setIndex),
+      weight: Value(set.weight),
+      reps: Value(set.reps),
+      rpe: Value(set.rpe),
+      e1rm: Value(set.e1rm),
+      setComplete: Value(set.setComplete),
+    );
+  }
 
   void _notifyUpdate() {
     if (onUpdate != null) {

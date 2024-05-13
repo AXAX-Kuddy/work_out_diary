@@ -30,8 +30,14 @@ import 'package:line_icons/line_icon.dart';
 import 'package:work_out_app/database.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  final database = AppDatabase();
+  // WidgetsFlutterBinding.ensureInitialized();
+  // final database = AppDatabase();
+
+  // await database.into(database.workoutSets).insert(WorkoutSetsCompanion.insert(
+  //     setIndex: 0, weight: 0, reps: 0, rpe: 0, e1rm: 0, setComplete: false));
+
+  // List<WorkoutSet> setsList = await database.select(database.workoutSets).get();
+  // print(setsList[0].setIndex);
 
   runApp(
     MultiProvider(

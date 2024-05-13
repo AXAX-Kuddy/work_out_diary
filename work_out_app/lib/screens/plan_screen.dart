@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:line_icons/line_icon.dart';
 import 'package:line_icons/line_icons.dart';
+import 'package:work_out_app/database.dart';
 import 'package:work_out_app/palette.dart' as palette;
 import 'package:work_out_app/dump/routine_page.dart';
 import 'package:work_out_app/screens/plan_screen_widgets.dart/select_work_out_page.dart';
@@ -30,6 +31,7 @@ class PlanningScreen extends StatefulWidget {
 }
 
 class _PlanningScreenState extends State<PlanningScreen> {
+  final AppDatabase database = AppDatabase();
   late provider.RoutineProvider routineProvider;
 
   late Widget restTimerWidget;
@@ -89,6 +91,62 @@ class _PlanningScreenState extends State<PlanningScreen> {
           onPressed: () {
             routineProvider.onWorkoutTimerStopped();
             routineProvider.setWorkoutFinish();
+            showDialog(
+                context: context,
+                builder: (context) {
+                  return Dialog(
+                    insetPadding: const EdgeInsets.all(10),
+                    backgroundColor: palette.bgColor,
+                    child: SizedBox(
+                      height: 100,
+                      width: 300,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            "운동을 마치시겠습니까?",
+                            style: TextStyle(
+                              color: palette.cardColorWhite,
+                              fontSize: 17,
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 15,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                                child: const Text(
+                                  "눼니오",
+                                  style: TextStyle(
+                                    color: Colors.red,
+                                    fontSize: 17,
+                                  ),
+                                ),
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  
+                                },
+                                child: Text(
+                                  "눼",
+                                  style: TextStyle(
+                                    color: palette.cardColorYelGreen,
+                                    fontSize: 17,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                });
           },
           child: Container(
             alignment: Alignment.center,
