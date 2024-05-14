@@ -11,6 +11,7 @@ import 'package:work_out_app/database.dart';
 import 'package:work_out_app/palette.dart' as palette;
 import 'package:work_out_app/dump/routine_page.dart';
 import 'package:work_out_app/screens/plan_screen_widgets.dart/select_work_out_page.dart';
+import 'package:work_out_app/screens/plan_screen_widgets.dart/workout_complete.dart';
 import 'package:work_out_app/screens/plan_screen_widgets.dart/workout_detail.dart';
 import 'package:work_out_app/screens/work_out_screen.dart';
 import 'package:work_out_app/widgets/base_page.dart';
@@ -37,6 +38,26 @@ class _PlanningScreenState extends State<PlanningScreen> {
   late Widget restTimerWidget;
   late Widget restTimerButton;
   late TextButton workoutTimerButton;
+
+  void workoutComplete() async {
+    for (int i = 0; i < routineProvider.todayWorkouts.length; i++) {
+      final maked.Workout workoutInstance = routineProvider.todayWorkouts[i];
+      for (int i = 0; i < workoutInstance.sets!.length; i++) {
+        final maked.Set setInstance = workoutInstance.sets![i];
+        final WorkoutSetsCompanion setsCompanion =
+            setInstance.toSetCompanion(setInstance);
+        await database.insertSet(setsCompanion);
+      }
+      final WorkoutsCompanion workoutsCompanion =
+          workoutInstance.toWorkoutCompanion(workoutInstance);
+      await database.insertWorkout(workoutsCompanion);
+    }
+    if (mounted) {
+      Navigator.push(context, MaterialPageRoute(builder: (context) {
+        return const WorkoutCompleteScreem();
+      }));
+    }
+  }
 
   Future<dynamic> showRestTimerDialog() {
     return showDialog(
@@ -129,9 +150,7 @@ class _PlanningScreenState extends State<PlanningScreen> {
                                 ),
                               ),
                               TextButton(
-                                onPressed: () {
-                                  
-                                },
+                                onPressed: () async {},
                                 child: Text(
                                   "눼",
                                   style: TextStyle(

@@ -17,6 +17,9 @@ class AppDatabase extends _$AppDatabase {
   @override
   int get schemaVersion => 1;
 
+  Future<int> insertRoutine(Insertable<Workout> workout) =>
+      into(workouts).insert(workout);
+
   Future<int> insertWorkout(Insertable<Workout> workout) =>
       into(workouts).insert(workout);
 
@@ -49,7 +52,7 @@ class RoutineStorage extends Table {
 class Routines extends Table {
   IntColumn get id => integer().autoIncrement()();
   IntColumn get storageId =>
-      integer().customConstraint('REFERENCES routine_storage(id)').nullable()();
+      integer().nullable().references(RoutineStorage, #id)();
 
   DateTimeColumn get date => dateTime().nullable()();
   BoolColumn get isFavor => boolean().withDefault(const Constant(false))();
@@ -58,8 +61,7 @@ class Routines extends Table {
 ///루틴 안 운동, 루틴에 종속되어야 함
 class Workouts extends Table {
   IntColumn get id => integer().autoIncrement()();
-  IntColumn get routineId =>
-      integer().customConstraint('REFERENCES routines(id)').nullable()();
+  IntColumn get routineId => integer().nullable().references(Routines, #id)();
 
   TextColumn get name => text().nullable()();
   RealColumn get targetRpe => real().withDefault(const Constant(0))();
@@ -69,8 +71,7 @@ class Workouts extends Table {
 /// 운동 안 세트, 운동에 종속되어야 함
 class WorkoutSets extends Table {
   IntColumn get id => integer().autoIncrement()();
-  IntColumn get workoutId =>
-      integer().customConstraint('REFERENCES workouts(id)').nullable()();
+  IntColumn get workoutId => integer().nullable().references(Workouts, #id)();
 
   IntColumn get setIndex => integer().nullable()();
   RealColumn get weight => real().withDefault(const Constant(0))();
