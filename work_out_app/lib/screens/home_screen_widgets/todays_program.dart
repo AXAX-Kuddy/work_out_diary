@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:work_out_app/database.dart';
 import 'package:work_out_app/palette.dart' as palette;
 import 'package:work_out_app/widgets/widget_box.dart';
 import 'package:provider/provider.dart';
@@ -18,7 +19,15 @@ class TodayWorkOutCard extends StatefulWidget {
 }
 
 class _TodayWorkOutCardState extends State<TodayWorkOutCard> {
+  final database = AppDatabase();
+  final List<Routine> routineData = [];
   late String _userName;
+
+  Future<void> getRoutines() async {
+    final data = await database.select(database.routines).get();
+    print(data);
+    routineData.addAll(data);
+  }
 
   List<String> randomAnnounce = [
     "오늘도 한탕 해볼까요?",
@@ -33,6 +42,12 @@ class _TodayWorkOutCardState extends State<TodayWorkOutCard> {
   int randomSelector() {
     int number = Random().nextInt(randomAnnounce.length);
     return number;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getRoutines();
   }
 
   @override
@@ -77,9 +92,16 @@ class _TodayWorkOutCardState extends State<TodayWorkOutCard> {
               height: 15,
             ),
             Column(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: List.generate(
-                7,
-                (index) => Text("$index번째 루틴"),
+                routineData.isEmpty ? 1 : routineData.length,
+                (index) {
+                  if (routineData.isEmpty) {
+                    return const Text("루틴이 비어있어요!");
+                  } else {
+                    return Text("${routineData[index].date}");
+                  }
+                },
               ),
             ),
           ],

@@ -1,10 +1,8 @@
 import 'dart:async';
 
 import 'package:animated_snack_bar/animated_snack_bar.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:line_icons/line_icon.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:work_out_app/database.dart';
@@ -23,6 +21,8 @@ import 'package:work_out_app/store.dart' as provider;
 import 'package:stop_watch_timer/stop_watch_timer.dart';
 
 import 'package:work_out_app/make_program.dart' as maked;
+import 'package:work_out_app/database.dart';
+import 'package:drift/drift.dart' as drift;
 
 class PlanningScreen extends StatefulWidget {
   const PlanningScreen({super.key});
@@ -40,17 +40,21 @@ class _PlanningScreenState extends State<PlanningScreen> {
   late TextButton workoutTimerButton;
 
   void workoutComplete() async {
+    await database
+        .into(database.routines)
+        .insert(RoutinesCompanion.insert(date: drift.Value(DateTime.now())));
     for (int i = 0; i < routineProvider.todayWorkouts.length; i++) {
       final maked.Workout workoutInstance = routineProvider.todayWorkouts[i];
+      final WorkoutsCompanion workoutsCompanion =
+          workoutInstance.toWorkoutCompanion(workoutInstance);
+      await database.insertWorkout(workoutsCompanion);
+
       for (int i = 0; i < workoutInstance.sets!.length; i++) {
         final maked.Set setInstance = workoutInstance.sets![i];
         final WorkoutSetsCompanion setsCompanion =
             setInstance.toSetCompanion(setInstance);
         await database.insertSet(setsCompanion);
       }
-      final WorkoutsCompanion workoutsCompanion =
-          workoutInstance.toWorkoutCompanion(workoutInstance);
-      await database.insertWorkout(workoutsCompanion);
     }
     if (mounted) {
       Navigator.push(context, MaterialPageRoute(builder: (context) {
@@ -150,7 +154,9 @@ class _PlanningScreenState extends State<PlanningScreen> {
                                 ),
                               ),
                               TextButton(
-                                onPressed: () async {},
+                                onPressed: () {
+                                  workoutComplete();
+                                },
                                 child: Text(
                                   "눼",
                                   style: TextStyle(

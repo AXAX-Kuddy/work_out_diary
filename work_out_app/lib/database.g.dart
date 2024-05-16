@@ -3,184 +3,6 @@
 part of 'database.dart';
 
 // ignore_for_file: type=lint
-class $RoutineStorageTable extends RoutineStorage
-    with TableInfo<$RoutineStorageTable, RoutineStorageData> {
-  @override
-  final GeneratedDatabase attachedDatabase;
-  final String? _alias;
-  $RoutineStorageTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _idMeta = const VerificationMeta('id');
-  @override
-  late final GeneratedColumn<int> id = GeneratedColumn<int>(
-      'id', aliasedName, false,
-      hasAutoIncrement: true,
-      type: DriftSqlType.int,
-      requiredDuringInsert: false,
-      defaultConstraints:
-          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
-  static const VerificationMeta _storageNameMeta =
-      const VerificationMeta('storageName');
-  @override
-  late final GeneratedColumn<String> storageName = GeneratedColumn<String>(
-      'storage_name', aliasedName, false,
-      type: DriftSqlType.string,
-      requiredDuringInsert: false,
-      defaultValue: const Constant('RoutineStorage'));
-  @override
-  List<GeneratedColumn> get $columns => [id, storageName];
-  @override
-  String get aliasedName => _alias ?? actualTableName;
-  @override
-  String get actualTableName => $name;
-  static const String $name = 'routine_storage';
-  @override
-  VerificationContext validateIntegrity(Insertable<RoutineStorageData> instance,
-      {bool isInserting = false}) {
-    final context = VerificationContext();
-    final data = instance.toColumns(true);
-    if (data.containsKey('id')) {
-      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
-    }
-    if (data.containsKey('storage_name')) {
-      context.handle(
-          _storageNameMeta,
-          storageName.isAcceptableOrUnknown(
-              data['storage_name']!, _storageNameMeta));
-    }
-    return context;
-  }
-
-  @override
-  Set<GeneratedColumn> get $primaryKey => {id};
-  @override
-  RoutineStorageData map(Map<String, dynamic> data, {String? tablePrefix}) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return RoutineStorageData(
-      id: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
-      storageName: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}storage_name'])!,
-    );
-  }
-
-  @override
-  $RoutineStorageTable createAlias(String alias) {
-    return $RoutineStorageTable(attachedDatabase, alias);
-  }
-}
-
-class RoutineStorageData extends DataClass
-    implements Insertable<RoutineStorageData> {
-  final int id;
-  final String storageName;
-  const RoutineStorageData({required this.id, required this.storageName});
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    map['id'] = Variable<int>(id);
-    map['storage_name'] = Variable<String>(storageName);
-    return map;
-  }
-
-  RoutineStorageCompanion toCompanion(bool nullToAbsent) {
-    return RoutineStorageCompanion(
-      id: Value(id),
-      storageName: Value(storageName),
-    );
-  }
-
-  factory RoutineStorageData.fromJson(Map<String, dynamic> json,
-      {ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return RoutineStorageData(
-      id: serializer.fromJson<int>(json['id']),
-      storageName: serializer.fromJson<String>(json['storageName']),
-    );
-  }
-  @override
-  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{
-      'id': serializer.toJson<int>(id),
-      'storageName': serializer.toJson<String>(storageName),
-    };
-  }
-
-  RoutineStorageData copyWith({int? id, String? storageName}) =>
-      RoutineStorageData(
-        id: id ?? this.id,
-        storageName: storageName ?? this.storageName,
-      );
-  @override
-  String toString() {
-    return (StringBuffer('RoutineStorageData(')
-          ..write('id: $id, ')
-          ..write('storageName: $storageName')
-          ..write(')'))
-        .toString();
-  }
-
-  @override
-  int get hashCode => Object.hash(id, storageName);
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is RoutineStorageData &&
-          other.id == this.id &&
-          other.storageName == this.storageName);
-}
-
-class RoutineStorageCompanion extends UpdateCompanion<RoutineStorageData> {
-  final Value<int> id;
-  final Value<String> storageName;
-  const RoutineStorageCompanion({
-    this.id = const Value.absent(),
-    this.storageName = const Value.absent(),
-  });
-  RoutineStorageCompanion.insert({
-    this.id = const Value.absent(),
-    this.storageName = const Value.absent(),
-  });
-  static Insertable<RoutineStorageData> custom({
-    Expression<int>? id,
-    Expression<String>? storageName,
-  }) {
-    return RawValuesInsertable({
-      if (id != null) 'id': id,
-      if (storageName != null) 'storage_name': storageName,
-    });
-  }
-
-  RoutineStorageCompanion copyWith(
-      {Value<int>? id, Value<String>? storageName}) {
-    return RoutineStorageCompanion(
-      id: id ?? this.id,
-      storageName: storageName ?? this.storageName,
-    );
-  }
-
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    if (id.present) {
-      map['id'] = Variable<int>(id.value);
-    }
-    if (storageName.present) {
-      map['storage_name'] = Variable<String>(storageName.value);
-    }
-    return map;
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('RoutineStorageCompanion(')
-          ..write('id: $id, ')
-          ..write('storageName: $storageName')
-          ..write(')'))
-        .toString();
-  }
-}
-
 class $RoutinesTable extends Routines with TableInfo<$RoutinesTable, Routine> {
   @override
   final GeneratedDatabase attachedDatabase;
@@ -195,14 +17,6 @@ class $RoutinesTable extends Routines with TableInfo<$RoutinesTable, Routine> {
       requiredDuringInsert: false,
       defaultConstraints:
           GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
-  static const VerificationMeta _storageIdMeta =
-      const VerificationMeta('storageId');
-  @override
-  late final GeneratedColumn<int> storageId = GeneratedColumn<int>(
-      'storage_id', aliasedName, true,
-      type: DriftSqlType.int,
-      requiredDuringInsert: false,
-      $customConstraints: 'REFERENCES routine_storage(id)');
   static const VerificationMeta _dateMeta = const VerificationMeta('date');
   @override
   late final GeneratedColumn<DateTime> date = GeneratedColumn<DateTime>(
@@ -219,7 +33,7 @@ class $RoutinesTable extends Routines with TableInfo<$RoutinesTable, Routine> {
           GeneratedColumn.constraintIsAlways('CHECK ("is_favor" IN (0, 1))'),
       defaultValue: const Constant(false));
   @override
-  List<GeneratedColumn> get $columns => [id, storageId, date, isFavor];
+  List<GeneratedColumn> get $columns => [id, date, isFavor];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -232,10 +46,6 @@ class $RoutinesTable extends Routines with TableInfo<$RoutinesTable, Routine> {
     final data = instance.toColumns(true);
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
-    }
-    if (data.containsKey('storage_id')) {
-      context.handle(_storageIdMeta,
-          storageId.isAcceptableOrUnknown(data['storage_id']!, _storageIdMeta));
     }
     if (data.containsKey('date')) {
       context.handle(
@@ -256,8 +66,6 @@ class $RoutinesTable extends Routines with TableInfo<$RoutinesTable, Routine> {
     return Routine(
       id: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
-      storageId: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}storage_id']),
       date: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}date']),
       isFavor: attachedDatabase.typeMapping
@@ -273,18 +81,13 @@ class $RoutinesTable extends Routines with TableInfo<$RoutinesTable, Routine> {
 
 class Routine extends DataClass implements Insertable<Routine> {
   final int id;
-  final int? storageId;
   final DateTime? date;
   final bool isFavor;
-  const Routine(
-      {required this.id, this.storageId, this.date, required this.isFavor});
+  const Routine({required this.id, this.date, required this.isFavor});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
-    if (!nullToAbsent || storageId != null) {
-      map['storage_id'] = Variable<int>(storageId);
-    }
     if (!nullToAbsent || date != null) {
       map['date'] = Variable<DateTime>(date);
     }
@@ -295,9 +98,6 @@ class Routine extends DataClass implements Insertable<Routine> {
   RoutinesCompanion toCompanion(bool nullToAbsent) {
     return RoutinesCompanion(
       id: Value(id),
-      storageId: storageId == null && nullToAbsent
-          ? const Value.absent()
-          : Value(storageId),
       date: date == null && nullToAbsent ? const Value.absent() : Value(date),
       isFavor: Value(isFavor),
     );
@@ -308,7 +108,6 @@ class Routine extends DataClass implements Insertable<Routine> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return Routine(
       id: serializer.fromJson<int>(json['id']),
-      storageId: serializer.fromJson<int?>(json['storageId']),
       date: serializer.fromJson<DateTime?>(json['date']),
       isFavor: serializer.fromJson<bool>(json['isFavor']),
     );
@@ -318,7 +117,6 @@ class Routine extends DataClass implements Insertable<Routine> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
-      'storageId': serializer.toJson<int?>(storageId),
       'date': serializer.toJson<DateTime?>(date),
       'isFavor': serializer.toJson<bool>(isFavor),
     };
@@ -326,12 +124,10 @@ class Routine extends DataClass implements Insertable<Routine> {
 
   Routine copyWith(
           {int? id,
-          Value<int?> storageId = const Value.absent(),
           Value<DateTime?> date = const Value.absent(),
           bool? isFavor}) =>
       Routine(
         id: id ?? this.id,
-        storageId: storageId.present ? storageId.value : this.storageId,
         date: date.present ? date.value : this.date,
         isFavor: isFavor ?? this.isFavor,
       );
@@ -339,7 +135,6 @@ class Routine extends DataClass implements Insertable<Routine> {
   String toString() {
     return (StringBuffer('Routine(')
           ..write('id: $id, ')
-          ..write('storageId: $storageId, ')
           ..write('date: $date, ')
           ..write('isFavor: $isFavor')
           ..write(')'))
@@ -347,56 +142,46 @@ class Routine extends DataClass implements Insertable<Routine> {
   }
 
   @override
-  int get hashCode => Object.hash(id, storageId, date, isFavor);
+  int get hashCode => Object.hash(id, date, isFavor);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is Routine &&
           other.id == this.id &&
-          other.storageId == this.storageId &&
           other.date == this.date &&
           other.isFavor == this.isFavor);
 }
 
 class RoutinesCompanion extends UpdateCompanion<Routine> {
   final Value<int> id;
-  final Value<int?> storageId;
   final Value<DateTime?> date;
   final Value<bool> isFavor;
   const RoutinesCompanion({
     this.id = const Value.absent(),
-    this.storageId = const Value.absent(),
     this.date = const Value.absent(),
     this.isFavor = const Value.absent(),
   });
   RoutinesCompanion.insert({
     this.id = const Value.absent(),
-    this.storageId = const Value.absent(),
     this.date = const Value.absent(),
     this.isFavor = const Value.absent(),
   });
   static Insertable<Routine> custom({
     Expression<int>? id,
-    Expression<int>? storageId,
     Expression<DateTime>? date,
     Expression<bool>? isFavor,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
-      if (storageId != null) 'storage_id': storageId,
       if (date != null) 'date': date,
       if (isFavor != null) 'is_favor': isFavor,
     });
   }
 
   RoutinesCompanion copyWith(
-      {Value<int>? id,
-      Value<int?>? storageId,
-      Value<DateTime?>? date,
-      Value<bool>? isFavor}) {
+      {Value<int>? id, Value<DateTime?>? date, Value<bool>? isFavor}) {
     return RoutinesCompanion(
       id: id ?? this.id,
-      storageId: storageId ?? this.storageId,
       date: date ?? this.date,
       isFavor: isFavor ?? this.isFavor,
     );
@@ -407,9 +192,6 @@ class RoutinesCompanion extends UpdateCompanion<Routine> {
     final map = <String, Expression>{};
     if (id.present) {
       map['id'] = Variable<int>(id.value);
-    }
-    if (storageId.present) {
-      map['storage_id'] = Variable<int>(storageId.value);
     }
     if (date.present) {
       map['date'] = Variable<DateTime>(date.value);
@@ -424,7 +206,6 @@ class RoutinesCompanion extends UpdateCompanion<Routine> {
   String toString() {
     return (StringBuffer('RoutinesCompanion(')
           ..write('id: $id, ')
-          ..write('storageId: $storageId, ')
           ..write('date: $date, ')
           ..write('isFavor: $isFavor')
           ..write(')'))
@@ -453,7 +234,8 @@ class $WorkoutsTable extends Workouts with TableInfo<$WorkoutsTable, Workout> {
       'routine_id', aliasedName, true,
       type: DriftSqlType.int,
       requiredDuringInsert: false,
-      $customConstraints: 'REFERENCES routines(id)');
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('REFERENCES routines (id)'));
   static const VerificationMeta _nameMeta = const VerificationMeta('name');
   @override
   late final GeneratedColumn<String> name = GeneratedColumn<String>(
@@ -744,7 +526,8 @@ class $WorkoutSetsTable extends WorkoutSets
       'workout_id', aliasedName, true,
       type: DriftSqlType.int,
       requiredDuringInsert: false,
-      $customConstraints: 'REFERENCES workouts(id)');
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('REFERENCES workouts (id)'));
   static const VerificationMeta _setIndexMeta =
       const VerificationMeta('setIndex');
   @override
@@ -1123,7 +906,6 @@ class WorkoutSetsCompanion extends UpdateCompanion<WorkoutSet> {
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   _$AppDatabaseManager get managers => _$AppDatabaseManager(this);
-  late final $RoutineStorageTable routineStorage = $RoutineStorageTable(this);
   late final $RoutinesTable routines = $RoutinesTable(this);
   late final $WorkoutsTable workouts = $WorkoutsTable(this);
   late final $WorkoutSetsTable workoutSets = $WorkoutSetsTable(this);
@@ -1132,121 +914,16 @@ abstract class _$AppDatabase extends GeneratedDatabase {
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities =>
-      [routineStorage, routines, workouts, workoutSets];
-}
-
-typedef $$RoutineStorageTableInsertCompanionBuilder = RoutineStorageCompanion
-    Function({
-  Value<int> id,
-  Value<String> storageName,
-});
-typedef $$RoutineStorageTableUpdateCompanionBuilder = RoutineStorageCompanion
-    Function({
-  Value<int> id,
-  Value<String> storageName,
-});
-
-class $$RoutineStorageTableTableManager extends RootTableManager<
-    _$AppDatabase,
-    $RoutineStorageTable,
-    RoutineStorageData,
-    $$RoutineStorageTableFilterComposer,
-    $$RoutineStorageTableOrderingComposer,
-    $$RoutineStorageTableProcessedTableManager,
-    $$RoutineStorageTableInsertCompanionBuilder,
-    $$RoutineStorageTableUpdateCompanionBuilder> {
-  $$RoutineStorageTableTableManager(
-      _$AppDatabase db, $RoutineStorageTable table)
-      : super(TableManagerState(
-          db: db,
-          table: table,
-          filteringComposer:
-              $$RoutineStorageTableFilterComposer(ComposerState(db, table)),
-          orderingComposer:
-              $$RoutineStorageTableOrderingComposer(ComposerState(db, table)),
-          getChildManagerBuilder: (p) =>
-              $$RoutineStorageTableProcessedTableManager(p),
-          getUpdateCompanionBuilder: ({
-            Value<int> id = const Value.absent(),
-            Value<String> storageName = const Value.absent(),
-          }) =>
-              RoutineStorageCompanion(
-            id: id,
-            storageName: storageName,
-          ),
-          getInsertCompanionBuilder: ({
-            Value<int> id = const Value.absent(),
-            Value<String> storageName = const Value.absent(),
-          }) =>
-              RoutineStorageCompanion.insert(
-            id: id,
-            storageName: storageName,
-          ),
-        ));
-}
-
-class $$RoutineStorageTableProcessedTableManager extends ProcessedTableManager<
-    _$AppDatabase,
-    $RoutineStorageTable,
-    RoutineStorageData,
-    $$RoutineStorageTableFilterComposer,
-    $$RoutineStorageTableOrderingComposer,
-    $$RoutineStorageTableProcessedTableManager,
-    $$RoutineStorageTableInsertCompanionBuilder,
-    $$RoutineStorageTableUpdateCompanionBuilder> {
-  $$RoutineStorageTableProcessedTableManager(super.$state);
-}
-
-class $$RoutineStorageTableFilterComposer
-    extends FilterComposer<_$AppDatabase, $RoutineStorageTable> {
-  $$RoutineStorageTableFilterComposer(super.$state);
-  ColumnFilters<int> get id => $state.composableBuilder(
-      column: $state.table.id,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get storageName => $state.composableBuilder(
-      column: $state.table.storageName,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ComposableFilter routinesRefs(
-      ComposableFilter Function($$RoutinesTableFilterComposer f) f) {
-    final $$RoutinesTableFilterComposer composer = $state.composerBuilder(
-        composer: this,
-        getCurrentColumn: (t) => t.id,
-        referencedTable: $state.db.routines,
-        getReferencedColumn: (t) => t.storageId,
-        builder: (joinBuilder, parentComposers) =>
-            $$RoutinesTableFilterComposer(ComposerState(
-                $state.db, $state.db.routines, joinBuilder, parentComposers)));
-    return f(composer);
-  }
-}
-
-class $$RoutineStorageTableOrderingComposer
-    extends OrderingComposer<_$AppDatabase, $RoutineStorageTable> {
-  $$RoutineStorageTableOrderingComposer(super.$state);
-  ColumnOrderings<int> get id => $state.composableBuilder(
-      column: $state.table.id,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get storageName => $state.composableBuilder(
-      column: $state.table.storageName,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
+      [routines, workouts, workoutSets];
 }
 
 typedef $$RoutinesTableInsertCompanionBuilder = RoutinesCompanion Function({
   Value<int> id,
-  Value<int?> storageId,
   Value<DateTime?> date,
   Value<bool> isFavor,
 });
 typedef $$RoutinesTableUpdateCompanionBuilder = RoutinesCompanion Function({
   Value<int> id,
-  Value<int?> storageId,
   Value<DateTime?> date,
   Value<bool> isFavor,
 });
@@ -1272,25 +949,21 @@ class $$RoutinesTableTableManager extends RootTableManager<
               $$RoutinesTableProcessedTableManager(p),
           getUpdateCompanionBuilder: ({
             Value<int> id = const Value.absent(),
-            Value<int?> storageId = const Value.absent(),
             Value<DateTime?> date = const Value.absent(),
             Value<bool> isFavor = const Value.absent(),
           }) =>
               RoutinesCompanion(
             id: id,
-            storageId: storageId,
             date: date,
             isFavor: isFavor,
           ),
           getInsertCompanionBuilder: ({
             Value<int> id = const Value.absent(),
-            Value<int?> storageId = const Value.absent(),
             Value<DateTime?> date = const Value.absent(),
             Value<bool> isFavor = const Value.absent(),
           }) =>
               RoutinesCompanion.insert(
             id: id,
-            storageId: storageId,
             date: date,
             isFavor: isFavor,
           ),
@@ -1327,18 +1000,6 @@ class $$RoutinesTableFilterComposer
       builder: (column, joinBuilders) =>
           ColumnFilters(column, joinBuilders: joinBuilders));
 
-  $$RoutineStorageTableFilterComposer get storageId {
-    final $$RoutineStorageTableFilterComposer composer = $state.composerBuilder(
-        composer: this,
-        getCurrentColumn: (t) => t.storageId,
-        referencedTable: $state.db.routineStorage,
-        getReferencedColumn: (t) => t.id,
-        builder: (joinBuilder, parentComposers) =>
-            $$RoutineStorageTableFilterComposer(ComposerState($state.db,
-                $state.db.routineStorage, joinBuilder, parentComposers)));
-    return composer;
-  }
-
   ComposableFilter workoutsRefs(
       ComposableFilter Function($$WorkoutsTableFilterComposer f) f) {
     final $$WorkoutsTableFilterComposer composer = $state.composerBuilder(
@@ -1370,19 +1031,6 @@ class $$RoutinesTableOrderingComposer
       column: $state.table.isFavor,
       builder: (column, joinBuilders) =>
           ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  $$RoutineStorageTableOrderingComposer get storageId {
-    final $$RoutineStorageTableOrderingComposer composer =
-        $state.composerBuilder(
-            composer: this,
-            getCurrentColumn: (t) => t.storageId,
-            referencedTable: $state.db.routineStorage,
-            getReferencedColumn: (t) => t.id,
-            builder: (joinBuilder, parentComposers) =>
-                $$RoutineStorageTableOrderingComposer(ComposerState($state.db,
-                    $state.db.routineStorage, joinBuilder, parentComposers)));
-    return composer;
-  }
 }
 
 typedef $$WorkoutsTableInsertCompanionBuilder = WorkoutsCompanion Function({
@@ -1749,8 +1397,6 @@ class $$WorkoutSetsTableOrderingComposer
 class _$AppDatabaseManager {
   final _$AppDatabase _db;
   _$AppDatabaseManager(this._db);
-  $$RoutineStorageTableTableManager get routineStorage =>
-      $$RoutineStorageTableTableManager(_db, _db.routineStorage);
   $$RoutinesTableTableManager get routines =>
       $$RoutinesTableTableManager(_db, _db.routines);
   $$WorkoutsTableTableManager get workouts =>

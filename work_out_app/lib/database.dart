@@ -10,15 +10,17 @@ import 'package:sqlite3_flutter_libs/sqlite3_flutter_libs.dart';
 part 'database.g.dart';
 
 /// 루틴 데이터 베이스 임당
-@DriftDatabase(tables: [RoutineStorage, Routines, Workouts, WorkoutSets])
+@DriftDatabase(tables: [
+  // RoutineStorage,
+  Routines,
+  Workouts,
+  WorkoutSets,
+])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
   @override
   int get schemaVersion => 1;
-
-  Future<int> insertRoutine(Insertable<Workout> workout) =>
-      into(workouts).insert(workout);
 
   Future<int> insertWorkout(Insertable<Workout> workout) =>
       into(workouts).insert(workout);
@@ -41,18 +43,18 @@ LazyDatabase _openConnection() {
   });
 }
 
-/// 사용자가 저장한 루틴 db
-class RoutineStorage extends Table {
-  IntColumn get id => integer().autoIncrement()();
-  TextColumn get storageName =>
-      text().withDefault(const Constant('RoutineStorage'))();
-}
+// /// 사용자가 저장한 루틴 db
+// class RoutineStorage extends Table {
+//   IntColumn get id => integer().autoIncrement()();
+//   TextColumn get storageName =>
+//       text().withDefault(const Constant('RoutineStorage'))();
+// }
 
 /// 오늘 완료한 루틴, 루틴 저장소에 종속되어야 함
 class Routines extends Table {
   IntColumn get id => integer().autoIncrement()();
-  IntColumn get storageId =>
-      integer().nullable().references(RoutineStorage, #id)();
+  // IntColumn get storageId =>
+  //     integer().nullable().references(RoutineStorage, #id)();
 
   DateTimeColumn get date => dateTime().nullable()();
   BoolColumn get isFavor => boolean().withDefault(const Constant(false))();

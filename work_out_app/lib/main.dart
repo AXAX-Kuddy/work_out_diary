@@ -1,7 +1,7 @@
 //기본
 import 'dart:io';
 
-import 'package:drift/drift.dart';
+
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
@@ -27,14 +27,11 @@ import 'package:line_icons/line_icons.dart';
 import 'package:line_icons/line_icon.dart';
 
 //데이터 베이스
+import 'package:drift/drift.dart';
 import 'package:work_out_app/database.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  final database = AppDatabase();
-
-  database.delete(database.workoutSets).go();
-  database.delete(database.workouts).go();
+  // WidgetsFlutterBinding.ensureInitialized();
 
   runApp(
     MultiProvider(
