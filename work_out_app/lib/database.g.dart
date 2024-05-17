@@ -17,6 +17,12 @@ class $RoutinesTable extends Routines with TableInfo<$RoutinesTable, Routine> {
       requiredDuringInsert: false,
       defaultConstraints:
           GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+  static const VerificationMeta _routineNameMeta =
+      const VerificationMeta('routineName');
+  @override
+  late final GeneratedColumn<String> routineName = GeneratedColumn<String>(
+      'routine_name', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
   static const VerificationMeta _dateMeta = const VerificationMeta('date');
   @override
   late final GeneratedColumn<DateTime> date = GeneratedColumn<DateTime>(
@@ -33,7 +39,7 @@ class $RoutinesTable extends Routines with TableInfo<$RoutinesTable, Routine> {
           GeneratedColumn.constraintIsAlways('CHECK ("is_favor" IN (0, 1))'),
       defaultValue: const Constant(false));
   @override
-  List<GeneratedColumn> get $columns => [id, date, isFavor];
+  List<GeneratedColumn> get $columns => [id, routineName, date, isFavor];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -46,6 +52,12 @@ class $RoutinesTable extends Routines with TableInfo<$RoutinesTable, Routine> {
     final data = instance.toColumns(true);
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('routine_name')) {
+      context.handle(
+          _routineNameMeta,
+          routineName.isAcceptableOrUnknown(
+              data['routine_name']!, _routineNameMeta));
     }
     if (data.containsKey('date')) {
       context.handle(
@@ -66,6 +78,8 @@ class $RoutinesTable extends Routines with TableInfo<$RoutinesTable, Routine> {
     return Routine(
       id: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      routineName: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}routine_name']),
       date: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}date']),
       isFavor: attachedDatabase.typeMapping
@@ -81,13 +95,18 @@ class $RoutinesTable extends Routines with TableInfo<$RoutinesTable, Routine> {
 
 class Routine extends DataClass implements Insertable<Routine> {
   final int id;
+  final String? routineName;
   final DateTime? date;
   final bool isFavor;
-  const Routine({required this.id, this.date, required this.isFavor});
+  const Routine(
+      {required this.id, this.routineName, this.date, required this.isFavor});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
+    if (!nullToAbsent || routineName != null) {
+      map['routine_name'] = Variable<String>(routineName);
+    }
     if (!nullToAbsent || date != null) {
       map['date'] = Variable<DateTime>(date);
     }
@@ -98,6 +117,9 @@ class Routine extends DataClass implements Insertable<Routine> {
   RoutinesCompanion toCompanion(bool nullToAbsent) {
     return RoutinesCompanion(
       id: Value(id),
+      routineName: routineName == null && nullToAbsent
+          ? const Value.absent()
+          : Value(routineName),
       date: date == null && nullToAbsent ? const Value.absent() : Value(date),
       isFavor: Value(isFavor),
     );
@@ -108,6 +130,7 @@ class Routine extends DataClass implements Insertable<Routine> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return Routine(
       id: serializer.fromJson<int>(json['id']),
+      routineName: serializer.fromJson<String?>(json['routineName']),
       date: serializer.fromJson<DateTime?>(json['date']),
       isFavor: serializer.fromJson<bool>(json['isFavor']),
     );
@@ -117,6 +140,7 @@ class Routine extends DataClass implements Insertable<Routine> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
+      'routineName': serializer.toJson<String?>(routineName),
       'date': serializer.toJson<DateTime?>(date),
       'isFavor': serializer.toJson<bool>(isFavor),
     };
@@ -124,10 +148,12 @@ class Routine extends DataClass implements Insertable<Routine> {
 
   Routine copyWith(
           {int? id,
+          Value<String?> routineName = const Value.absent(),
           Value<DateTime?> date = const Value.absent(),
           bool? isFavor}) =>
       Routine(
         id: id ?? this.id,
+        routineName: routineName.present ? routineName.value : this.routineName,
         date: date.present ? date.value : this.date,
         isFavor: isFavor ?? this.isFavor,
       );
@@ -135,6 +161,7 @@ class Routine extends DataClass implements Insertable<Routine> {
   String toString() {
     return (StringBuffer('Routine(')
           ..write('id: $id, ')
+          ..write('routineName: $routineName, ')
           ..write('date: $date, ')
           ..write('isFavor: $isFavor')
           ..write(')'))
@@ -142,46 +169,56 @@ class Routine extends DataClass implements Insertable<Routine> {
   }
 
   @override
-  int get hashCode => Object.hash(id, date, isFavor);
+  int get hashCode => Object.hash(id, routineName, date, isFavor);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is Routine &&
           other.id == this.id &&
+          other.routineName == this.routineName &&
           other.date == this.date &&
           other.isFavor == this.isFavor);
 }
 
 class RoutinesCompanion extends UpdateCompanion<Routine> {
   final Value<int> id;
+  final Value<String?> routineName;
   final Value<DateTime?> date;
   final Value<bool> isFavor;
   const RoutinesCompanion({
     this.id = const Value.absent(),
+    this.routineName = const Value.absent(),
     this.date = const Value.absent(),
     this.isFavor = const Value.absent(),
   });
   RoutinesCompanion.insert({
     this.id = const Value.absent(),
+    this.routineName = const Value.absent(),
     this.date = const Value.absent(),
     this.isFavor = const Value.absent(),
   });
   static Insertable<Routine> custom({
     Expression<int>? id,
+    Expression<String>? routineName,
     Expression<DateTime>? date,
     Expression<bool>? isFavor,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
+      if (routineName != null) 'routine_name': routineName,
       if (date != null) 'date': date,
       if (isFavor != null) 'is_favor': isFavor,
     });
   }
 
   RoutinesCompanion copyWith(
-      {Value<int>? id, Value<DateTime?>? date, Value<bool>? isFavor}) {
+      {Value<int>? id,
+      Value<String?>? routineName,
+      Value<DateTime?>? date,
+      Value<bool>? isFavor}) {
     return RoutinesCompanion(
       id: id ?? this.id,
+      routineName: routineName ?? this.routineName,
       date: date ?? this.date,
       isFavor: isFavor ?? this.isFavor,
     );
@@ -192,6 +229,9 @@ class RoutinesCompanion extends UpdateCompanion<Routine> {
     final map = <String, Expression>{};
     if (id.present) {
       map['id'] = Variable<int>(id.value);
+    }
+    if (routineName.present) {
+      map['routine_name'] = Variable<String>(routineName.value);
     }
     if (date.present) {
       map['date'] = Variable<DateTime>(date.value);
@@ -206,6 +246,7 @@ class RoutinesCompanion extends UpdateCompanion<Routine> {
   String toString() {
     return (StringBuffer('RoutinesCompanion(')
           ..write('id: $id, ')
+          ..write('routineName: $routineName, ')
           ..write('date: $date, ')
           ..write('isFavor: $isFavor')
           ..write(')'))
@@ -919,11 +960,13 @@ abstract class _$AppDatabase extends GeneratedDatabase {
 
 typedef $$RoutinesTableInsertCompanionBuilder = RoutinesCompanion Function({
   Value<int> id,
+  Value<String?> routineName,
   Value<DateTime?> date,
   Value<bool> isFavor,
 });
 typedef $$RoutinesTableUpdateCompanionBuilder = RoutinesCompanion Function({
   Value<int> id,
+  Value<String?> routineName,
   Value<DateTime?> date,
   Value<bool> isFavor,
 });
@@ -949,21 +992,25 @@ class $$RoutinesTableTableManager extends RootTableManager<
               $$RoutinesTableProcessedTableManager(p),
           getUpdateCompanionBuilder: ({
             Value<int> id = const Value.absent(),
+            Value<String?> routineName = const Value.absent(),
             Value<DateTime?> date = const Value.absent(),
             Value<bool> isFavor = const Value.absent(),
           }) =>
               RoutinesCompanion(
             id: id,
+            routineName: routineName,
             date: date,
             isFavor: isFavor,
           ),
           getInsertCompanionBuilder: ({
             Value<int> id = const Value.absent(),
+            Value<String?> routineName = const Value.absent(),
             Value<DateTime?> date = const Value.absent(),
             Value<bool> isFavor = const Value.absent(),
           }) =>
               RoutinesCompanion.insert(
             id: id,
+            routineName: routineName,
             date: date,
             isFavor: isFavor,
           ),
@@ -987,6 +1034,11 @@ class $$RoutinesTableFilterComposer
   $$RoutinesTableFilterComposer(super.$state);
   ColumnFilters<int> get id => $state.composableBuilder(
       column: $state.table.id,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get routineName => $state.composableBuilder(
+      column: $state.table.routineName,
       builder: (column, joinBuilders) =>
           ColumnFilters(column, joinBuilders: joinBuilders));
 
@@ -1019,6 +1071,11 @@ class $$RoutinesTableOrderingComposer
   $$RoutinesTableOrderingComposer(super.$state);
   ColumnOrderings<int> get id => $state.composableBuilder(
       column: $state.table.id,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get routineName => $state.composableBuilder(
+      column: $state.table.routineName,
       builder: (column, joinBuilders) =>
           ColumnOrderings(column, joinBuilders: joinBuilders));
 

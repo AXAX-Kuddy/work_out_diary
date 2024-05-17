@@ -134,7 +134,6 @@ class Routine {
 }
 
 class RoutineProvider extends ChangeNotifier {
- 
   final Routine _routine;
   RoutineProvider(this._routine);
   Routine get routine => _routine;
@@ -151,12 +150,12 @@ class RoutineProvider extends ChangeNotifier {
   int get restTimeSec => Routine.restTimeSec;
 
   void addUserSelectWorkout(maked.Workout workout) {
-    _routine.todayWorkouts.add(workout);
+    todayWorkouts.add(workout);
     notifyListeners();
   }
 
   void removeUserSelectWorkout(maked.Workout workout) {
-    _routine.todayWorkouts.remove(workout);
+    todayWorkouts.remove(workout);
     notifyListeners();
   }
 

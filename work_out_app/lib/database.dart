@@ -56,6 +56,7 @@ class Routines extends Table {
   // IntColumn get storageId =>
   //     integer().nullable().references(RoutineStorage, #id)();
 
+  TextColumn get routineName => text().nullable()();
   DateTimeColumn get date => dateTime().nullable()();
   BoolColumn get isFavor => boolean().withDefault(const Constant(false))();
 }

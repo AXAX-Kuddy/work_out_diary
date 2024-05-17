@@ -33,16 +33,31 @@ class PlanningScreen extends StatefulWidget {
 
 class _PlanningScreenState extends State<PlanningScreen> {
   final AppDatabase database = AppDatabase();
+  String routineName = "";
   late provider.RoutineProvider routineProvider;
 
   late Widget restTimerWidget;
   late Widget restTimerButton;
   late TextButton workoutTimerButton;
 
+  void setRoutineName() {
+    String nowTime = DateTime.now().toString();
+    routineName = nowTime.substring(0, 10);
+  }
+
+  void changeTitle(String value) {
+    setState(() {
+      routineName = value;
+    });
+  }
+
   void workoutComplete() async {
-    await database
-        .into(database.routines)
-        .insert(RoutinesCompanion.insert(date: drift.Value(DateTime.now())));
+    await database.into(database.routines).insert(
+          RoutinesCompanion.insert(
+            routineName: drift.Value(routineName),
+            date: drift.Value(DateTime.now()),
+          ),
+        );
     for (int i = 0; i < routineProvider.todayWorkouts.length; i++) {
       final maked.Workout workoutInstance = routineProvider.todayWorkouts[i];
       final WorkoutsCompanion workoutsCompanion =
@@ -57,6 +72,10 @@ class _PlanningScreenState extends State<PlanningScreen> {
       }
     }
     if (mounted) {
+      for (int i = 0; i < routineProvider.todayWorkouts.length; i++) {
+        routineProvider
+            .removeUserSelectWorkout(routineProvider.todayWorkouts[i]);
+      }
       Navigator.push(context, MaterialPageRoute(builder: (context) {
         return const WorkoutCompleteScreem();
       }));
@@ -109,6 +128,7 @@ class _PlanningScreenState extends State<PlanningScreen> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     routineProvider = context.watch<provider.RoutineProvider>();
+    setRoutineName();
 
     switch (routineProvider.workoutStart) {
       case true:
@@ -391,16 +411,9 @@ class _PlanningScreenState extends State<PlanningScreen> {
               color: palette.cardColorWhite,
               size: 30,
             )),
-        title: GestureDetector(
-          onTap: () {},
-          child: const Text(
-            "Planning",
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 50,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
+        title: TitleTextField(
+          title: routineName,
+          changeTitle: changeTitle,
         ),
       ),
       children: [
@@ -509,6 +522,65 @@ class _PlanningScreenState extends State<PlanningScreen> {
           ),
         ),
       ],
+    );
+  }
+}
+
+class TitleTextField extends StatefulWidget {
+  final String title;
+  final Function(String) changeTitle;
+
+  const TitleTextField({
+    super.key,
+    required this.title,
+    required this.changeTitle,
+  });
+
+  @override
+  State<TitleTextField> createState() => _TitleTextFieldState();
+}
+
+class _TitleTextFieldState extends State<TitleTextField> {
+  final TextEditingController _controller = TextEditingController();
+  final FocusNode _focusNode = FocusNode();
+  late String title = "${widget.title}일차 루틴";
+
+  @override
+  void initState() {
+    super.initState();
+    _controller.text = title;
+
+    _focusNode.addListener(() {
+      if (_focusNode.hasFocus) {
+        return;
+      } else {
+        _controller.text = title;
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return TextField(
+      controller: _controller,
+      focusNode: _focusNode,
+      onChanged: (value) {
+        widget.changeTitle(value);
+      },
+      onSubmitted: (value) {
+        if (value.isEmpty) {
+          _controller.text = title;
+          widget.changeTitle(title);
+        }
+        widget.changeTitle(value);
+      },
+      style: TextStyle(
+        fontSize: 18,
+        color: palette.cardColorWhite,
+      ),
+      decoration: const InputDecoration(
+        border: InputBorder.none,
+      ),
     );
   }
 }
