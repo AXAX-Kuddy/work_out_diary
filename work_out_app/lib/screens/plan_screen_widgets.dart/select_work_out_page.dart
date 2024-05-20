@@ -30,7 +30,7 @@ class _SelectWorkOutState extends State<SelectWorkOut> {
   List<maked.Workout> tempoList = [];
 
   late maked.Day? day;
-  late Map<String, List<maked.Workout>> workoutList;
+  late Map<String, List<provider.WorkoutMenu>> workoutList;
 
   void managementTempoList(
       {required maked.Workout workout, required int command}) {
@@ -155,7 +155,7 @@ class _SelectWorkOutState extends State<SelectWorkOut> {
 
 class WorkoutList extends StatelessWidget {
   final String part;
-  final Map<String, List<maked.Workout>> workoutList;
+  final Map<String, List<provider.WorkoutMenu>> workoutList;
   List<maked.Workout> tempoList;
   void Function({required maked.Workout workout, required int command})
       managementTempoList;

@@ -543,7 +543,7 @@ class TitleTextField extends StatefulWidget {
 class _TitleTextFieldState extends State<TitleTextField> {
   final TextEditingController _controller = TextEditingController();
   final FocusNode _focusNode = FocusNode();
-  late String title = "${widget.title}일차 루틴";
+  late String title = "${widget.title}일자 루틴";
 
   @override
   void initState() {
@@ -562,6 +562,7 @@ class _TitleTextFieldState extends State<TitleTextField> {
   @override
   Widget build(BuildContext context) {
     return TextField(
+      cursorColor: palette.cardColorYelGreen,
       controller: _controller,
       focusNode: _focusNode,
       onChanged: (value) {
@@ -578,8 +579,18 @@ class _TitleTextFieldState extends State<TitleTextField> {
         fontSize: 18,
         color: palette.cardColorWhite,
       ),
-      decoration: const InputDecoration(
-        border: InputBorder.none,
+      decoration: InputDecoration(
+        focusColor: palette.cardColorYelGreen,
+        suffixIcon: const LineIcon(
+          LineIcons.pen,
+          size: 25,
+        ),
+        suffixIconColor: palette.cardColorYelGreen,
+        focusedBorder: UnderlineInputBorder(
+          borderSide: BorderSide(
+            color: palette.cardColorYelGreen,
+          ),
+        ),
       ),
     );
   }

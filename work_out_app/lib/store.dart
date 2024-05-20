@@ -73,40 +73,86 @@ class MainStoreProvider extends ChangeNotifier {
   }
 }
 
+class MemoList {
+  final String? notifiMemo;
+  final List<Map<DateTime, String>>? memos;
+
+  MemoList({
+    this.notifiMemo,
+    this.memos,
+  });
+}
+
+/// 운동 종목 구성
+class WorkoutMenu {
+  ///운동 이름
+  final String name;
+
+  /// 메모
+  final MemoList? memo;
+
+  ///e1rm표시유무
+  final bool showE1rm;
+
+  WorkoutMenu({
+    required this.name,
+    this.memo,
+    this.showE1rm = false,
+  });
+}
+
 class WorkoutListStore extends ChangeNotifier {
   var workouts = {
     "하체": [
-      maked.Workout(
+      WorkoutMenu(
         name: "스쿼트",
         showE1rm: true,
       ),
-      maked.Workout(
+      WorkoutMenu(
         name: "데드리프트",
         showE1rm: true,
       ),
     ],
     "등": [
-      maked.Workout(name: "랫 풀 다운"),
-      maked.Workout(name: "바벨 로우"),
+      WorkoutMenu(
+        name: "랫 풀 다운",
+      ),
+      WorkoutMenu(
+        name: "바벨 로우",
+      ),
     ],
     "가슴": [
-      maked.Workout(
-        name: "벤치프레스",
+      WorkoutMenu(
+        name: "바벨 벤치 프레스",
         showE1rm: true,
       ),
-      maked.Workout(name: "인클라인 덤벨 프레스"),
+      WorkoutMenu(
+        name: "인클라인 덤벨 프레스",
+      ),
     ],
     "어깨": [
-      maked.Workout(name: "밀리터리 프레스"),
-      maked.Workout(name: "덤벨 숄더 프레스"),
+      WorkoutMenu(
+        name: "바벨 밀리터리 프레스",
+      ),
+      WorkoutMenu(
+        name: "사이드 레터럴 레이즈",
+      ),
     ],
     "이두": [
-      maked.Workout(name: "바벨 컬"),
-      maked.Workout(name: "해머 컬"),
+      WorkoutMenu(
+        name: "바벨 컬",
+      ),
+      WorkoutMenu(
+        name: "해머 컬",
+      ),
     ],
     "삼두": [
-      maked.Workout(name: "클로즈 그립 벤치프레스"),
-      maked.Workout(name: "덤벨 스컬 크러셔"),
+      WorkoutMenu(
+        name: "클로즈 그립 벤치프레스",
+      ),
+      WorkoutMenu(
+        name: "덤벨 스컬 크러셔",
+      ),
     ],
   };
 }
