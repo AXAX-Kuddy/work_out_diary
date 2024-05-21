@@ -8,7 +8,7 @@ import 'package:line_icons/line_icons.dart';
 import 'package:work_out_app/database.dart';
 import 'package:work_out_app/palette.dart' as palette;
 import 'package:work_out_app/dump/routine_page.dart';
-import 'package:work_out_app/screens/plan_screen_widgets.dart/select_work_out_page.dart';
+import 'package:work_out_app/screens/plan_screen_widgets.dart/select_workout/select_work_out_page.dart';
 import 'package:work_out_app/screens/plan_screen_widgets.dart/workout_complete.dart';
 import 'package:work_out_app/screens/plan_screen_widgets.dart/workout_detail.dart';
 import 'package:work_out_app/screens/work_out_screen.dart';
