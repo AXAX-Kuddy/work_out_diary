@@ -103,7 +103,7 @@ class WorkoutMenu {
 
 class WorkoutListStore extends ChangeNotifier {
   var workouts = {
-    "하체": [
+    WorkoutListKeys.leg: [
       WorkoutMenu(
         name: "스쿼트",
         showE1rm: true,
@@ -113,7 +113,7 @@ class WorkoutListStore extends ChangeNotifier {
         showE1rm: true,
       ),
     ],
-    "등": [
+    WorkoutListKeys.back: [
       WorkoutMenu(
         name: "랫 풀 다운",
       ),
@@ -121,7 +121,7 @@ class WorkoutListStore extends ChangeNotifier {
         name: "바벨 로우",
       ),
     ],
-    "가슴": [
+    WorkoutListKeys.chest: [
       WorkoutMenu(
         name: "바벨 벤치 프레스",
         showE1rm: true,
@@ -130,7 +130,7 @@ class WorkoutListStore extends ChangeNotifier {
         name: "인클라인 덤벨 프레스",
       ),
     ],
-    "어깨": [
+    WorkoutListKeys.shoulder: [
       WorkoutMenu(
         name: "바벨 밀리터리 프레스",
       ),
@@ -138,7 +138,7 @@ class WorkoutListStore extends ChangeNotifier {
         name: "사이드 레터럴 레이즈",
       ),
     ],
-    "이두": [
+    WorkoutListKeys.biceps: [
       WorkoutMenu(
         name: "바벨 컬",
       ),
@@ -146,7 +146,7 @@ class WorkoutListStore extends ChangeNotifier {
         name: "해머 컬",
       ),
     ],
-    "삼두": [
+    WorkoutListKeys.triceps: [
       WorkoutMenu(
         name: "클로즈 그립 벤치프레스",
       ),

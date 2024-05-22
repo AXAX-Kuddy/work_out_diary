@@ -4,27 +4,42 @@ import 'package:work_out_app/palette.dart' as palette;
 import 'package:line_icons/line_icon.dart';
 import 'package:line_icons/line_icons.dart';
 
-class SearchBar extends StatefulWidget {
-  const SearchBar({super.key});
+class SearchWorkout extends StatefulWidget {
+  const SearchWorkout({super.key});
 
   @override
-  State<SearchBar> createState() => _SearchBarState();
+  State<SearchWorkout> createState() => _SearchWorkoutState();
 }
 
-class _SearchBarState extends State<SearchBar> {
+class _SearchWorkoutState extends State<SearchWorkout> {
   final TextEditingController _controller = TextEditingController();
+  final FocusNode _focusNode = FocusNode();
+
 
   @override
   Widget build(BuildContext context) {
     return TextField(
+      cursorColor: palette.cardColorYelGreen,
       controller: _controller,
+      focusNode: _focusNode,
+      onChanged: (value) {},
+      onSubmitted: (value) {},
+      style: TextStyle(
+        fontSize: 18,
+        color: palette.cardColorWhite,
+      ),
       decoration: InputDecoration(
         focusColor: palette.cardColorYelGreen,
         prefixIcon: const LineIcon(
-          LineIcons.pen,
+          LineIcons.search,
           size: 25,
         ),
         prefixIconColor: palette.cardColorYelGreen,
+        focusedBorder: UnderlineInputBorder(
+          borderSide: BorderSide(
+            color: palette.cardColorYelGreen,
+          ),
+        ),
       ),
     );
   }

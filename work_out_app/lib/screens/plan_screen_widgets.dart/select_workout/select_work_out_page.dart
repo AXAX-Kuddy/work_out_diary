@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:line_icons/line_icon.dart';
 import 'package:line_icons/line_icons.dart';
+import 'package:work_out_app/keys.dart';
 import 'package:work_out_app/screens/plan_screen_widgets.dart/select_workout/page_widget/listview_of_part.dart';
+import 'package:work_out_app/screens/plan_screen_widgets.dart/select_workout/page_widget/search_of_workout.dart';
 import 'package:work_out_app/widgets/base_page.dart';
 import 'package:work_out_app/widgets/widget_box.dart';
 import 'package:work_out_app/palette.dart' as palette;
@@ -10,6 +13,18 @@ import 'package:work_out_app/store.dart' as provider;
 import 'package:animated_snack_bar/animated_snack_bar.dart';
 
 import 'package:work_out_app/make_program.dart' as maked;
+
+class ChangePart {
+  static int index = 0;
+
+  static void changeIndex(int value) {
+    index = value;
+  }
+
+  static void dispose() {
+    index = 0;
+  }
+}
 
 class SelectWorkOut extends StatefulWidget {
   final Function? changedListner;
@@ -29,9 +44,10 @@ class SelectWorkOut extends StatefulWidget {
 
 class _SelectWorkOutState extends State<SelectWorkOut> {
   List<provider.WorkoutMenu> tempoList = [];
+  final List<WorkoutListKeys> keys = WorkoutListKeys.values;
 
   late maked.Day? day;
-  late Map<String, List<provider.WorkoutMenu>> workoutList;
+  late Map<WorkoutListKeys, List<provider.WorkoutMenu>> workoutList;
 
   void managementTempoList(
       {required provider.WorkoutMenu workout, required int command}) {
@@ -44,6 +60,12 @@ class _SelectWorkOutState extends State<SelectWorkOut> {
     }
   }
 
+  void handleChangedPart() {
+    setState(() {
+      ChangePart.index;
+    });
+  }
+
   @override
   void initState() {
     super.initState();
@@ -52,11 +74,17 @@ class _SelectWorkOutState extends State<SelectWorkOut> {
   }
 
   @override
+  void dispose() {
+    ChangePart.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return BasePage(
       appBar: AppBar(
         centerTitle: true,
-        title: const SearchBar(),
+        title: const SearchWorkout(),
         leading: IconButton(
           onPressed: () {
             Navigator.pop(context);
@@ -70,7 +98,19 @@ class _SelectWorkOutState extends State<SelectWorkOut> {
       ),
       children: [
         PartList(
+          onChanged: handleChangedPart,
           workoutList: workoutList,
+        ),
+        Expanded(
+          child: ListView.builder(
+            itemCount: workoutList[keys[ChangePart.index]]!.length,
+            itemBuilder: (BuildContext context, int index) {
+              return SelectBox(
+                  menu: workoutList[keys[ChangePart.index]]![index],
+                  tempoList: tempoList,
+                  managementTempoList: managementTempoList);
+            },
+          ),
         ),
         TextButton(
           onPressed: () async {
@@ -91,48 +131,48 @@ class _SelectWorkOutState extends State<SelectWorkOut> {
   }
 }
 
-class WorkoutList extends StatelessWidget {
-  final String part;
-  final Map<String, List<provider.WorkoutMenu>> workoutList;
-  List<maked.Workout> tempoList;
-  void Function({required provider.WorkoutMenu workout, required int command})
-      managementTempoList;
+// class WorkoutList extends StatelessWidget {
+//   final String part;
+//   final Map<String, List<provider.WorkoutMenu>> workoutList;
+//   List<maked.Workout> tempoList;
+//   void Function({required provider.WorkoutMenu workout, required int command})
+//       managementTempoList;
 
-  final maked.Day? day;
+//   final maked.Day? day;
 
-  WorkoutList({
-    super.key,
-    required this.part,
-    required this.workoutList,
-    required this.day,
-    required this.tempoList,
-    required this.managementTempoList,
-  });
+//   WorkoutList({
+//     super.key,
+//     required this.part,
+//     required this.workoutList,
+//     required this.day,
+//     required this.tempoList,
+//     required this.managementTempoList,
+//   });
 
-  @override
-  Widget build(BuildContext context) {
-    return ListView.separated(
-      itemCount: workoutList[part]!.length,
-      separatorBuilder: (context, index) {
-        return const Divider(
-          height: 20,
-          color: Colors.white,
-        );
-      },
-      itemBuilder: (context, index) {
-        return SelectBox(
-          menu: workoutList[part]![index],
-          tempoList: tempoList,
-          managementTempoList: managementTempoList,
-        );
-      },
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return ListView.separated(
+//       itemCount: workoutList[part]!.length,
+//       separatorBuilder: (context, index) {
+//         return const Divider(
+//           height: 20,
+//           color: Colors.white,
+//         );
+//       },
+//       itemBuilder: (context, index) {
+//         return SelectBox(
+//           menu: workoutList[part]![index],
+//           tempoList: tempoList,
+//           managementTempoList: managementTempoList,
+//         );
+//       },
+//     );
+//   }
+// }
 
 class SelectBox extends StatefulWidget {
   final provider.WorkoutMenu menu;
-  List<maked.Workout> tempoList;
+  List<provider.WorkoutMenu> tempoList;
 
   void Function({
     required provider.WorkoutMenu workout,

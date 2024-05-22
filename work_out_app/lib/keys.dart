@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-
 class PageNumber {
   static int pageNum = 0;
 
@@ -8,6 +7,7 @@ class PageNumber {
     pageNum = selectPage;
   }
 }
+
 
 enum UserInfoField {
   userName,
@@ -24,3 +24,11 @@ enum SBDkeys {
   deadlift,
 }
 
+enum WorkoutListKeys {
+  leg,
+  back,
+  chest,
+  shoulder,
+  biceps,
+  triceps,
+}

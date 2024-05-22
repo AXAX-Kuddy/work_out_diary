@@ -581,11 +581,11 @@ class _TitleTextFieldState extends State<TitleTextField> {
       ),
       decoration: InputDecoration(
         focusColor: palette.cardColorYelGreen,
-        suffixIcon: const LineIcon(
+        prefixIcon: const LineIcon(
           LineIcons.pen,
           size: 25,
         ),
-        suffixIconColor: palette.cardColorYelGreen,
+        prefixIconColor: palette.cardColorYelGreen,
         focusedBorder: UnderlineInputBorder(
           borderSide: BorderSide(
             color: palette.cardColorYelGreen,
