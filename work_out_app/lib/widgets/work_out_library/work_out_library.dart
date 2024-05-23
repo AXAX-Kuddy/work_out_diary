@@ -27,13 +27,12 @@ class ChangePart {
 }
 
 class WorkoutLibrary extends StatefulWidget {
-  final Function? changedListner;
-  final Function? addFunction;
-
+  final List<Widget> bottomChildren;
   const WorkoutLibrary({
     super.key,
-    this.changedListner,
-    this.addFunction,
+    this.bottomChildren = const [
+      SizedBox.shrink(),
+    ],
   });
 
   @override
@@ -134,6 +133,7 @@ class _WorkoutLibraryState extends State<WorkoutLibrary> {
             ),
           ][ChangePart.index],
         ),
+        ...widget.bottomChildren,
       ],
     );
   }

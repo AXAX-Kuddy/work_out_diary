@@ -1,11 +1,9 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:work_out_app/database/database.dart';
 import 'package:work_out_app/util/palette.dart' as palette;
 import 'package:work_out_app/widgets/box_widget/widget_box.dart';
-import 'package:provider/provider.dart';
 import 'package:work_out_app/util/keys.dart';
 import 'package:work_out_app/provider/store.dart' as provider;
 
@@ -29,7 +27,7 @@ class _TodayWorkOutCardState extends State<TodayWorkOutCard> {
     routineData.addAll(data);
   }
 
-  List<String> randomAnnounce = [
+  final List<String> randomAnnounce = [
     "오늘도 한탕 해볼까요?",
     "오늘도 힘내자구요!",
     "힘들어도 아자아자!",
@@ -61,7 +59,7 @@ class _TodayWorkOutCardState extends State<TodayWorkOutCard> {
     return WidgetsBox(
       backgroundColor: palette.cardColorWhite,
       height: 300,
-      inputContent: [
+      children: [
         Column(
           children: [
             Column(

@@ -1,29 +1,23 @@
 import 'dart:async';
 
 import 'package:animated_snack_bar/animated_snack_bar.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:line_icons/line_icon.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:work_out_app/database/database.dart';
 import 'package:work_out_app/util/palette.dart' as palette;
-import 'package:work_out_app/dump/routine_page.dart';
-import 'package:work_out_app/widgets/work_out_library/work_out_library.dart';
 import 'package:work_out_app/screens/plan_screen/plan_screen_widgets/select_work_out_screen.dart';
 import 'package:work_out_app/screens/plan_screen/plan_screen_widgets/workout_complete.dart';
 import 'package:work_out_app/screens/plan_screen/plan_screen_widgets/workout_detail.dart';
-import 'package:work_out_app/screens/work_out_screen.dart';
 import 'package:work_out_app/widgets/base_screen/base_page.dart';
-import 'package:work_out_app/widgets/drop_downs/drop_down.dart';
-import 'package:work_out_app/widgets/buttons/wide_button.dart';
-import 'package:work_out_app/widgets/box_widget/widget_box.dart';
 import 'package:provider/provider.dart';
 import 'package:work_out_app/provider/store.dart' as provider;
 import 'package:stop_watch_timer/stop_watch_timer.dart';
 
 import 'package:work_out_app/provider/make_program.dart' as maked;
-import 'package:work_out_app/database/database.dart';
 import 'package:drift/drift.dart' as drift;
+import 'package:work_out_app/widgets/buttons/wide_button.dart';
+import 'package:work_out_app/widgets/work_out_library/work_out_library.dart';
 
 class PlanningScreen extends StatefulWidget {
   const PlanningScreen({super.key});
@@ -458,17 +452,18 @@ class _PlanningScreenState extends State<PlanningScreen> {
                   PageRouteBuilder(
                     pageBuilder: (context, animation, secondaryAnimation) =>
                         SelectWorkoutPage(
-                      addFunction: (List<maked.Workout> selectList) {
-                        for (int i = 0; i < selectList.length; i++) {
-                          routineProvider.addUserSelectWorkout(selectList[i]);
-                          // addWorkout(selectList[i]);
-                        }
-                      },
-                      changedListner: () {
-                        setState(() {
-                          routineProvider.todayWorkouts;
-                        });
-                      },
+                      routineProvider: routineProvider,
+                      // addFunction: (List<maked.Workout> selectList) {
+                      //   for (int i = 0; i < selectList.length; i++) {
+                      //     routineProvider.addUserSelectWorkout(selectList[i]);
+                      //     // addWorkout(selectList[i]);
+                      //   }
+                      // },
+                      // changedListner: () {
+                      //   setState(() {
+                      //     routineProvider.todayWorkouts;
+                      //   });
+                      // },
                     ),
                     transitionsBuilder:
                         (context, animation, secondaryAnimation, child) {

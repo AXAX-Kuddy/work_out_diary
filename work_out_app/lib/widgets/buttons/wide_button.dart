@@ -5,7 +5,7 @@ class WideButton extends StatefulWidget {
   final Color unTapColor;
   final Color tapColor;
   final Color tapBorderColor;
-  final List<Widget> inputContent;
+  final List<Widget> children;
   final bool buttonTest;
   final Function? onTapUpFunction;
 
@@ -19,7 +19,7 @@ class WideButton extends StatefulWidget {
     super.key,
     this.unTapColor = const Color.fromARGB(226, 255, 255, 255),
     this.tapColor = const Color.fromARGB(183, 255, 255, 255),
-    this.inputContent = const [
+    this.children = const [
       Text("컨텐츠를 입력하세요"),
     ],
     this.onTapUpFunction,
@@ -79,8 +79,8 @@ class _WideButtonState extends State<WideButton> {
           verticalAxis: widget.verticalAxis,
           height: widget.height,
           width: widget.width,
-          inputContent: [
-            ...widget.inputContent,
+          children: [
+            ...widget. children,
           ],
         ));
   }

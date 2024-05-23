@@ -1,7 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_native_splash/cli_commands.dart';
-import 'package:work_out_app/util/keys.dart';
 import 'package:work_out_app/screens/home_screen/home_screen.dart';
 import 'package:work_out_app/widgets/base_screen/base_page.dart';
 import 'package:work_out_app/util/palette.dart' as palette;

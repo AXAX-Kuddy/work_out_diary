@@ -1,14 +1,9 @@
-import 'dart:ffi';
-
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:work_out_app/provider/make_program.dart' as maked;
 import 'package:work_out_app/util/palette.dart' as palette;
 import 'package:line_icons/line_icon.dart';
 import 'package:line_icons/line_icons.dart';
-import 'package:work_out_app/screens/plan_screen/plan_screen.dart';
 import 'package:work_out_app/screens/plan_screen/plan_screen_widgets/top_divider.dart';
 import 'package:work_out_app/widgets/drop_downs/drop_down.dart';
 import 'package:work_out_app/widgets/text_field/non_form_text_field.dart';

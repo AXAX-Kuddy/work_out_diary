@@ -1,17 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:line_icons/line_icon.dart';
 import 'package:line_icons/line_icons.dart';
-import 'package:provider/provider.dart';
-import 'package:simple_animations/movie_tween/movie_tween.dart';
-import 'package:simple_animations/simple_animations.dart';
 import 'package:work_out_app/util/palette.dart' as palette;
 import 'package:work_out_app/screens/plan_screen/plan_screen.dart';
-import 'package:work_out_app/widgets/buttons/wide_button.dart';
 import 'package:work_out_app/screens/home_screen/home_screen_widgets/todays_program.dart';
 import 'package:work_out_app/screens/home_screen/home_screen_widgets/top_profile_card.dart';
 import 'package:work_out_app/widgets/base_screen/base_page.dart';
-import 'package:provider/provider.dart';
-import 'package:work_out_app/provider/store.dart' as provider;
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({

@@ -4,7 +4,7 @@ class WidgetsBox extends StatelessWidget {
   final Color backgroundColor;
   final double? height;
   final double? width;
-  final List<Widget> inputContent;
+  final List<Widget> children;
   final MainAxisAlignment horizontalAxis;
   final CrossAxisAlignment verticalAxis;
   final Border? border;
@@ -15,7 +15,7 @@ class WidgetsBox extends StatelessWidget {
     this.backgroundColor = Colors.white,
     this.height,
     this.width,
-    required this.inputContent,
+    required this.children,
     this.horizontalAxis = MainAxisAlignment.spaceEvenly,
     this.verticalAxis = CrossAxisAlignment.start,
     this.border,
@@ -39,7 +39,7 @@ class WidgetsBox extends StatelessWidget {
           mainAxisAlignment: horizontalAxis,
           crossAxisAlignment: verticalAxis,
           children: [
-            ...inputContent,
+            ...children,
           ],
         ),
       ),

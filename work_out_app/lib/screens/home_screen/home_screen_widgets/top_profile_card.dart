@@ -1,24 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:work_out_app/util/palette.dart' as palette;
 import 'package:work_out_app/widgets/box_widget/widget_box.dart';
-import 'package:provider/provider.dart';
 import 'package:work_out_app/provider/store.dart' as provider;
 import 'package:work_out_app/util/keys.dart';
 
 class ProfileCard extends StatelessWidget {
   ProfileCard({super.key});
-  final double squat = provider.MainStore
-      .userInfo[UserInfoField.userSBD][SBDkeys.squat];
+  final double squat =
+      provider.MainStore.userInfo[UserInfoField.userSBD][SBDkeys.squat];
 
-  final double bench = provider.MainStore
-      .userInfo[UserInfoField.userSBD][SBDkeys.benchPress];
+  final double bench =
+      provider.MainStore.userInfo[UserInfoField.userSBD][SBDkeys.benchPress];
 
-  final double dl = provider.MainStore.userInfo[UserInfoField.userSBD]
-      [SBDkeys.deadlift];
+  final double dl =
+      provider.MainStore.userInfo[UserInfoField.userSBD][SBDkeys.deadlift];
 
-  final double dots =
-      provider.MainStore.userInfo[UserInfoField.dotsPoint];
+  final double dots = provider.MainStore.userInfo[UserInfoField.dotsPoint];
 
   final List<String> tierList = [
     "초보자",
@@ -56,7 +53,7 @@ class ProfileCard extends StatelessWidget {
     return WidgetsBox(
       backgroundColor: palette.cardColorYelGreen,
       verticalAxis: CrossAxisAlignment.center,
-      inputContent: [
+      children: [
         Row(
           children: [
             Column(
