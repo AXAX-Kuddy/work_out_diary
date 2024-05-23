@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:work_out_app/palette.dart' as palette;
-import 'package:work_out_app/widgets/base_page.dart';
+import 'package:work_out_app/util/palette.dart' as palette;
+import 'package:work_out_app/widgets/base_screen/base_page.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class WorkOutScreen extends StatefulWidget {

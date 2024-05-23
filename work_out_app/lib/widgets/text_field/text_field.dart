@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:work_out_app/palette.dart' as palette;
+import 'package:work_out_app/util/palette.dart' as palette;
 
 class CoustomTextField extends StatefulWidget {
   final String? userName;

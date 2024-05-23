@@ -5,21 +5,21 @@ import 'dart:io';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
-import 'package:work_out_app/widgets/base_page.dart';
-import 'package:work_out_app/make_program.dart' as maked;
-import 'package:work_out_app/palette.dart' as palette;
-import 'package:work_out_app/keys.dart';
+import 'package:work_out_app/widgets/base_screen/base_page.dart';
+import 'package:work_out_app/provider/make_program.dart' as maked;
+import 'package:work_out_app/util/palette.dart' as palette;
+import 'package:work_out_app/util/keys.dart';
 
 //화면 위젯
-import 'package:work_out_app/screens/home_screen.dart';
-import 'package:work_out_app/screens/plan_screen.dart';
+import 'package:work_out_app/screens/home_screen/home_screen.dart';
+import 'package:work_out_app/screens/plan_screen/plan_screen.dart';
 import 'package:work_out_app/screens/work_out_screen.dart';
 import 'package:work_out_app/screens/dots_point_screen.dart';
 import 'package:work_out_app/dump/input_userInfo.dart';
 
 //패키지들
 import 'package:provider/provider.dart';
-import 'package:work_out_app/store.dart' as provider;
+import 'package:work_out_app/provider/store.dart' as provider;
 import 'package:animations/animations.dart';
 
 //아이콘
@@ -28,7 +28,7 @@ import 'package:line_icons/line_icon.dart';
 
 //데이터 베이스
 import 'package:drift/drift.dart';
-import 'package:work_out_app/database.dart';
+import 'package:work_out_app/database/database.dart';
 
 void main() async {
   // WidgetsFlutterBinding.ensureInitialized();

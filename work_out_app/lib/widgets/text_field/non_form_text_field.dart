@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:work_out_app/palette.dart' as palette;
-import 'package:work_out_app/make_program.dart' as maked;
+import 'package:work_out_app/util/palette.dart' as palette;
+import 'package:work_out_app/provider/make_program.dart' as maked;
 
 class CustomTextField2 extends StatefulWidget {
   final double? width;

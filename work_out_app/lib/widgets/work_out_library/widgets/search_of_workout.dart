@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:work_out_app/widgets/non_form_text_field.dart';
-import 'package:work_out_app/palette.dart' as palette;
+import 'package:work_out_app/widgets/text_field/non_form_text_field.dart';
+import 'package:work_out_app/util/palette.dart' as palette;
 import 'package:line_icons/line_icon.dart';
 import 'package:line_icons/line_icons.dart';
 

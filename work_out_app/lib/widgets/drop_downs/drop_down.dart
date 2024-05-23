@@ -3,7 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:line_icons/line_icon.dart';
-import 'package:work_out_app/palette.dart' as palette;
+import 'package:work_out_app/util/palette.dart' as palette;
 
 class CustomDropDownButton extends StatefulWidget {
   final String hint;

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 // 베이스색
 var bgColor = const Color.fromARGB(255, 22, 22, 22);
 var bgFadeColor = const Color.fromARGB(255, 46, 46, 46);
+Color selectColor = const Color.fromARGB(255, 37, 37, 37);
 
 //카드색
 var cardColorYelGreen = const Color.fromRGBO(210, 230, 94, 1);

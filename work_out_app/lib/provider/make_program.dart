@@ -1,8 +1,8 @@
 import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:work_out_app/store.dart' as provider;
-import 'package:work_out_app/database.dart';
+import 'package:work_out_app/provider/store.dart' as provider;
+import 'package:work_out_app/database/database.dart';
 
 class Program {
   late String? programName;

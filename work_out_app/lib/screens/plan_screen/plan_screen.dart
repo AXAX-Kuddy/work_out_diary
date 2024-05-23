@@ -5,23 +5,24 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:line_icons/line_icon.dart';
 import 'package:line_icons/line_icons.dart';
-import 'package:work_out_app/database.dart';
-import 'package:work_out_app/palette.dart' as palette;
+import 'package:work_out_app/database/database.dart';
+import 'package:work_out_app/util/palette.dart' as palette;
 import 'package:work_out_app/dump/routine_page.dart';
-import 'package:work_out_app/screens/plan_screen_widgets.dart/select_workout/select_work_out_page.dart';
-import 'package:work_out_app/screens/plan_screen_widgets.dart/workout_complete.dart';
-import 'package:work_out_app/screens/plan_screen_widgets.dart/workout_detail.dart';
+import 'package:work_out_app/widgets/work_out_library/work_out_library.dart';
+import 'package:work_out_app/screens/plan_screen/plan_screen_widgets/select_work_out_screen.dart';
+import 'package:work_out_app/screens/plan_screen/plan_screen_widgets/workout_complete.dart';
+import 'package:work_out_app/screens/plan_screen/plan_screen_widgets/workout_detail.dart';
 import 'package:work_out_app/screens/work_out_screen.dart';
-import 'package:work_out_app/widgets/base_page.dart';
-import 'package:work_out_app/widgets/drop_down.dart';
-import 'package:work_out_app/widgets/wide_button.dart';
-import 'package:work_out_app/widgets/widget_box.dart';
+import 'package:work_out_app/widgets/base_screen/base_page.dart';
+import 'package:work_out_app/widgets/drop_downs/drop_down.dart';
+import 'package:work_out_app/widgets/buttons/wide_button.dart';
+import 'package:work_out_app/widgets/box_widget/widget_box.dart';
 import 'package:provider/provider.dart';
-import 'package:work_out_app/store.dart' as provider;
+import 'package:work_out_app/provider/store.dart' as provider;
 import 'package:stop_watch_timer/stop_watch_timer.dart';
 
-import 'package:work_out_app/make_program.dart' as maked;
-import 'package:work_out_app/database.dart';
+import 'package:work_out_app/provider/make_program.dart' as maked;
+import 'package:work_out_app/database/database.dart';
 import 'package:drift/drift.dart' as drift;
 
 class PlanningScreen extends StatefulWidget {
@@ -456,7 +457,7 @@ class _PlanningScreenState extends State<PlanningScreen> {
                   context,
                   PageRouteBuilder(
                     pageBuilder: (context, animation, secondaryAnimation) =>
-                        SelectWorkOut(
+                        SelectWorkoutPage(
                       addFunction: (List<maked.Workout> selectList) {
                         for (int i = 0; i < selectList.length; i++) {
                           routineProvider.addUserSelectWorkout(selectList[i]);

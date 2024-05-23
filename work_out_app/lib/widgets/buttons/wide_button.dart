@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:work_out_app/widgets/widget_box.dart';
+import 'package:work_out_app/widgets/box_widget/widget_box.dart';
 
 class WideButton extends StatefulWidget {
   final Color unTapColor;

@@ -1,13 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_native_splash/cli_commands.dart';
 import 'package:provider/provider.dart';
-import 'package:work_out_app/screens/plan_screen_widgets.dart/select_workout/select_work_out_page.dart';
-import 'package:work_out_app/store.dart' as provider;
-import 'package:work_out_app/palette.dart' as palette;
-import 'package:work_out_app/keys.dart';
+import 'package:work_out_app/widgets/work_out_library/work_out_library.dart';
+import 'package:work_out_app/provider/store.dart' as provider;
+import 'package:work_out_app/util/palette.dart' as palette;
+import 'package:work_out_app/util/keys.dart';
 
 class PartList extends StatefulWidget {
   final Map<WorkoutListKeys, List<provider.WorkoutMenu>> workoutList;
@@ -28,20 +29,24 @@ class _PartListState extends State<PartList> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 40,
+      height: 35,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: list.length,
         itemBuilder: (BuildContext context, int index) {
           return Container(
-            width: 50,
+            width: 65,
             margin: const EdgeInsets.only(
               right: 20,
             ),
-            padding: const EdgeInsets.all(8),
+            // padding: const EdgeInsets.all(8),
+            alignment: Alignment.center,
             decoration: BoxDecoration(
-              color: palette.cardColorYelGreen,
-              borderRadius: BorderRadius.circular(10),
+              color: Colors.transparent,
+              border: Border.all(
+                color: palette.cardColorYelGreen,
+              ),
+              borderRadius: BorderRadius.circular(7),
             ),
             child: GestureDetector(
               onTap: () {
@@ -53,9 +58,9 @@ class _PartListState extends State<PartList> {
               child: Text(
                 list[index],
                 textAlign: TextAlign.center,
-                style: const TextStyle(
+                style: TextStyle(
+                  color: palette.cardColorWhite,
                   fontSize: 15,
-                  fontWeight: FontWeight.bold,
                 ),
               ),
             ),
