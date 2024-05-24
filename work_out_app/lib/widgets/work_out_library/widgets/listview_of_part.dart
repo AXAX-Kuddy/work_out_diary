@@ -35,6 +35,7 @@ class _PartListState extends State<PartList> {
         itemCount: list.length,
         itemBuilder: (BuildContext context, int index) {
           return Container(
+            key: GlobalKey(),
             width: 65,
             margin: const EdgeInsets.only(
               right: 20,

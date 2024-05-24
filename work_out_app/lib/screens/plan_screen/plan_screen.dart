@@ -451,20 +451,7 @@ class _PlanningScreenState extends State<PlanningScreen> {
                   context,
                   PageRouteBuilder(
                     pageBuilder: (context, animation, secondaryAnimation) =>
-                        SelectWorkoutPage(
-                      routineProvider: routineProvider,
-                      // addFunction: (List<maked.Workout> selectList) {
-                      //   for (int i = 0; i < selectList.length; i++) {
-                      //     routineProvider.addUserSelectWorkout(selectList[i]);
-                      //     // addWorkout(selectList[i]);
-                      //   }
-                      // },
-                      // changedListner: () {
-                      //   setState(() {
-                      //     routineProvider.todayWorkouts;
-                      //   });
-                      // },
-                    ),
+                        const SelectWorkoutPage(),
                     transitionsBuilder:
                         (context, animation, secondaryAnimation, child) {
                       var begin = const Offset(0.0, 1.0);

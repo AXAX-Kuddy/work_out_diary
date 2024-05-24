@@ -3,6 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:line_icons/line_icon.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:work_out_app/util/keys.dart';
+import 'package:work_out_app/widgets/buttons/wide_button.dart';
 import 'package:work_out_app/widgets/work_out_library/widgets/listview_of_part.dart';
 import 'package:work_out_app/widgets/work_out_library/widgets/search_of_workout.dart';
 import 'package:work_out_app/widgets/base_screen/base_page.dart';
@@ -27,12 +28,12 @@ class ChangePart {
 }
 
 class WorkoutLibrary extends StatefulWidget {
-  final List<Widget> bottomChildren;
+  final bool showAddPlanningScreen;
+  final void Function()? changedListner;
   const WorkoutLibrary({
     super.key,
-    this.bottomChildren = const [
-      SizedBox.shrink(),
-    ],
+    required this.showAddPlanningScreen,
+    this.changedListner,
   });
 
   @override
@@ -42,18 +43,26 @@ class WorkoutLibrary extends StatefulWidget {
 class _WorkoutLibraryState extends State<WorkoutLibrary> {
   List<provider.WorkoutMenu> tempoList = [];
   final List<WorkoutListKeys> keys = WorkoutListKeys.values;
+  late Widget addWorkoutToPlanScreenButton = const SizedBox.shrink();
 
   late Map<WorkoutListKeys, List<provider.WorkoutMenu>> workoutList;
+  late provider.RoutineProvider routineProvider;
 
   void managementTempoList(
       {required provider.WorkoutMenu workout, required int command}) {
     if (command == 1) {
       tempoList.add(workout);
+      debugPrint("$tempoList");
     } else if (command == 0) {
       tempoList.remove(workout);
+      debugPrint("$tempoList");
     } else {
       debugPrint("커맨드가 잘못 입력됨");
     }
+  }
+
+  void disposeTempoList() {
+    tempoList = [];
   }
 
   void handleChangedPart() {
@@ -66,12 +75,38 @@ class _WorkoutLibraryState extends State<WorkoutLibrary> {
   void initState() {
     super.initState();
     workoutList = context.read<provider.WorkoutListStore>().workouts;
+
+    if (widget.showAddPlanningScreen) {
+      addWorkoutToPlanScreenButton = WideButton(
+        onTapUpFunction: () {
+          for (int i = 0; i < tempoList.length; i++) {
+            maked.Workout selectWorkout = maked.Workout(
+              name: tempoList[i].name,
+              showE1rm: tempoList[i].showE1rm,
+            );
+
+            routineProvider.addUserSelectWorkout(selectWorkout);
+          }
+          Navigator.pop(context);
+        },
+        children: const [
+          Text("운동 추가하기"),
+        ],
+      );
+    }
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    routineProvider = context.watch<provider.RoutineProvider>();
   }
 
   @override
   void dispose() {
-    ChangePart.dispose();
     super.dispose();
+    ChangePart.dispose();
+    disposeTempoList();
   }
 
   @override
@@ -133,7 +168,7 @@ class _WorkoutLibraryState extends State<WorkoutLibrary> {
             ),
           ][ChangePart.index],
         ),
-        ...widget.bottomChildren,
+        addWorkoutToPlanScreenButton,
       ],
     );
   }
