@@ -14,6 +14,7 @@ import 'package:work_out_app/provider/store.dart' as provider;
 import 'package:animated_snack_bar/animated_snack_bar.dart';
 
 import 'package:work_out_app/provider/make_program.dart' as maked;
+import 'package:work_out_app/widgets/work_out_library/widgets/workout_list_viewer.dart';
 
 class ChangePart {
   static int index = 0;
@@ -44,21 +45,36 @@ class _WorkoutLibraryState extends State<WorkoutLibrary> {
   List<provider.WorkoutMenu> tempoList = [];
   final List<WorkoutListKeys> keys = WorkoutListKeys.values;
   late Widget addWorkoutToPlanScreenButton = const SizedBox.shrink();
+  late Widget tempoListViewer = const SizedBox.shrink();
 
   late Map<WorkoutListKeys, List<provider.WorkoutMenu>> workoutList;
   late provider.RoutineProvider routineProvider;
 
+  ///커맨드 1 = 추가
+  ///커맨드 0 = 제거
   void managementTempoList(
       {required provider.WorkoutMenu workout, required int command}) {
     if (command == 1) {
-      tempoList.add(workout);
+      setState(() {
+        tempoList.add(workout);
+        thrrowUpdateTempoList();
+      });
       debugPrint("$tempoList");
     } else if (command == 0) {
-      tempoList.remove(workout);
+      setState(() {
+        tempoList.remove(workout);
+        thrrowUpdateTempoList();
+      });
       debugPrint("$tempoList");
     } else {
-      debugPrint("커맨드가 잘못 입력됨");
+      Exception("커맨드 잘못 입력함");
     }
+  }
+
+  void thrrowUpdateTempoList() {
+    setState(() {
+      tempoList;
+    });
   }
 
   void disposeTempoList() {
@@ -168,6 +184,13 @@ class _WorkoutLibraryState extends State<WorkoutLibrary> {
             ),
           ][ChangePart.index],
         ),
+        // tempoListViewer,
+        widget.showAddPlanningScreen
+            ? WorkoutListViewer(
+                list: tempoList,
+                managementTempoList: managementTempoList,
+              )
+            : const SizedBox.shrink(),
         addWorkoutToPlanScreenButton,
       ],
     );
@@ -260,7 +283,6 @@ class _SelectBoxState extends State<SelectBox> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        print("click");
         if (_checker == false) {
           if (widget.tempoList.contains(widget.menu) == false) {
             setState(() {
