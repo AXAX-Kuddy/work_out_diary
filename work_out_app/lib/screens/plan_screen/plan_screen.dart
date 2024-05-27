@@ -71,6 +71,8 @@ class _PlanningScreenState extends State<PlanningScreen> {
         routineProvider
             .removeUserSelectWorkout(routineProvider.todayWorkouts[i]);
       }
+      routineProvider.onDisposeWorkoutTimer();
+      routineProvider.onDisposeRestTimer();
       Navigator.push(context, MaterialPageRoute(builder: (context) {
         return const WorkoutCompleteScreem();
       }));
@@ -120,10 +122,16 @@ class _PlanningScreenState extends State<PlanningScreen> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    setRoutineName();
+    context.read<provider.RoutineProvider>().loadPreferences();
+  }
+
+  @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     routineProvider = context.watch<provider.RoutineProvider>();
-    setRoutineName();
 
     switch (routineProvider.workoutStart) {
       case true:
@@ -235,6 +243,11 @@ class _PlanningScreenState extends State<PlanningScreen> {
 
     switch (routineProvider.onRest) {
       case true:
+        routineProvider.totalRest();
+        restTimerButton = RestTimeWidget(
+          showRestTimerDialog: showRestTimerDialog,
+        );
+
         restTimerWidget = Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
@@ -246,7 +259,9 @@ class _PlanningScreenState extends State<PlanningScreen> {
               children: [
                 RestTimeScrollList(
                   onSelectedItemChanged: (index) {
-                    routineProvider.setRestTimeMin(index);
+                    setState(() {
+                      routineProvider.setRestTimeMin(index);
+                    });
                   },
                   children: List.generate(
                     11,
@@ -263,7 +278,9 @@ class _PlanningScreenState extends State<PlanningScreen> {
                 ),
                 RestTimeScrollList(
                   onSelectedItemChanged: (index) {
-                    routineProvider.setRestTimeSec(index);
+                    setState(() {
+                      routineProvider.setRestTimeSec(index);
+                    });
                   },
                   children: List.generate(
                     60,
@@ -325,25 +342,49 @@ class _PlanningScreenState extends State<PlanningScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 TextButton(
-                    onPressed: () {
-                      setState(() {
-                        routineProvider.totalRest();
-                      });
-                      Navigator.pop(context);
-                    },
-                    child: Text(
-                      "설정하기",
-                      style: TextStyle(
-                        color: palette.cardColorWhite,
-                        fontSize: 17,
-                      ),
-                    ))
+                  onPressed: () {
+                    routineProvider.totalRest();
+                    Navigator.pop(context);
+                  },
+                  child: Text(
+                    "설정하기",
+                    style: TextStyle(
+                      color: palette.cardColorWhite,
+                      fontSize: 17,
+                    ),
+                  ),
+                )
               ],
             ),
           ],
         );
 
       default:
+        restTimerButton = TextButton(
+          onPressed: () {
+            showRestTimerDialog();
+          },
+          child: Row(
+            children: [
+              Text(
+                "휴식시간 설정",
+                style: TextStyle(
+                  fontSize: 14,
+                  color: palette.cardColorWhite,
+                ),
+              ),
+              const SizedBox(
+                width: 3,
+              ),
+              LineIcon(
+                LineIcons.clock,
+                color: palette.cardColorYelGreen,
+                size: 18,
+              ),
+            ],
+          ),
+        );
+
         restTimerWidget = Expanded(
           child: Center(
             child: Text(
@@ -356,37 +397,6 @@ class _PlanningScreenState extends State<PlanningScreen> {
             ),
           ),
         );
-    }
-
-    if (routineProvider.restTimeTotal <= 0) {
-      restTimerButton = TextButton(
-        onPressed: () {
-          showRestTimerDialog();
-        },
-        child: Row(
-          children: [
-            Text(
-              "휴식시간 설정",
-              style: TextStyle(
-                fontSize: 14,
-                color: palette.cardColorWhite,
-              ),
-            ),
-            const SizedBox(
-              width: 3,
-            ),
-            LineIcon(
-              LineIcons.clock,
-              color: palette.cardColorYelGreen,
-              size: 18,
-            ),
-          ],
-        ),
-      );
-    } else {
-      restTimerButton = RestTimeWidget(
-        showRestTimerDialog: showRestTimerDialog,
-      );
     }
   }
 
@@ -649,12 +659,6 @@ class _RestTimeWidgetState extends State<RestTimeWidget> {
     super.didChangeDependencies();
     routineProvider = context.watch<provider.RoutineProvider>();
   }
-
-  // @override
-  // void dispose() async {
-  //   super.dispose();
-  //   await provider.Routine.restTimer.dispose();
-  // }
 
   @override
   Widget build(BuildContext context) {

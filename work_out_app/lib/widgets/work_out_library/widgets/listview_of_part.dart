@@ -34,28 +34,28 @@ class _PartListState extends State<PartList> {
         scrollDirection: Axis.horizontal,
         itemCount: list.length,
         itemBuilder: (BuildContext context, int index) {
-          return Container(
-            key: GlobalKey(),
-            width: 65,
-            margin: const EdgeInsets.only(
-              right: 20,
-            ),
-            // padding: const EdgeInsets.all(8),
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              color: Colors.transparent,
-              border: Border.all(
-                color: palette.cardColorYelGreen,
+          return GestureDetector(
+            onTap: () {
+              setState(() {
+                ChangePart.changeIndex(index);
+                widget.onChanged();
+              });
+            },
+            child: Container(
+              key: GlobalKey(),
+              width: 65,
+              margin: const EdgeInsets.only(
+                right: 20,
               ),
-              borderRadius: BorderRadius.circular(7),
-            ),
-            child: GestureDetector(
-              onTap: () {
-                setState(() {
-                  ChangePart.changeIndex(index);
-                  widget.onChanged();
-                });
-              },
+              // padding: const EdgeInsets.all(8),
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color: Colors.transparent,
+                border: Border.all(
+                  color: palette.cardColorYelGreen,
+                ),
+                borderRadius: BorderRadius.circular(7),
+              ),
               child: Text(
                 list[index],
                 textAlign: TextAlign.center,

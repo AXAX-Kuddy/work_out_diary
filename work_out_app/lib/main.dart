@@ -1,7 +1,6 @@
 //기본
 import 'dart:io';
 
-
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
@@ -31,7 +30,7 @@ import 'package:drift/drift.dart';
 import 'package:work_out_app/database/database.dart';
 
 void main() async {
-  // WidgetsFlutterBinding.ensureInitialized();
+  WidgetsFlutterBinding.ensureInitialized();
 
   runApp(
     MultiProvider(

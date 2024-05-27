@@ -231,7 +231,6 @@ class _SelectBoxState extends State<SelectBox> {
   @override
   void initState() {
     super.initState();
-
     if (widget.tempoList.contains(widget.menu)) {
       _checker = true;
     }
@@ -261,6 +260,7 @@ class _SelectBoxState extends State<SelectBox> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
+        print("click");
         if (_checker == false) {
           if (widget.tempoList.contains(widget.menu) == false) {
             setState(() {

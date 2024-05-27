@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:work_out_app/provider/make_program.dart' as maked;
 import 'package:work_out_app/util/keys.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
@@ -224,6 +225,10 @@ class RoutineProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> onDisposeWorkoutTimer() async {
+    await Routine.stopWatchTimer.dispose();
+  }
+
   void onStartedRestTimer() {
     Routine.onRestStart = true;
     Routine.restTimer.onStartTimer();
@@ -232,16 +237,19 @@ class RoutineProvider extends ChangeNotifier {
 
   void setRestTimer(bool value) {
     Routine.onRest = value;
+    savePreferences();
     notifyListeners();
   }
 
   void setRestTimeMin(int value) {
     Routine.restTimeMin = value;
+    savePreferences();
     notifyListeners();
   }
 
   void setRestTimeSec(int value) {
     Routine.restTimeSec = value;
+    savePreferences();
     notifyListeners();
   }
 
@@ -251,7 +259,8 @@ class RoutineProvider extends ChangeNotifier {
     Routine.restTimeTotal = min + sec;
 
     Routine.restTimer.setPresetTime(mSec: Routine.restTimeTotal, add: false);
-    notifyListeners();
+    savePreferences();
+    // notifyListeners();
   }
 
   void onStoppedRestTimer() {
@@ -279,5 +288,32 @@ class RoutineProvider extends ChangeNotifier {
   void resetRestSnackbarShown() {
     Routine.hasShowSnackbar = false;
     notifyListeners();
+  }
+
+  Future<void> savePreferences() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(RoutinePreferencesKey.onRest.key, Routine.onRest);
+
+    await prefs.setInt(
+        RoutinePreferencesKey.restTimeMin.key, Routine.restTimeMin);
+    await prefs.setInt(
+        RoutinePreferencesKey.restTimeSec.key, Routine.restTimeSec);
+    await prefs.setInt(
+        RoutinePreferencesKey.restTimeTotal.key, Routine.restTimeTotal);
+    print("save");
+  }
+
+  Future<void> loadPreferences() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    Routine.onRest = prefs.getBool(RoutinePreferencesKey.onRest.key) ?? false;
+
+    Routine.restTimeMin =
+        prefs.getInt(RoutinePreferencesKey.restTimeMin.key) ?? 0;
+    Routine.restTimeSec =
+        prefs.getInt(RoutinePreferencesKey.restTimeSec.key) ?? 0;
+    Routine.restTimeTotal =
+        prefs.getInt(RoutinePreferencesKey.restTimeTotal.key) ?? 0;
+
+    print("load");
   }
 }
