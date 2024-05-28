@@ -26,6 +26,17 @@ class PartList extends StatefulWidget {
 class _PartListState extends State<PartList> {
   final List<String> list = ["하체", "등", "가슴", "어깨", "이두", "삼두"];
 
+  Color changeFocusBorderColor({
+    required int index,
+    required int focusTab,
+  }) {
+    if (index == focusTab) {
+      return palette.cardColorYelGreen;
+    } else {
+      return palette.bgFadeColor;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -52,7 +63,10 @@ class _PartListState extends State<PartList> {
               decoration: BoxDecoration(
                 color: Colors.transparent,
                 border: Border.all(
-                  color: palette.cardColorYelGreen,
+                  color: changeFocusBorderColor(
+                    index: index,
+                    focusTab: ChangePart.index,
+                  ),
                 ),
                 borderRadius: BorderRadius.circular(7),
               ),

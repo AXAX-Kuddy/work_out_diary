@@ -42,13 +42,17 @@ class WorkoutLibrary extends StatefulWidget {
 }
 
 class _WorkoutLibraryState extends State<WorkoutLibrary> {
-  List<provider.WorkoutMenu> tempoList = [];
-  final List<WorkoutListKeys> keys = WorkoutListKeys.values;
-  late Widget addWorkoutToPlanScreenButton = const SizedBox.shrink();
-  late Widget tempoListViewer = const SizedBox.shrink();
+  late provider.RoutineProvider routineProvider;
 
   late Map<WorkoutListKeys, List<provider.WorkoutMenu>> workoutList;
-  late provider.RoutineProvider routineProvider;
+  final List<WorkoutListKeys> keys = WorkoutListKeys.values;
+
+  List<provider.WorkoutMenu> tempoList = [];
+  List<provider.WorkoutMenu> allWorkoutList = [];
+  String searchText = "";
+
+  late Widget addWorkoutToPlanScreenButton = const SizedBox.shrink();
+  late Widget tempoListViewer = const SizedBox.shrink();
 
   ///커맨드 1 = 추가
   ///커맨드 0 = 제거
@@ -57,24 +61,16 @@ class _WorkoutLibraryState extends State<WorkoutLibrary> {
     if (command == 1) {
       setState(() {
         tempoList.add(workout);
-        thrrowUpdateTempoList();
       });
       debugPrint("$tempoList");
     } else if (command == 0) {
       setState(() {
         tempoList.remove(workout);
-        thrrowUpdateTempoList();
       });
       debugPrint("$tempoList");
     } else {
       Exception("커맨드 잘못 입력함");
     }
-  }
-
-  void thrrowUpdateTempoList() {
-    setState(() {
-      tempoList;
-    });
   }
 
   void disposeTempoList() {
@@ -87,10 +83,27 @@ class _WorkoutLibraryState extends State<WorkoutLibrary> {
     });
   }
 
+  void handleChangedAllWorkoutList() {
+    setState(() {
+      allWorkoutList;
+    });
+  }
+
+  void changedSearchText(String value) {
+    setState(() {
+      searchText = value;
+    });
+    print(searchText);
+  }
+
   @override
   void initState() {
     super.initState();
     workoutList = context.read<provider.WorkoutListStore>().workouts;
+
+    for (var workout in workoutList.values) {
+      allWorkoutList.addAll(workout);
+    }
 
     if (widget.showAddPlanningScreen) {
       addWorkoutToPlanScreenButton = WideButton(
@@ -130,7 +143,11 @@ class _WorkoutLibraryState extends State<WorkoutLibrary> {
     return BasePage(
       appBar: AppBar(
         centerTitle: true,
-        title: const SearchWorkout(),
+        title: SearchWorkout(
+          handleChangedPart: handleChangedPart,
+          allWorkoutList: allWorkoutList,
+          changedSearchText: changedSearchText,
+        ),
         leading: IconButton(
           onPressed: () {
             Navigator.pop(context);
@@ -149,6 +166,11 @@ class _WorkoutLibraryState extends State<WorkoutLibrary> {
         ),
         const SizedBox(
           height: 20,
+        ),
+        Divider(
+          thickness: 0.5,
+          height: 0.0,
+          color: palette.cardColorWhite,
         ),
         Expanded(
           child: [
@@ -182,6 +204,12 @@ class _WorkoutLibraryState extends State<WorkoutLibrary> {
               tempoList: tempoList,
               managementTempoList: managementTempoList,
             ),
+            WorkoutListAll(
+              searchText: searchText,
+              allWorkoutList: allWorkoutList,
+              tempoList: tempoList,
+              managementTempoList: managementTempoList,
+            ),
           ][ChangePart.index],
         ),
         // tempoListViewer,
@@ -193,6 +221,51 @@ class _WorkoutLibraryState extends State<WorkoutLibrary> {
             : const SizedBox.shrink(),
         addWorkoutToPlanScreenButton,
       ],
+    );
+  }
+}
+
+class WorkoutListAll extends StatefulWidget {
+  final String searchText;
+
+  final List<provider.WorkoutMenu> allWorkoutList;
+  final List<provider.WorkoutMenu> tempoList;
+  final void Function(
+      {required provider.WorkoutMenu workout,
+      required int command}) managementTempoList;
+
+  const WorkoutListAll({
+    super.key,
+    required this.searchText,
+    required this.allWorkoutList,
+    required this.tempoList,
+    required this.managementTempoList,
+  });
+
+  @override
+  State<WorkoutListAll> createState() => _WorkoutListAllState();
+}
+
+class _WorkoutListAllState extends State<WorkoutListAll> {
+  @override
+  Widget build(BuildContext context) {
+    return ListView.builder(
+      itemCount: widget.allWorkoutList.length,
+      itemBuilder: (context, index) {
+        var hasMatch = RegExp(widget.searchText)
+            .hasMatch(widget.allWorkoutList[index].name);
+
+        if (widget.searchText.isNotEmpty && !hasMatch) {
+          return const SizedBox.shrink();
+        } else {
+          return SelectBox(
+            key: GlobalKey(),
+            menu: widget.allWorkoutList[index],
+            tempoList: widget.tempoList,
+            managementTempoList: widget.managementTempoList,
+          );
+        }
+      },
     );
   }
 }
