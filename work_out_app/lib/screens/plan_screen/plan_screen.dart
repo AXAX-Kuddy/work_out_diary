@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_sliding_up_panel/flutter_sliding_up_panel.dart';
 import 'package:line_icons/line_icon.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:work_out_app/database/database.dart';
@@ -19,6 +21,10 @@ import 'package:drift/drift.dart' as drift;
 import 'package:work_out_app/widgets/buttons/wide_button.dart';
 import 'package:work_out_app/widgets/work_out_library/work_out_library.dart';
 
+enum WorkoutDetailPanelControllerCommand {
+  spread,
+}
+
 class PlanningScreen extends StatefulWidget {
   const PlanningScreen({super.key});
 
@@ -28,6 +34,10 @@ class PlanningScreen extends StatefulWidget {
 
 class _PlanningScreenState extends State<PlanningScreen> {
   final AppDatabase database = AppDatabase();
+  final SlidingUpPanelController panelController = SlidingUpPanelController();
+  maked.Workout panelCallingInstance = maked.Workout(
+    name: "placeHold",
+  );
   String routineName = "";
   late provider.RoutineProvider routineProvider;
 
@@ -119,6 +129,22 @@ class _PlanningScreenState extends State<PlanningScreen> {
             },
           );
         });
+  }
+
+  void workoutDetailPanelController({
+    required WorkoutDetailPanelControllerCommand command,
+    required maked.Workout workoutInstance,
+  }) {
+    switch (command) {
+      case WorkoutDetailPanelControllerCommand.spread:
+        setState(() {
+          panelCallingInstance = workoutInstance;
+          panelController.anchor();
+        });
+
+      default:
+        null;
+    }
   }
 
   @override
@@ -421,6 +447,60 @@ class _PlanningScreenState extends State<PlanningScreen> {
           changeTitle: changeTitle,
         ),
       ),
+      slidingUpPanelWidget: SlidingUpPanelWidget(
+        controlHeight: 50,
+        panelController: panelController,
+        panelStatus: SlidingUpPanelStatus.hidden,
+        child: Container(
+          margin: const EdgeInsets.symmetric(horizontal: 15.0),
+          decoration: ShapeDecoration(
+            color: palette.bgFadeColor,
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(10.0),
+                topRight: Radius.circular(10.0),
+              ),
+            ),
+          ),
+          child: Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    panelCallingInstance.name!,
+                    style: TextStyle(
+                      color: palette.cardColorWhite,
+                      fontSize: 17,
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      panelController.hide();
+                    },
+                    icon: const Icon(
+                      Icons.close,
+                      color: Colors.red,
+                    ),
+                  ),
+                ],
+              ),
+              GestureDetector(
+                onTap: () {
+                  ///삭제
+                },
+                child: Container(
+                  child: const Row(
+                    children: [
+                      Text("삭제"),
+                    ],
+                  ),
+                ),
+              )
+            ],
+          ),
+        ),
+      ),
       children: [
         Expanded(
           child: ScrollConfiguration(
@@ -446,6 +526,7 @@ class _PlanningScreenState extends State<PlanningScreen> {
                     index: index,
                     workoutInstance: routineProvider.todayWorkouts[index],
                     removeWorkout: routineProvider.removeUserSelectWorkout,
+                    workoutDetailPanelController: workoutDetailPanelController,
                   );
                 }
               },

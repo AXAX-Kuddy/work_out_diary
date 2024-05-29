@@ -5,6 +5,7 @@ import 'package:work_out_app/util/palette.dart' as palette;
 import 'package:line_icons/line_icon.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:work_out_app/screens/plan_screen/plan_screen_widgets/top_divider.dart';
+import 'package:work_out_app/screens/plan_screen/plan_screen.dart';
 import 'package:work_out_app/widgets/drop_downs/drop_down.dart';
 import 'package:work_out_app/widgets/text_field/non_form_text_field.dart';
 import 'package:work_out_app/provider/store.dart' as provider;
@@ -13,12 +14,17 @@ class WorkoutDetail extends StatefulWidget {
   final int index;
   final void Function(maked.Workout) removeWorkout;
   final maked.Workout workoutInstance;
+  final void Function({
+    required WorkoutDetailPanelControllerCommand command,
+    required maked.Workout workoutInstance,
+  }) workoutDetailPanelController;
 
   const WorkoutDetail({
     super.key,
     required this.index,
     required this.removeWorkout,
     required this.workoutInstance,
+    required this.workoutDetailPanelController,
   });
 
   @override
@@ -239,54 +245,58 @@ class _WorkoutDetailState extends State<WorkoutDetail> {
               padding: EdgeInsets.zero,
               visualDensity: VisualDensity.compact,
               onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (context) {
-                    return AlertDialog(
-                      contentPadding: const EdgeInsets.all(25),
-                      backgroundColor: Colors.transparent,
-                      content: Text(
-                        "${widget.workoutInstance.name}를(을) 목록에서 삭제 하시겠습니까?",
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: palette.cardColorWhite,
-                        ),
-                      ),
-                      actions: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            TextButton(
-                              onPressed: () {
-                                Navigator.pop(context);
-                              },
-                              child: Text(
-                                "취소",
-                                style: TextStyle(
-                                  color: palette.cardColorWhite,
-                                ),
-                              ),
-                            ),
-                            TextButton(
-                              onPressed: () {
-                                setState(() {
-                                  widget.removeWorkout(widget.workoutInstance);
-                                });
-                                Navigator.pop(context);
-                              },
-                              child: Text(
-                                "확인",
-                                style: TextStyle(
-                                  color: palette.cardColorYelGreen,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    );
-                  },
+                widget.workoutDetailPanelController(
+                  command: WorkoutDetailPanelControllerCommand.spread,
+                  workoutInstance: widget.workoutInstance,
                 );
+                // showDialog(
+                //   context: context,
+                //   builder: (context) {
+                //     return AlertDialog(
+                //       contentPadding: const EdgeInsets.all(25),
+                //       backgroundColor: Colors.transparent,
+                //       content: Text(
+                //         "${widget.workoutInstance.name}를(을) 목록에서 삭제 하시겠습니까?",
+                //         style: TextStyle(
+                //           fontSize: 16,
+                //           color: palette.cardColorWhite,
+                //         ),
+                //       ),
+                //       actions: [
+                //         Row(
+                //           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                //           children: [
+                //             TextButton(
+                //               onPressed: () {
+                //                 Navigator.pop(context);
+                //               },
+                //               child: Text(
+                //                 "취소",
+                //                 style: TextStyle(
+                //                   color: palette.cardColorWhite,
+                //                 ),
+                //               ),
+                //             ),
+                //             TextButton(
+                //               onPressed: () {
+                //                 setState(() {
+                //                   widget.removeWorkout(widget.workoutInstance);
+                //                 });
+                //                 Navigator.pop(context);
+                //               },
+                //               child: Text(
+                //                 "확인",
+                //                 style: TextStyle(
+                //                   color: palette.cardColorYelGreen,
+                //                 ),
+                //               ),
+                //             ),
+                //           ],
+                //         ),
+                //       ],
+                //     );
+                //   },
+                // );
               },
               icon: LineIcon(
                 color: palette.cardColorWhite,
