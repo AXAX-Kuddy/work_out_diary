@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:line_icons/line_icon.dart';
@@ -30,10 +31,12 @@ class ChangePart {
 
 class WorkoutLibrary extends StatefulWidget {
   final bool showAddPlanningScreen;
+  final int? exchangedWorkoutIndex;
   final void Function()? changedListner;
   const WorkoutLibrary({
     super.key,
     required this.showAddPlanningScreen,
+    this.exchangedWorkoutIndex,
     this.changedListner,
   });
 
@@ -49,9 +52,12 @@ class _WorkoutLibraryState extends State<WorkoutLibrary> {
 
   List<provider.WorkoutMenu> tempoList = [];
   List<provider.WorkoutMenu> allWorkoutList = [];
+
   String searchText = "";
 
   late Widget addWorkoutToPlanScreenButton = const SizedBox.shrink();
+  maked.Workout? selectExchangeWorkout;
+
   late Widget tempoListViewer = const SizedBox.shrink();
 
   ///커맨드 1 = 추가
@@ -93,7 +99,16 @@ class _WorkoutLibraryState extends State<WorkoutLibrary> {
     setState(() {
       searchText = value;
     });
-    print(searchText);
+  }
+
+  void handleSelectExchangeWorkout({
+    maked.Workout? selectWorkout,
+  }) {
+    if (selectWorkout != null) {
+      setState(() {
+        selectExchangeWorkout = selectWorkout;
+      });
+    }
   }
 
   @override
@@ -178,37 +193,51 @@ class _WorkoutLibraryState extends State<WorkoutLibrary> {
               items: workoutList[keys[0]]!,
               tempoList: tempoList,
               managementTempoList: managementTempoList,
+              exchangedWorkoutIndex: widget.exchangedWorkoutIndex,
+              handleSelectExchangeWorkout: handleSelectExchangeWorkout,
             ),
             WorkoutList(
               items: workoutList[keys[1]]!,
               tempoList: tempoList,
               managementTempoList: managementTempoList,
+              exchangedWorkoutIndex: widget.exchangedWorkoutIndex,
+              handleSelectExchangeWorkout: handleSelectExchangeWorkout,
             ),
             WorkoutList(
               items: workoutList[keys[2]]!,
               tempoList: tempoList,
               managementTempoList: managementTempoList,
+              exchangedWorkoutIndex: widget.exchangedWorkoutIndex,
+              handleSelectExchangeWorkout: handleSelectExchangeWorkout,
             ),
             WorkoutList(
               items: workoutList[keys[3]]!,
               tempoList: tempoList,
               managementTempoList: managementTempoList,
+              exchangedWorkoutIndex: widget.exchangedWorkoutIndex,
+              handleSelectExchangeWorkout: handleSelectExchangeWorkout,
             ),
             WorkoutList(
               items: workoutList[keys[4]]!,
               tempoList: tempoList,
               managementTempoList: managementTempoList,
+              exchangedWorkoutIndex: widget.exchangedWorkoutIndex,
+              handleSelectExchangeWorkout: handleSelectExchangeWorkout,
             ),
             WorkoutList(
               items: workoutList[keys[5]]!,
               tempoList: tempoList,
               managementTempoList: managementTempoList,
+              exchangedWorkoutIndex: widget.exchangedWorkoutIndex,
+              handleSelectExchangeWorkout: handleSelectExchangeWorkout,
             ),
             WorkoutListAll(
               searchText: searchText,
               allWorkoutList: allWorkoutList,
               tempoList: tempoList,
               managementTempoList: managementTempoList,
+              exchangedWorkoutIndex: widget.exchangedWorkoutIndex,
+              handleSelectExchangeWorkout: handleSelectExchangeWorkout,
             ),
           ][ChangePart.index],
         ),
@@ -233,6 +262,9 @@ class WorkoutListAll extends StatefulWidget {
   final void Function(
       {required provider.WorkoutMenu workout,
       required int command}) managementTempoList;
+  final void Function({maked.Workout? selectWorkout})?
+      handleSelectExchangeWorkout;
+  final int? exchangedWorkoutIndex;
 
   const WorkoutListAll({
     super.key,
@@ -240,6 +272,8 @@ class WorkoutListAll extends StatefulWidget {
     required this.allWorkoutList,
     required this.tempoList,
     required this.managementTempoList,
+    this.exchangedWorkoutIndex,
+    this.handleSelectExchangeWorkout,
   });
 
   @override
@@ -263,6 +297,7 @@ class _WorkoutListAllState extends State<WorkoutListAll> {
             menu: widget.allWorkoutList[index],
             tempoList: widget.tempoList,
             managementTempoList: widget.managementTempoList,
+            exchangedWorkoutIndex: widget.exchangedWorkoutIndex,
           );
         }
       },
@@ -276,12 +311,17 @@ class WorkoutList extends StatelessWidget {
   final void Function(
       {required provider.WorkoutMenu workout,
       required int command}) managementTempoList;
+  final int? exchangedWorkoutIndex;
+  final void Function({maked.Workout? selectWorkout})?
+      handleSelectExchangeWorkout;
 
   const WorkoutList({
     super.key,
     required this.items,
     required this.tempoList,
     required this.managementTempoList,
+    this.exchangedWorkoutIndex,
+    this.handleSelectExchangeWorkout,
   });
 
   @override
@@ -294,6 +334,7 @@ class WorkoutList extends StatelessWidget {
           menu: items[index],
           tempoList: tempoList,
           managementTempoList: managementTempoList,
+          exchangedWorkoutIndex: exchangedWorkoutIndex,
         );
       },
     );
@@ -303,6 +344,9 @@ class WorkoutList extends StatelessWidget {
 class SelectBox extends StatefulWidget {
   final provider.WorkoutMenu menu;
   final List<provider.WorkoutMenu> tempoList;
+  final int? exchangedWorkoutIndex;
+  final void Function({maked.Workout? selectWorkout})?
+      handleSelectExchangeWorkout;
 
   final void Function({
     required provider.WorkoutMenu workout,
@@ -314,6 +358,8 @@ class SelectBox extends StatefulWidget {
     required this.menu,
     required this.tempoList,
     required this.managementTempoList,
+    this.exchangedWorkoutIndex,
+    this.handleSelectExchangeWorkout,
   });
 
   @override
@@ -327,8 +373,12 @@ class _SelectBoxState extends State<SelectBox> {
   @override
   void initState() {
     super.initState();
-    if (widget.tempoList.contains(widget.menu)) {
-      _checker = true;
+    if (widget.exchangedWorkoutIndex != null) {
+      
+    } else {
+      if (widget.tempoList.contains(widget.menu)) {
+        _checker = true;
+      }
     }
   }
 
@@ -356,19 +406,29 @@ class _SelectBoxState extends State<SelectBox> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        if (_checker == false) {
-          if (widget.tempoList.contains(widget.menu) == false) {
-            setState(() {
-              _checker = true;
-              addWorkout();
-            });
-          }
+        if (widget.handleSelectExchangeWorkout != null) {
+          maked.Workout exchangeWorkout = maked.Workout(
+            name: widget.menu.name,
+            showE1rm: widget.menu.showE1rm,
+          );
+          widget.handleSelectExchangeWorkout!(
+            selectWorkout: exchangeWorkout,
+          );
         } else {
-          if (widget.tempoList.contains(widget.menu)) {
-            setState(() {
-              _checker = false;
-              deleteWorkout();
-            });
+          if (_checker == false) {
+            if (widget.tempoList.contains(widget.menu) == false) {
+              setState(() {
+                _checker = true;
+                addWorkout();
+              });
+            }
+          } else {
+            if (widget.tempoList.contains(widget.menu)) {
+              setState(() {
+                _checker = false;
+                deleteWorkout();
+              });
+            }
           }
         }
       },
