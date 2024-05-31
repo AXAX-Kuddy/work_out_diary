@@ -33,12 +33,17 @@ class WorkoutLibrary extends StatefulWidget {
   final bool showAddPlanningScreen;
   final int? exchangedWorkoutIndex;
   final void Function()? changedListner;
+
   const WorkoutLibrary({
-    super.key,
+    Key? key,
     required this.showAddPlanningScreen,
     this.exchangedWorkoutIndex,
     this.changedListner,
-  });
+  })  : assert(
+            (showAddPlanningScreen && exchangedWorkoutIndex == null) ||
+                (!showAddPlanningScreen && exchangedWorkoutIndex != null),
+            '서로 다른 페이지의 기능이 충돌함.'),
+        super(key: key);
 
   @override
   State<WorkoutLibrary> createState() => _WorkoutLibraryState();
@@ -55,32 +60,40 @@ class _WorkoutLibraryState extends State<WorkoutLibrary> {
 
   String searchText = "";
 
-  late Widget addWorkoutToPlanScreenButton = const SizedBox.shrink();
-  maked.Workout? selectExchangeWorkout;
-
+  late Widget bottomAddButton = const SizedBox.shrink();
   late Widget tempoListViewer = const SizedBox.shrink();
 
   ///커맨드 1 = 추가
   ///커맨드 0 = 제거
   void managementTempoList(
-      {required provider.WorkoutMenu workout, required int command}) {
-    if (command == 1) {
-      setState(() {
-        tempoList.add(workout);
-      });
-      debugPrint("$tempoList");
-    } else if (command == 0) {
-      setState(() {
-        tempoList.remove(workout);
-      });
-      debugPrint("$tempoList");
-    } else {
-      Exception("커맨드 잘못 입력함");
+      {provider.WorkoutMenu? workout, required int command}) {
+    assert(
+        (command == 0 && workout != null) ||
+            (command == 1 && workout != null) ||
+            command == 2,
+        '커맨드는 반드시 0 (제거), 1 (추가), 2 (리스트 초기화) 중 하나만 선택해야 함. 만약, 0, 혹은 1을 실행한다면, 반드시 provider.WorkoutMenu를 매개변수로 받아야함.');
+
+    switch (command) {
+      case 0:
+        setState(() {
+          tempoList.remove(workout);
+        });
+        debugPrint("$tempoList");
+
+      case 1:
+        setState(() {
+          tempoList.add(workout!);
+        });
+        debugPrint("$tempoList");
+      case 2:
+        setState(() {
+          tempoList.clear();
+        });
     }
   }
 
   void disposeTempoList() {
-    tempoList = [];
+    tempoList.clear();
   }
 
   void handleChangedPart() {
@@ -101,27 +114,18 @@ class _WorkoutLibraryState extends State<WorkoutLibrary> {
     });
   }
 
-  void handleSelectExchangeWorkout({
-    maked.Workout? selectWorkout,
-  }) {
-    if (selectWorkout != null) {
-      setState(() {
-        selectExchangeWorkout = selectWorkout;
-      });
-    }
-  }
-
   @override
   void initState() {
     super.initState();
     workoutList = context.read<provider.WorkoutListStore>().workouts;
 
+    /// 모든 운동들을 전체 리스트에 추가
     for (var workout in workoutList.values) {
       allWorkoutList.addAll(workout);
     }
 
     if (widget.showAddPlanningScreen) {
-      addWorkoutToPlanScreenButton = WideButton(
+      bottomAddButton = WideButton(
         onTapUpFunction: () {
           for (int i = 0; i < tempoList.length; i++) {
             maked.Workout selectWorkout = maked.Workout(
@@ -135,6 +139,22 @@ class _WorkoutLibraryState extends State<WorkoutLibrary> {
         },
         children: const [
           Text("운동 추가하기"),
+        ],
+      );
+    } else if (widget.exchangedWorkoutIndex != null) {
+      bottomAddButton = WideButton(
+        onTapUpFunction: () {
+          maked.Workout selectWorkout = maked.Workout(
+            name: tempoList[0].name,
+            showE1rm: tempoList[0].showE1rm,
+          );
+          routineProvider.exchangeUserSelectWorkout(
+              widget.exchangedWorkoutIndex!, selectWorkout);
+
+          Navigator.pop(context);
+        },
+        children: const [
+          Text("운동 교체하기"),
         ],
       );
     }
@@ -194,42 +214,36 @@ class _WorkoutLibraryState extends State<WorkoutLibrary> {
               tempoList: tempoList,
               managementTempoList: managementTempoList,
               exchangedWorkoutIndex: widget.exchangedWorkoutIndex,
-              handleSelectExchangeWorkout: handleSelectExchangeWorkout,
             ),
             WorkoutList(
               items: workoutList[keys[1]]!,
               tempoList: tempoList,
               managementTempoList: managementTempoList,
               exchangedWorkoutIndex: widget.exchangedWorkoutIndex,
-              handleSelectExchangeWorkout: handleSelectExchangeWorkout,
             ),
             WorkoutList(
               items: workoutList[keys[2]]!,
               tempoList: tempoList,
               managementTempoList: managementTempoList,
               exchangedWorkoutIndex: widget.exchangedWorkoutIndex,
-              handleSelectExchangeWorkout: handleSelectExchangeWorkout,
             ),
             WorkoutList(
               items: workoutList[keys[3]]!,
               tempoList: tempoList,
               managementTempoList: managementTempoList,
               exchangedWorkoutIndex: widget.exchangedWorkoutIndex,
-              handleSelectExchangeWorkout: handleSelectExchangeWorkout,
             ),
             WorkoutList(
               items: workoutList[keys[4]]!,
               tempoList: tempoList,
               managementTempoList: managementTempoList,
               exchangedWorkoutIndex: widget.exchangedWorkoutIndex,
-              handleSelectExchangeWorkout: handleSelectExchangeWorkout,
             ),
             WorkoutList(
               items: workoutList[keys[5]]!,
               tempoList: tempoList,
               managementTempoList: managementTempoList,
               exchangedWorkoutIndex: widget.exchangedWorkoutIndex,
-              handleSelectExchangeWorkout: handleSelectExchangeWorkout,
             ),
             WorkoutListAll(
               searchText: searchText,
@@ -237,67 +251,73 @@ class _WorkoutLibraryState extends State<WorkoutLibrary> {
               tempoList: tempoList,
               managementTempoList: managementTempoList,
               exchangedWorkoutIndex: widget.exchangedWorkoutIndex,
-              handleSelectExchangeWorkout: handleSelectExchangeWorkout,
             ),
           ][ChangePart.index],
         ),
         // tempoListViewer,
-        widget.showAddPlanningScreen
-            ? WorkoutListViewer(
-                list: tempoList,
-                managementTempoList: managementTempoList,
-              )
-            : const SizedBox.shrink(),
-        addWorkoutToPlanScreenButton,
+        WorkoutListViewer(
+          list: tempoList,
+          managementTempoList: managementTempoList,
+        ),
+        bottomAddButton,
       ],
     );
   }
 }
 
-class WorkoutListAll extends StatefulWidget {
-  final String searchText;
-
-  final List<provider.WorkoutMenu> allWorkoutList;
+abstract class WorkoutListBase extends StatelessWidget {
   final List<provider.WorkoutMenu> tempoList;
-  final void Function(
-      {required provider.WorkoutMenu workout,
-      required int command}) managementTempoList;
-  final void Function({maked.Workout? selectWorkout})?
-      handleSelectExchangeWorkout;
+  final void Function({provider.WorkoutMenu? workout, required int command})
+      managementTempoList;
+
   final int? exchangedWorkoutIndex;
 
-  const WorkoutListAll({
+  const WorkoutListBase({
     super.key,
-    required this.searchText,
-    required this.allWorkoutList,
     required this.tempoList,
     required this.managementTempoList,
     this.exchangedWorkoutIndex,
-    this.handleSelectExchangeWorkout,
   });
-
-  @override
-  State<WorkoutListAll> createState() => _WorkoutListAllState();
 }
 
-class _WorkoutListAllState extends State<WorkoutListAll> {
+class WorkoutListAll extends WorkoutListBase {
+  final String searchText;
+  final List<provider.WorkoutMenu> allWorkoutList;
+
+  const WorkoutListAll({
+    Key? key,
+    required this.searchText,
+    required this.allWorkoutList,
+    required List<provider.WorkoutMenu> tempoList,
+    required void Function(
+            {provider.WorkoutMenu? workout, required int command})
+        managementTempoList,
+    int? exchangedWorkoutIndex,
+    void Function({maked.Workout? selectWorkout})? handleSelectExchangeWorkout,
+    maked.Workout? selectExchangeWorkout,
+  }) : super(
+          key: key,
+          tempoList: tempoList,
+          managementTempoList: managementTempoList,
+          exchangedWorkoutIndex: exchangedWorkoutIndex,
+        );
+
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-      itemCount: widget.allWorkoutList.length,
+      itemCount: allWorkoutList.length,
       itemBuilder: (context, index) {
-        var hasMatch = RegExp(widget.searchText)
-            .hasMatch(widget.allWorkoutList[index].name);
+        var hasMatch = RegExp(searchText).hasMatch(allWorkoutList[index].name);
 
-        if (widget.searchText.isNotEmpty && !hasMatch) {
+        if (searchText.isNotEmpty && !hasMatch) {
           return const SizedBox.shrink();
         } else {
           return SelectBox(
             key: GlobalKey(),
-            menu: widget.allWorkoutList[index],
-            tempoList: widget.tempoList,
-            managementTempoList: widget.managementTempoList,
-            exchangedWorkoutIndex: widget.exchangedWorkoutIndex,
+            menu: allWorkoutList[index],
+            tempoList: tempoList,
+            managementTempoList: managementTempoList,
+            exchangedWorkoutIndex: exchangedWorkoutIndex,
           );
         }
       },
@@ -305,24 +325,25 @@ class _WorkoutListAllState extends State<WorkoutListAll> {
   }
 }
 
-class WorkoutList extends StatelessWidget {
+class WorkoutList extends WorkoutListBase {
   final List<provider.WorkoutMenu> items;
-  final List<provider.WorkoutMenu> tempoList;
-  final void Function(
-      {required provider.WorkoutMenu workout,
-      required int command}) managementTempoList;
-  final int? exchangedWorkoutIndex;
-  final void Function({maked.Workout? selectWorkout})?
-      handleSelectExchangeWorkout;
 
   const WorkoutList({
-    super.key,
+    Key? key,
     required this.items,
-    required this.tempoList,
-    required this.managementTempoList,
-    this.exchangedWorkoutIndex,
-    this.handleSelectExchangeWorkout,
-  });
+    required List<provider.WorkoutMenu> tempoList,
+    required void Function(
+            {provider.WorkoutMenu? workout, required int command})
+        managementTempoList,
+    int? exchangedWorkoutIndex,
+    void Function({maked.Workout? selectWorkout})? handleSelectExchangeWorkout,
+    maked.Workout? selectExchangeWorkout,
+  }) : super(
+          key: key,
+          tempoList: tempoList,
+          managementTempoList: managementTempoList,
+          exchangedWorkoutIndex: exchangedWorkoutIndex,
+        );
 
   @override
   Widget build(BuildContext context) {
@@ -345,11 +366,9 @@ class SelectBox extends StatefulWidget {
   final provider.WorkoutMenu menu;
   final List<provider.WorkoutMenu> tempoList;
   final int? exchangedWorkoutIndex;
-  final void Function({maked.Workout? selectWorkout})?
-      handleSelectExchangeWorkout;
 
   final void Function({
-    required provider.WorkoutMenu workout,
+    provider.WorkoutMenu? workout,
     required int command,
   }) managementTempoList;
 
@@ -359,7 +378,6 @@ class SelectBox extends StatefulWidget {
     required this.tempoList,
     required this.managementTempoList,
     this.exchangedWorkoutIndex,
-    this.handleSelectExchangeWorkout,
   });
 
   @override
@@ -368,21 +386,17 @@ class SelectBox extends StatefulWidget {
 
 class _SelectBoxState extends State<SelectBox> {
   bool _checker = false;
-  late maked.Day? day;
 
   @override
   void initState() {
     super.initState();
-    if (widget.exchangedWorkoutIndex != null) {
-      
-    } else {
-      if (widget.tempoList.contains(widget.menu)) {
-        _checker = true;
-      }
+
+    if (widget.tempoList.contains(widget.menu)) {
+      _checker = true;
     }
   }
 
-  void addWorkout() {
+  void _addWorkout() {
     setState(() {
       widget.managementTempoList(
         command: 1,
@@ -391,7 +405,7 @@ class _SelectBoxState extends State<SelectBox> {
     });
   }
 
-  void deleteWorkout() {
+  void _deleteWorkout() {
     if (widget.tempoList.isNotEmpty) {
       setState(() {
         widget.managementTempoList(
@@ -402,34 +416,57 @@ class _SelectBoxState extends State<SelectBox> {
     }
   }
 
+  void _initializeList() {
+    setState(() {
+      widget.managementTempoList(
+        command: 2,
+      );
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        if (widget.handleSelectExchangeWorkout != null) {
-          maked.Workout exchangeWorkout = maked.Workout(
-            name: widget.menu.name,
-            showE1rm: widget.menu.showE1rm,
-          );
-          widget.handleSelectExchangeWorkout!(
-            selectWorkout: exchangeWorkout,
-          );
-        } else {
-          if (_checker == false) {
-            if (widget.tempoList.contains(widget.menu) == false) {
-              setState(() {
-                _checker = true;
-                addWorkout();
-              });
+        switch (widget.exchangedWorkoutIndex != null) {
+          case true:
+            if (_checker == false) {
+              if (widget.tempoList.isEmpty) {
+                setState(() {
+                  _checker = true;
+                  _addWorkout();
+                });
+              } else if (widget.tempoList.isNotEmpty) {
+                setState(() {
+                  _checker = true;
+                  _initializeList();
+                  _addWorkout();
+                });
+              }
+            } else {
+              if (widget.tempoList.isNotEmpty) {
+                setState(() {
+                  _checker = false;
+                  _initializeList();
+                });
+              }
             }
-          } else {
-            if (widget.tempoList.contains(widget.menu)) {
-              setState(() {
-                _checker = false;
-                deleteWorkout();
-              });
+          default:
+            if (_checker == false) {
+              if (widget.tempoList.contains(widget.menu) == false) {
+                setState(() {
+                  _checker = true;
+                  _addWorkout();
+                });
+              }
+            } else {
+              if (widget.tempoList.contains(widget.menu)) {
+                setState(() {
+                  _checker = false;
+                  _deleteWorkout();
+                });
+              }
             }
-          }
         }
       },
       child: Container(

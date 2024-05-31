@@ -205,6 +205,11 @@ class RoutineProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void exchangeUserSelectWorkout(int index, maked.Workout workout) {
+    todayWorkouts[index] = workout;
+    notifyListeners();
+  }
+
   void setWorkoutStart() {
     Routine.workoutStart = true;
     notifyListeners();

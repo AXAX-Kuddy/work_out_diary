@@ -16,7 +16,8 @@ class WorkoutDetail extends StatefulWidget {
   final maked.Workout workoutInstance;
   final void Function({
     required WorkoutDetailPanelControllerCommand command,
-    required maked.Workout workoutInstance,
+    maked.Workout? workoutInstance,
+    int? workoutInstanceIndex,
   }) workoutDetailPanelController;
 
   const WorkoutDetail({
@@ -248,6 +249,7 @@ class _WorkoutDetailState extends State<WorkoutDetail> {
                 widget.workoutDetailPanelController(
                   command: WorkoutDetailPanelControllerCommand.spread,
                   workoutInstance: widget.workoutInstance,
+                  workoutInstanceIndex: widget.index,
                 );
                 // showDialog(
                 //   context: context,

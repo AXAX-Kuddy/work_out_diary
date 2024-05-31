@@ -443,6 +443,12 @@ class _PlanningScreenState extends State<PlanningScreen> {
   }
 
   @override
+  void dispose() {
+    super.dispose();
+    panelController.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return BasePage(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
@@ -536,6 +542,9 @@ class _PlanningScreenState extends State<PlanningScreen> {
                     icon: LineIcons.alternateExchange,
                     iconColor: palette.cardColorWhite,
                     onTap: () {
+                      workoutDetailPanelController(
+                          command: WorkoutDetailPanelControllerCommand.hide);
+
                       Navigator.push(
                         context,
                         MaterialPageRoute(
