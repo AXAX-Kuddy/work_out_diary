@@ -187,7 +187,7 @@ class _WorkoutLibraryState extends State<WorkoutLibrary> {
           onPressed: () {
             Navigator.pop(context);
           },
-          icon: Icon(
+          icon: const Icon(
             Icons.close,
             size: 30,
             color: palette.cardColorWhite,
@@ -202,7 +202,7 @@ class _WorkoutLibraryState extends State<WorkoutLibrary> {
         const SizedBox(
           height: 20,
         ),
-        Divider(
+        const Divider(
           thickness: 0.5,
           height: 0.0,
           color: palette.cardColorWhite,
@@ -428,7 +428,9 @@ class _SelectBoxState extends State<SelectBox> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
+        /// 운동 교체 페이지에서 호출할 경우
         switch (widget.exchangedWorkoutIndex != null) {
+          /// 운동 교체 페이지에서
           case true:
             if (_checker == false) {
               if (widget.tempoList.isEmpty) {
@@ -451,6 +453,8 @@ class _SelectBoxState extends State<SelectBox> {
                 });
               }
             }
+
+          /// 운동 계획 페이지에서
           default:
             if (_checker == false) {
               if (widget.tempoList.contains(widget.menu) == false) {
@@ -474,7 +478,7 @@ class _SelectBoxState extends State<SelectBox> {
         padding: const EdgeInsets.all(15),
         decoration: BoxDecoration(
           color: _checker ? palette.selectColor : Colors.transparent,
-          border: Border(
+          border: const Border(
             bottom: BorderSide(
               color: palette.cardColorWhite,
               width: 0.5,
@@ -485,7 +489,7 @@ class _SelectBoxState extends State<SelectBox> {
           children: [
             Text(
               widget.menu.name,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 18,
                 color: palette.cardColorWhite,
               ),

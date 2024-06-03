@@ -12,7 +12,7 @@ import 'package:work_out_app/util/keys.dart';
 //화면 위젯
 import 'package:work_out_app/screens/home_screen/home_screen.dart';
 import 'package:work_out_app/screens/plan_screen/plan_screen.dart';
-import 'package:work_out_app/screens/work_out_screen.dart';
+import 'package:work_out_app/screens/diary_screen/diary_screen.dart';
 import 'package:work_out_app/screens/dots_point_screen.dart';
 import 'package:work_out_app/dump/input_userInfo.dart';
 
@@ -28,6 +28,7 @@ import 'package:line_icons/line_icon.dart';
 //데이터 베이스
 import 'package:drift/drift.dart';
 import 'package:work_out_app/database/database.dart';
+import 'package:work_out_app/widgets/work_out_library/work_out_library.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -52,7 +53,7 @@ void main() async {
             splashFactory: NoSplash.splashFactory,
             splashColor: Colors.transparent,
             highlightColor: Colors.transparent,
-            appBarTheme: AppBarTheme(
+            appBarTheme: const AppBarTheme(
               backgroundColor: palette.bgColor,
             ),
             textButtonTheme: TextButtonThemeData(
@@ -122,8 +123,10 @@ class _MyAppState extends State<MyApp> {
     return Scaffold(
       body: [
         const HomeScreen(),
-        // const PlanningScreen(),
-        const WorkOutScreen(),
+        const DiaryScreen(),
+        const WorkoutLibrary(
+          showAddPlanningScreen: true,
+        ),
         const DotsPointScreen(),
       ][PageNumber.pageNum],
       bottomNavigationBar: BottomNavigationBar(
@@ -140,19 +143,19 @@ class _MyAppState extends State<MyApp> {
         items: const [
           BottomNavigationBarItem(
             icon: LineIcon.home(),
-            label: "Home",
+            label: "홈",
           ),
-          // BottomNavigationBarItem(
-          //   icon: LineIcon.calendar(),
-          //   label: "Planning",
-          // ),
+          BottomNavigationBarItem(
+            icon: LineIcon.calendar(),
+            label: "일지",
+          ),
           BottomNavigationBarItem(
             icon: LineIcon.dumbbell(),
-            label: "Work Out",
+            label: "라이브러리",
           ),
           BottomNavigationBarItem(
             icon: LineIcon.raisedFist(),
-            label: "DOTS Point",
+            label: "DOTS 포인트",
           ),
         ],
       ),

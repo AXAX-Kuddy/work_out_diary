@@ -8,7 +8,7 @@ class TopDivider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    return const Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Expanded(
@@ -29,7 +29,7 @@ class TopDivider extends StatelessWidget {
             style: TextStyle(color: palette.cardColorWhite),
           ),
         ),
-        const SizedBox(
+        SizedBox(
           width: 8,
         ),
         Expanded(
@@ -40,7 +40,7 @@ class TopDivider extends StatelessWidget {
             style: TextStyle(color: palette.cardColorWhite),
           ),
         ),
-        const SizedBox(
+        SizedBox(
           width: 8,
         ),
         Expanded(

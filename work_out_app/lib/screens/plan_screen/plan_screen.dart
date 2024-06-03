@@ -193,7 +193,7 @@ class _PlanningScreenState extends State<PlanningScreen> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text(
+                          const Text(
                             "운동을 마치시겠습니까?",
                             style: TextStyle(
                               color: palette.cardColorWhite,
@@ -222,7 +222,7 @@ class _PlanningScreenState extends State<PlanningScreen> {
                                 onPressed: () {
                                   workoutComplete();
                                 },
-                                child: Text(
+                                child: const Text(
                                   "눼",
                                   style: TextStyle(
                                     color: palette.cardColorYelGreen,
@@ -246,7 +246,7 @@ class _PlanningScreenState extends State<PlanningScreen> {
               color: palette.cardColorYelGreen,
               borderRadius: BorderRadius.circular(10),
             ),
-            child: Text(
+            child: const Text(
               "운동 완료",
               textAlign: TextAlign.center,
               style: TextStyle(
@@ -271,7 +271,7 @@ class _PlanningScreenState extends State<PlanningScreen> {
               color: palette.cardColorWhite,
               borderRadius: BorderRadius.circular(10),
             ),
-            child: Text(
+            child: const Text(
               "운동 시작",
               textAlign: TextAlign.center,
               style: TextStyle(
@@ -310,7 +310,7 @@ class _PlanningScreenState extends State<PlanningScreen> {
                     (index) {
                       return Text(
                         "$index분",
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 14,
                           color: palette.cardColorWhite,
                         ),
@@ -329,7 +329,7 @@ class _PlanningScreenState extends State<PlanningScreen> {
                     (index) {
                       return Text(
                         "$index초",
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 14,
                           color: palette.cardColorWhite,
                         ),
@@ -349,14 +349,14 @@ class _PlanningScreenState extends State<PlanningScreen> {
                   width: 70,
                   child: Text(
                     routineProvider.restTimeMin.toString(),
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 20,
                       color: palette.cardColorWhite,
                     ),
                     textAlign: TextAlign.center,
                   ),
                 ),
-                Text(
+                const Text(
                   ":",
                   style: TextStyle(
                     fontSize: 20,
@@ -368,7 +368,7 @@ class _PlanningScreenState extends State<PlanningScreen> {
                   width: 70,
                   child: Text(
                     routineProvider.restTimeSec.toString(),
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 20,
                       color: palette.cardColorWhite,
                     ),
@@ -388,7 +388,7 @@ class _PlanningScreenState extends State<PlanningScreen> {
                     routineProvider.totalRest();
                     Navigator.pop(context);
                   },
-                  child: Text(
+                  child: const Text(
                     "설정하기",
                     style: TextStyle(
                       color: palette.cardColorWhite,
@@ -406,7 +406,7 @@ class _PlanningScreenState extends State<PlanningScreen> {
           onPressed: () {
             showRestTimerDialog();
           },
-          child: Row(
+          child: const Row(
             children: [
               Text(
                 "휴식시간 설정",
@@ -415,7 +415,7 @@ class _PlanningScreenState extends State<PlanningScreen> {
                   color: palette.cardColorWhite,
                 ),
               ),
-              const SizedBox(
+              SizedBox(
                 width: 3,
               ),
               LineIcon(
@@ -427,7 +427,7 @@ class _PlanningScreenState extends State<PlanningScreen> {
           ),
         );
 
-        restTimerWidget = Expanded(
+        restTimerWidget = const Expanded(
           child: Center(
             child: Text(
               "휴식시간을 설정하려면 버튼을 눌러주세요.",
@@ -459,7 +459,7 @@ class _PlanningScreenState extends State<PlanningScreen> {
             onPressed: () {
               Navigator.pop(context);
             },
-            icon: LineIcon(
+            icon: const LineIcon(
               LineIcons.angleRight,
               color: palette.cardColorWhite,
               size: 30,
@@ -488,9 +488,9 @@ class _PlanningScreenState extends State<PlanningScreen> {
           builder: (context, constraints) {
             return Container(
               margin: const EdgeInsets.symmetric(horizontal: 15.0),
-              decoration: ShapeDecoration(
+              decoration: const ShapeDecoration(
                 color: palette.bgFadeColor,
-                shape: const RoundedRectangleBorder(
+                shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(10.0),
                     topRight: Radius.circular(10.0),
@@ -515,7 +515,7 @@ class _PlanningScreenState extends State<PlanningScreen> {
                       children: [
                         Text(
                           panelCallingInstance.name!,
-                          style: TextStyle(
+                          style: const TextStyle(
                             color: palette.cardColorWhite,
                             fontWeight: FontWeight.bold,
                             fontSize: 23,
@@ -569,10 +569,60 @@ class _PlanningScreenState extends State<PlanningScreen> {
                     iconColor: Colors.red,
                     showAngle: false,
                     onTap: () {
-                      workoutDetailPanelController(
-                          command: WorkoutDetailPanelControllerCommand.hide);
-                      routineProvider
-                          .removeUserSelectWorkout(panelCallingInstance);
+                      showDialog(
+                        context: context,
+                        builder: (context) {
+                          return AlertDialog(
+                            contentPadding: const EdgeInsets.all(25),
+                            backgroundColor: Colors.transparent,
+                            content: Text(
+                              "${panelCallingInstance.name}를(을) 목록에서 삭제 하시겠습니까?",
+                              style: const TextStyle(
+                                fontSize: 16,
+                                color: palette.cardColorWhite,
+                              ),
+                            ),
+                            actions: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                    child: const Text(
+                                      "취소",
+                                      style: TextStyle(
+                                        color: palette.cardColorWhite,
+                                      ),
+                                    ),
+                                  ),
+                                  TextButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        workoutDetailPanelController(
+                                            command:
+                                                WorkoutDetailPanelControllerCommand
+                                                    .hide);
+                                        routineProvider.removeUserSelectWorkout(
+                                            panelCallingInstance);
+                                      });
+                                      Navigator.pop(context);
+                                    },
+                                    child: const Text(
+                                      "확인",
+                                      style: TextStyle(
+                                        color: palette.cardColorYelGreen,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          );
+                        },
+                      );
                     },
                   ),
                 ],
@@ -591,7 +641,7 @@ class _PlanningScreenState extends State<PlanningScreen> {
                   : routineProvider.todayWorkouts.length,
               itemBuilder: (BuildContext context, int index) {
                 if (routineProvider.todayWorkouts.isEmpty) {
-                  return Center(
+                  return const Center(
                     heightFactor: 20,
                     child: Text(
                       "운동을 추가해주세요!",
@@ -641,11 +691,11 @@ class _PlanningScreenState extends State<PlanningScreen> {
                   ),
                 );
               },
-              icon: LineIcon.plus(
+              icon: const LineIcon.plus(
                 color: palette.cardColorYelGreen,
                 size: 28,
               ),
-              label: Text(
+              label: const Text(
                 "운동추가",
                 style: TextStyle(
                   fontSize: 17,
@@ -729,13 +779,13 @@ class _TitleTextFieldState extends State<TitleTextField> {
         }
         widget.changeTitle(value);
       },
-      style: TextStyle(
+      style: const TextStyle(
         fontSize: 18,
         color: palette.cardColorWhite,
       ),
-      decoration: InputDecoration(
+      decoration: const InputDecoration(
         focusColor: palette.cardColorYelGreen,
-        prefixIcon: const LineIcon(
+        prefixIcon: LineIcon(
           LineIcons.pen,
           size: 25,
         ),
@@ -777,7 +827,7 @@ class WorkoutTimeWidget extends StatelessWidget {
               children: [
                 Text(
                   displayTime,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 18,
                     color: palette.cardColorWhite,
                   ),
@@ -845,7 +895,7 @@ class _RestTimeWidgetState extends State<RestTimeWidget> {
                 if (value <= 6000 && value >= 200) {
                   AnimatedSnackBar(
                     builder: ((context) {
-                      return MaterialAnimatedSnackBar(
+                      return const MaterialAnimatedSnackBar(
                         titleText: "곧 휴식시간이 종료됩니다!",
                         messageText: '다음 세트에 돌입할 준비를 하세요!',
                         type: AnimatedSnackBarType.info,
@@ -882,7 +932,7 @@ class _RestTimeWidgetState extends State<RestTimeWidget> {
                         onPressed: () {
                           routineProvider.onStartedRestTimer();
                         },
-                        icon: LineIcon(
+                        icon: const LineIcon(
                           LineIcons.angleDoubleRight,
                           color: palette.cardColorYelGreen,
                         )),
@@ -922,7 +972,7 @@ class _RestTimeScrollListState extends State<RestTimeScrollList> {
       width: widget.width,
       height: widget.height,
       padding: const EdgeInsets.all(10),
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
           border: Border.symmetric(
               horizontal: BorderSide(
         color: palette.cardColorYelGreen,

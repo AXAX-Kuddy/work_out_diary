@@ -39,7 +39,7 @@ class _WorkoutListViewerState extends State<WorkoutListViewer> {
             children: [
               Text(
                 widget.list[index].name,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 15,
                   color: palette.cardColorWhite,
                 ),

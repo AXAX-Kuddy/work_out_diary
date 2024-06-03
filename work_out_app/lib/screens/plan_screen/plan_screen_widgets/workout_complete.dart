@@ -11,7 +11,7 @@ class WorkoutCompleteScreem extends StatelessWidget {
   Widget build(BuildContext context) {
     return BasePage(
       children: [
-        Text(
+        const Text(
           "운동 완료창",
           style: TextStyle(
             color: palette.cardColorWhite,
@@ -27,7 +27,7 @@ class WorkoutCompleteScreem extends StatelessWidget {
               (route) => false,
             );
           },
-          child: Text(
+          child: const Text(
             "운동 완료",
             style: TextStyle(
               color: palette.cardColorWhite,

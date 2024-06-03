@@ -59,13 +59,13 @@ class _SearchWorkoutState extends State<SearchWorkout> {
         });
       },
       onSubmitted: (value) {},
-      style: TextStyle(
+      style: const TextStyle(
         fontSize: 18,
         color: palette.cardColorWhite,
       ),
-      decoration: InputDecoration(
+      decoration: const InputDecoration(
         focusColor: palette.cardColorYelGreen,
-        prefixIcon: const LineIcon(
+        prefixIcon: LineIcon(
           LineIcons.search,
           size: 25,
         ),

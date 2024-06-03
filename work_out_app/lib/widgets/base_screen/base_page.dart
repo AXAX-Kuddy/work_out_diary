@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_sliding_up_panel/flutter_sliding_up_panel.dart';
 import 'package:work_out_app/util/palette.dart' as palette;
 
 class BasePage extends StatelessWidget {
@@ -9,6 +8,7 @@ class BasePage extends StatelessWidget {
   final Widget? floatingActionButton;
   final FloatingActionButtonLocation? floatingActionButtonLocation;
   final EdgeInsets padding;
+  final Color backgroundColor;
 
   const BasePage({
     super.key,
@@ -18,6 +18,7 @@ class BasePage extends StatelessWidget {
     this.floatingActionButton,
     this.floatingActionButtonLocation,
     this.padding = const EdgeInsets.all(15),
+    this.backgroundColor = palette.bgColor,
   });
 
   @override
@@ -28,7 +29,7 @@ class BasePage extends StatelessWidget {
           appBar: appBar,
           body: Container(
             decoration: BoxDecoration(
-              color: palette.bgColor,
+              color: backgroundColor,
             ),
             // ignore: prefer_const_constructors
             child: Padding(
@@ -52,5 +53,3 @@ class BasePage extends StatelessWidget {
     );
   }
 }
-
-

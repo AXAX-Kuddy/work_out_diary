@@ -85,8 +85,8 @@ class _IntensitySelectorState extends State<IntensitySelector> {
             padding: EdgeInsets.only(left: 14, right: 14),
             elevation: 2,
           ),
-          iconStyleData: IconStyleData(
-            icon: const LineIcon.angleRight(),
+          iconStyleData: const IconStyleData(
+            icon: LineIcon.angleRight(),
             iconSize: 14,
             iconEnabledColor: palette.cardColorWhite,
             iconDisabledColor: Colors.grey,

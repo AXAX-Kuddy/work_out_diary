@@ -44,8 +44,8 @@ class HomeScreen extends StatelessWidget {
               ),
             );
           },
-          child: Padding(
-            padding: const EdgeInsets.symmetric(
+          child: const Padding(
+            padding: EdgeInsets.symmetric(
               horizontal: 14,
             ),
             child: Row(

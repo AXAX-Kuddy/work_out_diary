@@ -102,7 +102,7 @@ class _WorkoutDetailState extends State<WorkoutDetail> {
           children: [
             Text(
               "${widget.index + 1}",
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
                 color: palette.cardColorYelGreen,
@@ -113,7 +113,7 @@ class _WorkoutDetailState extends State<WorkoutDetail> {
             ),
             Text(
               widget.workoutInstance.name!,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
                 color: palette.cardColorWhite,
@@ -138,7 +138,7 @@ class _WorkoutDetailState extends State<WorkoutDetail> {
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Text(
+                              const Text(
                                 "목표 RPE를 선택해주세요!",
                                 style: TextStyle(
                                   fontSize: 17,
@@ -150,11 +150,11 @@ class _WorkoutDetailState extends State<WorkoutDetail> {
                               ),
                               CustomDropDownButton(
                                 hint: "RPE",
-                                textStyle: TextStyle(
+                                textStyle: const TextStyle(
                                   color: palette.cardColorWhite,
                                 ),
                                 itemList: rpeList,
-                                itemTextStyle: TextStyle(
+                                itemTextStyle: const TextStyle(
                                   color: palette.cardColorWhite,
                                 ),
                                 onChanged: (value) {
@@ -178,7 +178,7 @@ class _WorkoutDetailState extends State<WorkoutDetail> {
                                       });
                                       Navigator.pop(context);
                                     },
-                                    child: Text(
+                                    child: const Text(
                                       "초기화",
                                       style: TextStyle(
                                         color: palette.cardColorWhite,
@@ -203,7 +203,7 @@ class _WorkoutDetailState extends State<WorkoutDetail> {
 
                                       Navigator.pop(context);
                                     },
-                                    child: Text(
+                                    child: const Text(
                                       "확인",
                                       style: TextStyle(
                                         color: palette.cardColorYelGreen,
@@ -224,7 +224,7 @@ class _WorkoutDetailState extends State<WorkoutDetail> {
                 children: [
                   Text(
                     "@$target",
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 16,
                       color: palette.cardColorWhite,
                     ),
@@ -232,7 +232,7 @@ class _WorkoutDetailState extends State<WorkoutDetail> {
                   const SizedBox(
                     width: 3,
                   ),
-                  LineIcon(
+                  const LineIcon(
                     LineIcons.pen,
                     size: 17,
                     color: palette.cardColorWhite,
@@ -300,7 +300,7 @@ class _WorkoutDetailState extends State<WorkoutDetail> {
                 //   },
                 // );
               },
-              icon: LineIcon(
+              icon: const LineIcon(
                 color: palette.cardColorWhite,
                 size: 30,
                 LineIcons.verticalEllipsis,
@@ -418,12 +418,12 @@ class _WorkoutDetailState extends State<WorkoutDetail> {
                 }
                 findE1rm();
               },
-              icon: LineIcon(
+              icon: const LineIcon(
                 LineIcons.plus,
                 size: 22,
                 color: palette.cardColorYelGreen,
               ),
-              label: Text(
+              label: const Text(
                 "세트 추가",
                 style: TextStyle(
                   fontSize: 16,
@@ -559,7 +559,7 @@ class _SetsDetailState extends State<SetsDetail> {
           child: Text(
             "${widget.index + 1}",
             textAlign: TextAlign.center,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 17,
               color: palette.cardColorWhite,
             ),
@@ -599,10 +599,10 @@ class _SetsDetailState extends State<SetsDetail> {
             enabledValid: false,
             height: 40,
             hint: "@",
-            textStyle: TextStyle(color: palette.cardColorWhite),
+            textStyle: const TextStyle(color: palette.cardColorWhite),
             nowValue: widget.setInstance.rpe.toString(),
             itemList: widget.rpeList!,
-            itemTextStyle: TextStyle(
+            itemTextStyle: const TextStyle(
               color: palette.cardColorWhite,
             ),
             onChanged: (value) {
@@ -677,7 +677,7 @@ class _SetInputFieldState extends State<SetInputField> {
       height: 40,
       valid: false,
       textInputType: TextInputType.number,
-      textStyle: TextStyle(
+      textStyle: const TextStyle(
         color: palette.cardColorWhite,
       ),
       onSubmitted: (value) {

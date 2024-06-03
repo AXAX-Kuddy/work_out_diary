@@ -305,7 +305,8 @@ class RoutineProvider extends ChangeNotifier {
         RoutinePreferencesKey.restTimeSec.key, Routine.restTimeSec);
     await prefs.setInt(
         RoutinePreferencesKey.restTimeTotal.key, Routine.restTimeTotal);
-    print("save");
+
+    debugPrint("save");
   }
 
   Future<void> loadPreferences() async {
@@ -319,6 +320,6 @@ class RoutineProvider extends ChangeNotifier {
     Routine.restTimeTotal =
         prefs.getInt(RoutinePreferencesKey.restTimeTotal.key) ?? 0;
 
-    print("load");
+    debugPrint("load");
   }
 }

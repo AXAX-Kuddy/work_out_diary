@@ -114,8 +114,8 @@ class _CustomDropDownButtonState extends State<CustomDropDownButton> {
             ),
             elevation: 2,
           ),
-          iconStyleData: IconStyleData(
-            icon: const LineIcon.angleRight(),
+          iconStyleData: const IconStyleData(
+            icon: LineIcon.angleRight(),
             iconSize: 14,
             iconEnabledColor: palette.cardColorWhite,
             iconDisabledColor: Colors.grey,

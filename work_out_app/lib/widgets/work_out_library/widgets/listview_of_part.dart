@@ -73,7 +73,7 @@ class _PartListState extends State<PartList> {
               child: Text(
                 list[index],
                 textAlign: TextAlign.center,
-                style: TextStyle(
+                style: const TextStyle(
                   color: palette.cardColorWhite,
                   fontSize: 15,
                 ),

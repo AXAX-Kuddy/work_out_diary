@@ -36,7 +36,7 @@ class InnerPanelButton extends StatelessWidget {
         width: constraints.maxWidth * 0.88,
         height: 45,
         padding: const EdgeInsets.all(5),
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
             border: BorderDirectional(
                 bottom: BorderSide(
           color: palette.cardColorGray,
@@ -53,7 +53,7 @@ class InnerPanelButton extends StatelessWidget {
             Text(contentText, style: contentTextStyle),
             const Spacer(),
             showAngle
-                ? LineIcon(
+                ? const LineIcon(
                     LineIcons.angleRight,
                     color: palette.cardColorWhite,
                   )
