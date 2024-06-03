@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_native_splash/cli_commands.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:work_out_app/screens/diary_screen/diary_screen_widgets/calendar_custom/calendar_builders.dart';
 import 'package:work_out_app/screens/diary_screen/diary_screen_widgets/calendar_custom/calendar_style.dart';
+import 'package:work_out_app/util/keys.dart';
 import 'package:work_out_app/widgets/base_screen/base_page.dart';
 import 'package:work_out_app/util/palette.dart' as palette;
 import 'package:work_out_app/screens/diary_screen/diary_screen_widgets/header_style.dart';
+import 'package:provider/provider.dart';
+import 'package:work_out_app/provider/store.dart' as provider;
 
 class DiaryScreen extends StatefulWidget {
   const DiaryScreen({super.key});
@@ -15,16 +17,25 @@ class DiaryScreen extends StatefulWidget {
 }
 
 class _DiaryScreenState extends State<DiaryScreen> {
+  late provider.UserInfo userInfo;
+
   DateTime _focusedDay = DateTime.now();
   DateTime _selectedDay = DateTime.now();
+
+  @override
+  void initState() {
+    super.initState();
+    userInfo = context.read<provider.MainStoreProvider>().getUserInfo();
+  }
 
   @override
   Widget build(BuildContext context) {
     return BasePage(
       children: [
-        const Text(
-          "기록",
-          style: TextStyle(
+        Text(
+          "${userInfo[UserInfoField.userName]}님의 일지",
+          style: const TextStyle(
+            fontSize: 20,
             color: palette.cardColorWhite,
           ),
         ),

@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:work_out_app/provider/make_program.dart' as maked;
 import 'package:work_out_app/util/keys.dart';
@@ -35,6 +36,10 @@ class MainStoreProvider extends ChangeNotifier {
     dynamic value,
   }) {
     MainStore.userInfo[userInfoField] = value;
+  }
+
+  UserInfo getUserInfo() {
+    return MainStore.userInfo;
   }
 
   static double dotsCal({
