@@ -10,4 +10,5 @@ class CustomHeaderStyle extends HeaderStyle {
 
   @override
   bool get rightChevronVisible => false;
+
 }

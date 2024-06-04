@@ -215,6 +215,11 @@ class RoutineProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void clearUserSelectWorkout() {
+    todayWorkouts.clear();
+    notifyListeners();
+  }
+
   void setWorkoutStart() {
     Routine.workoutStart = true;
     notifyListeners();

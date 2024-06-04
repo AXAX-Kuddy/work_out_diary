@@ -5,12 +5,10 @@ class WideButton extends StatefulWidget {
   final Color unTapColor;
   final Color tapColor;
   final Color tapBorderColor;
-  final List<Widget> children;
+  final Widget child;
   final bool buttonTest;
   final Function? onTapUpFunction;
 
-  final MainAxisAlignment horizontalAxis;
-  final CrossAxisAlignment verticalAxis;
 
   final double height;
   final double? width;
@@ -19,13 +17,9 @@ class WideButton extends StatefulWidget {
     super.key,
     this.unTapColor = const Color.fromARGB(226, 255, 255, 255),
     this.tapColor = const Color.fromARGB(183, 255, 255, 255),
-    this.children = const [
-      Text("컨텐츠를 입력하세요"),
-    ],
+    this.child = const Text("컨텐츠를 입력하세요"),
     this.onTapUpFunction,
     this.buttonTest = false,
-    this.horizontalAxis = MainAxisAlignment.center,
-    this.verticalAxis = CrossAxisAlignment.center,
     this.height = 50,
     this.width,
     this.tapBorderColor = const Color.fromRGBO(0, 0, 0, 0),
@@ -49,39 +43,36 @@ class _WideButtonState extends State<WideButton> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-        onTapDown: (details) {
-          setState(() {
-            btnColor = widget.tapColor;
-            borderColor = widget.tapBorderColor;
-          });
-        },
-        onTapUp: (details) {
-          setState(() {
-            btnColor = widget.unTapColor;
-            borderColor = const Color.fromRGBO(0, 0, 0, 0);
-          });
-          if (buttonTest) {
-            print("버튼테스트");
-          }
-          widget.onTapUpFunction?.call();
-        },
-        onTapCancel: () {
-          setState(() {
-            btnColor = widget.unTapColor;
-          });
-        },
-        child: WidgetsBox(
-          backgroundColor: btnColor,
-          border: Border.all(
-            color: borderColor,
-          ),
-          horizontalAxis: widget.horizontalAxis,
-          verticalAxis: widget.verticalAxis,
-          height: widget.height,
-          width: widget.width,
-          children: [
-            ...widget. children,
-          ],
-        ));
+      onTapDown: (details) {
+        setState(() {
+          btnColor = widget.tapColor;
+          borderColor = widget.tapBorderColor;
+        });
+      },
+      onTapUp: (details) {
+        setState(() {
+          btnColor = widget.unTapColor;
+          borderColor = const Color.fromRGBO(0, 0, 0, 0);
+        });
+        if (buttonTest) {
+          print("버튼테스트");
+        }
+        widget.onTapUpFunction?.call();
+      },
+      onTapCancel: () {
+        setState(() {
+          btnColor = widget.unTapColor;
+        });
+      },
+      child: WidgetsBox(
+        backgroundColor: btnColor,
+        border: Border.all(
+          color: borderColor,
+        ),
+        height: widget.height,
+        width: widget.width,
+        child: widget.child,
+      ),
+    );
   }
 }

@@ -4,8 +4,8 @@ import 'package:work_out_app/screens/home_screen/home_screen.dart';
 import 'package:work_out_app/widgets/base_screen/base_page.dart';
 import 'package:work_out_app/util/palette.dart' as palette;
 
-class WorkoutCompleteScreem extends StatelessWidget {
-  const WorkoutCompleteScreem({super.key});
+class WorkoutCompleteScreen extends StatelessWidget {
+  const WorkoutCompleteScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

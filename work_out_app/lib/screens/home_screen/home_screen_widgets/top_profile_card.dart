@@ -52,108 +52,110 @@ class ProfileCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return WidgetsBox(
       backgroundColor: palette.cardColorYelGreen,
-      verticalAxis: CrossAxisAlignment.center,
-      children: [
-        Row(
-          children: [
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Text(
-                  "스쿼트",
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          Row(
+            children: [
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text(
+                    "스쿼트",
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                ),
-                Text(
-                  squat.toString(),
-                  style: const TextStyle(
-                    fontSize: 18,
+                  Text(
+                    squat.toString(),
+                    style: const TextStyle(
+                      fontSize: 18,
+                    ),
                   ),
-                ),
-              ],
-            ),
-            const SizedBox(
-              width: 8,
-            ),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Text(
-                  "벤치프레스",
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
+                ],
+              ),
+              const SizedBox(
+                width: 8,
+              ),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text(
+                    "벤치프레스",
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                ),
-                Text(
-                  bench.toString(),
-                  style: const TextStyle(
-                    fontSize: 18,
+                  Text(
+                    bench.toString(),
+                    style: const TextStyle(
+                      fontSize: 18,
+                    ),
                   ),
-                ),
-              ],
-            ),
-            const SizedBox(
-              width: 8,
-            ),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Text(
-                  "데드리프트",
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
+                ],
+              ),
+              const SizedBox(
+                width: 8,
+              ),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text(
+                    "데드리프트",
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                ),
-                Text(
-                  dl.toString(),
-                  style: const TextStyle(
-                    fontSize: 18,
+                  Text(
+                    dl.toString(),
+                    style: const TextStyle(
+                      fontSize: 18,
+                    ),
                   ),
-                ),
-              ],
-            ),
-          ],
-        ),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Row(
-              children: [
-                Text(
-                  tierList[userTier(dots.toString())],
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
+                ],
+              ),
+            ],
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Row(
+                children: [
+                  Text(
+                    tierList[userTier(dots.toString())],
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                ),
-                const SizedBox(
-                  width: 5,
-                ),
-                Container(
-                  width: 15,
-                  height: 15,
-                  decoration: BoxDecoration(
-                    color: colorList[userTier(dots.toString())],
-                    borderRadius: BorderRadius.circular(50),
+                  const SizedBox(
+                    width: 5,
                   ),
-                ),
-              ],
-            ),
-            Row(
-              children: [
-                Text(
-                  "$dots PT",
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.normal,
+                  Container(
+                    width: 15,
+                    height: 15,
+                    decoration: BoxDecoration(
+                      color: colorList[userTier(dots.toString())],
+                      borderRadius: BorderRadius.circular(50),
+                    ),
                   ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ],
+                ],
+              ),
+              Row(
+                children: [
+                  Text(
+                    "$dots PT",
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.normal,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }

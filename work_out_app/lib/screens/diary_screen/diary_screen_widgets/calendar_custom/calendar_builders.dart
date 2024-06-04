@@ -5,6 +5,16 @@ import 'package:work_out_app/util/palette.dart' as palette;
 class CustomCalendarBuilders extends CalendarBuilders {
   @override
   DayBuilder? get dowBuilder => (BuildContext context, DateTime day) {
+        Color weekendColor(int weekday) {
+          if (weekday == 6) {
+            return palette.colorBlue;
+          } else if (weekday == 7) {
+            return palette.colorRed;
+          } else {
+            return palette.cardColorYelGreen;
+          }
+        }
+
         const List<String> weekName = [
           "월",
           "화",
@@ -18,8 +28,8 @@ class CustomCalendarBuilders extends CalendarBuilders {
         return Center(
           child: Text(
             weekName[day.weekday - 1],
-            style: const TextStyle(
-              color: palette.cardColorYelGreen,
+            style: TextStyle(
+              color: weekendColor(day.weekday),
             ),
           ),
         );

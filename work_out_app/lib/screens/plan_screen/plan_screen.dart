@@ -43,7 +43,7 @@ class _PlanningScreenState extends State<PlanningScreen> {
     name: "placeHold",
   );
   int? panelCallingInstanceIndex;
-  String routineName = "";
+  String routineTitle = "";
   late provider.RoutineProvider routineProvider;
 
   late Widget restTimerWidget;
@@ -52,19 +52,19 @@ class _PlanningScreenState extends State<PlanningScreen> {
 
   void setRoutineName() {
     String nowTime = DateTime.now().toString();
-    routineName = nowTime.substring(0, 10);
+    routineTitle = nowTime.substring(0, 10);
   }
 
   void changeTitle(String value) {
     setState(() {
-      routineName = value;
+      routineTitle = value;
     });
   }
 
   void workoutComplete() async {
     await database.into(database.routines).insert(
           RoutinesCompanion.insert(
-            routineName: drift.Value(routineName),
+            routineName: drift.Value(routineTitle),
             date: drift.Value(DateTime.now()),
           ),
         );
@@ -82,14 +82,11 @@ class _PlanningScreenState extends State<PlanningScreen> {
       }
     }
     if (mounted) {
-      for (int i = 0; i < routineProvider.todayWorkouts.length; i++) {
-        routineProvider
-            .removeUserSelectWorkout(routineProvider.todayWorkouts[i]);
-      }
+      routineProvider.clearUserSelectWorkout();
       routineProvider.onDisposeWorkoutTimer();
       routineProvider.onDisposeRestTimer();
       Navigator.push(context, MaterialPageRoute(builder: (context) {
-        return const WorkoutCompleteScreem();
+        return const WorkoutCompleteScreen();
       }));
     }
   }
@@ -465,7 +462,7 @@ class _PlanningScreenState extends State<PlanningScreen> {
               size: 30,
             )),
         title: TitleTextField(
-          title: routineName,
+          title: routineTitle,
           changeTitle: changeTitle,
         ),
       ),

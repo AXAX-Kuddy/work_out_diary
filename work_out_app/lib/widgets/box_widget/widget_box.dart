@@ -1,12 +1,11 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class WidgetsBox extends StatelessWidget {
   final Color backgroundColor;
   final double? height;
   final double? width;
-  final List<Widget> children;
-  final MainAxisAlignment horizontalAxis;
-  final CrossAxisAlignment verticalAxis;
+  final Widget child;
   final Border? border;
   final EdgeInsetsGeometry? margin;
 
@@ -15,9 +14,7 @@ class WidgetsBox extends StatelessWidget {
     this.backgroundColor = Colors.white,
     this.height,
     this.width,
-    required this.children,
-    this.horizontalAxis = MainAxisAlignment.spaceEvenly,
-    this.verticalAxis = CrossAxisAlignment.start,
+    required this.child,
     this.border,
     this.margin,
   });
@@ -35,13 +32,7 @@ class WidgetsBox extends StatelessWidget {
       ),
       child: Padding(
         padding: const EdgeInsets.all(10),
-        child: Row(
-          mainAxisAlignment: horizontalAxis,
-          crossAxisAlignment: verticalAxis,
-          children: [
-            ...children,
-          ],
-        ),
+        child: child,
       ),
     );
   }

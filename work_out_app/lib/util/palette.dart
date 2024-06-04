@@ -18,4 +18,5 @@ const Color tierMiddleHigh = Color.fromARGB(255, 245, 92, 49);
 const Color tierHigh = Color.fromRGBO(82, 179, 175, 1);
 
 // 기타색
-const Color iconColorRed = Color.fromARGB(255, 255, 0, 0);
+const Color colorRed = Color.fromARGB(255, 255, 0, 0);
+const Color colorBlue = Color.fromARGB(255, 0, 174, 255);

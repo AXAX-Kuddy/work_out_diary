@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:sqlite3/sqlite3.dart';
 import 'package:table_calendar/table_calendar.dart';
+import 'package:work_out_app/database/database.dart';
 import 'package:work_out_app/screens/diary_screen/diary_screen_widgets/calendar_custom/calendar_builders.dart';
 import 'package:work_out_app/screens/diary_screen/diary_screen_widgets/calendar_custom/calendar_style.dart';
 import 'package:work_out_app/util/keys.dart';
@@ -17,6 +19,8 @@ class DiaryScreen extends StatefulWidget {
 }
 
 class _DiaryScreenState extends State<DiaryScreen> {
+  final AppDatabase database = AppDatabase();
+  late Future<List<Routine>> routineList;
   late provider.UserInfo userInfo;
 
   DateTime _focusedDay = DateTime.now();
@@ -26,6 +30,7 @@ class _DiaryScreenState extends State<DiaryScreen> {
   void initState() {
     super.initState();
     userInfo = context.read<provider.MainStoreProvider>().getUserInfo();
+    routineList = database.getRoutines();
   }
 
   @override

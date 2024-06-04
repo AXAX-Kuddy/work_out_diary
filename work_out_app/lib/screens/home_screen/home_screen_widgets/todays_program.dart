@@ -1,6 +1,8 @@
 import 'dart:math';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:work_out_app/database/database.dart';
 import 'package:work_out_app/util/palette.dart' as palette;
 import 'package:work_out_app/widgets/box_widget/widget_box.dart';
@@ -18,14 +20,7 @@ class TodayWorkOutCard extends StatefulWidget {
 
 class _TodayWorkOutCardState extends State<TodayWorkOutCard> {
   final database = AppDatabase();
-  final List<Routine> routineData = [];
   late String _userName;
-
-  Future<void> getRoutines() async {
-    final data = await database.select(database.routines).get();
-    print(data);
-    routineData.addAll(data);
-  }
 
   final List<String> randomAnnounce = [
     "오늘도 한탕 해볼까요?",
@@ -45,7 +40,6 @@ class _TodayWorkOutCardState extends State<TodayWorkOutCard> {
   @override
   void initState() {
     super.initState();
-    getRoutines();
   }
 
   @override
@@ -59,52 +53,81 @@ class _TodayWorkOutCardState extends State<TodayWorkOutCard> {
     return WidgetsBox(
       backgroundColor: palette.cardColorWhite,
       height: 300,
-      children: [
-        Column(
-          children: [
-            Column(
-              children: [
-                Text(
-                  "$_userName님! 반가워요!",
-                  style: const TextStyle(
-                    fontSize: 17,
-                    fontWeight: FontWeight.bold,
-                  ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Column(
+            children: [
+              Text(
+                "$_userName님! 반가워요!",
+                style: const TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.bold,
                 ),
-                Text(
-                  randomAnnounce[randomSelector()],
-                  style: const TextStyle(
-                    fontSize: 15,
-                  ),
+              ),
+              Text(
+                randomAnnounce[randomSelector()],
+                style: const TextStyle(
+                  fontSize: 15,
                 ),
-              ],
-            ),
-            const Text(
-              "Upcoming Programs",
-              style: TextStyle(
-                fontSize: 30,
-                fontWeight: FontWeight.bold,
               ),
+            ],
+          ),
+          const Text(
+            "Upcoming Programs",
+            style: TextStyle(
+              fontSize: 30,
+              fontWeight: FontWeight.bold,
             ),
-            const SizedBox(
-              height: 15,
+          ),
+          const SizedBox(
+            height: 15,
+          ),
+          Expanded(
+            child: FutureBuilder(
+              future: database.getRoutines(),
+              builder: (
+                BuildContext context,
+                AsyncSnapshot<List<Routine>> snapshot,
+              ) {
+                if (!snapshot.hasData) {
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                } else if (snapshot.hasError) {
+                  return const Center(
+                    child: Text("데이터를 가져오지 못했습니다."),
+                  );
+                } else {
+                  return ListView.builder(
+                    itemCount:
+                        snapshot.data!.isEmpty ? 1 : snapshot.data!.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      List<Routine> routines = snapshot.data!;
+                      late Routine routine = snapshot.data![index];
+
+                      if (routines.isEmpty) {
+                        return const Center(
+                          child: Text("루틴이 비어있습니다."),
+                        );
+                      } else {
+                        return ListTile(
+                          title: Text(routine.date.toString()),
+                          onTap: () {
+                            setState(() {
+                              database.removeRoutine(routine);
+                            });
+                          },
+                        );
+                      }
+                    },
+                  );
+                }
+              },
             ),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(
-                routineData.isEmpty ? 1 : routineData.length,
-                (index) {
-                  if (routineData.isEmpty) {
-                    return const Text("루틴이 비어있어요!");
-                  } else {
-                    return Text("${routineData[index].date}");
-                  }
-                },
-              ),
-            ),
-          ],
-        ),
-      ],
+          ),
+        ],
+      ),
     );
   }
 }

@@ -137,9 +137,7 @@ class _WorkoutLibraryState extends State<WorkoutLibrary> {
           }
           Navigator.pop(context);
         },
-        children: const [
-          Text("운동 추가하기"),
-        ],
+        child: const Text("운동 추가하기"),
       );
     } else if (widget.exchangedWorkoutIndex != null) {
       bottomAddButton = WideButton(
@@ -153,9 +151,7 @@ class _WorkoutLibraryState extends State<WorkoutLibrary> {
 
           Navigator.pop(context);
         },
-        children: const [
-          Text("운동 교체하기"),
-        ],
+        child: const Text("운동 교체하기"),
       );
     }
   }
