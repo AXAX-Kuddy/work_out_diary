@@ -52,7 +52,6 @@ class _TodayWorkOutCardState extends State<TodayWorkOutCard> {
   Widget build(BuildContext context) {
     return WidgetsBox(
       backgroundColor: palette.cardColorWhite,
-      height: 300,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -83,7 +82,8 @@ class _TodayWorkOutCardState extends State<TodayWorkOutCard> {
           const SizedBox(
             height: 15,
           ),
-          Expanded(
+          SizedBox(
+            height: 250,
             child: FutureBuilder(
               future: database.getRoutines(),
               builder: (
@@ -99,28 +99,34 @@ class _TodayWorkOutCardState extends State<TodayWorkOutCard> {
                     child: Text("데이터를 가져오지 못했습니다."),
                   );
                 } else {
-                  return ListView.builder(
-                    itemCount:
-                        snapshot.data!.isEmpty ? 1 : snapshot.data!.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      List<Routine> routines = snapshot.data!;
-                      late Routine routine = snapshot.data![index];
+                  return CustomScrollView(
+                    slivers: [
+                      SliverGrid.builder(
+                        itemCount: snapshot.data?.length ?? 10,
+                        gridDelegate:
+                            const SliverGridDelegateWithMaxCrossAxisExtent(
+                          maxCrossAxisExtent: 200.0,
+                          mainAxisSpacing: 10.0,
+                          crossAxisSpacing: 10.0,
+                          childAspectRatio: 4.0,
+                        ),
+                        itemBuilder: (BuildContext context, int index) {
+                          final routines = snapshot.data;
 
-                      if (routines.isEmpty) {
-                        return const Center(
-                          child: Text("루틴이 비어있습니다."),
-                        );
-                      } else {
-                        return ListTile(
-                          title: Text(routine.date.toString()),
-                          onTap: () {
-                            setState(() {
-                              database.removeRoutine(routine);
-                            });
-                          },
-                        );
-                      }
-                    },
+                          return Container(
+                            alignment: Alignment.center,
+                            color: palette.cardColorYelGreen,
+                            child: const Text(
+                              "아무글자",
+                              style: TextStyle(
+                                fontSize: 15,
+                                color: palette.bgColor,
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ],
                   );
                 }
               },

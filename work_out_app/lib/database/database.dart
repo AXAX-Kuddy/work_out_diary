@@ -10,11 +10,7 @@ import 'package:sqlite3_flutter_libs/sqlite3_flutter_libs.dart';
 part 'database.g.dart';
 
 /// 루틴 데이터 베이스
-@DriftDatabase(tables: [
-  Routines,
-  Workouts,
-  WorkoutSets,
-])
+@DriftDatabase(tables: [Routines])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
@@ -28,19 +24,6 @@ class AppDatabase extends _$AppDatabase {
 
   /// 선택한 운동 루틴 삭제
   Future<int> removeRoutine(Routine selectRoutine) async {
-    /// 삭제할 루틴의 운동 종목들 불러오기
-    final deleteWorkout = await (select(workouts)
-          ..where((workout) => workout.routineId.equals(selectRoutine.id)))
-        .get();
-
-    /// 불러온 운동 종목들에 해당하는 모든 세트 및 운동 종목 삭제
-    for (var workout in deleteWorkout) {
-      await (delete(workoutSets)
-            ..where((set) => set.workoutId.equals(workout.id)))
-          .go();
-      await delete(workouts).delete(workout);
-    }
-
     /// 매개변수로 받은 루틴 삭제
     return await delete(routines).delete(selectRoutine);
   }
@@ -55,18 +38,18 @@ class AppDatabase extends _$AppDatabase {
     }
     return totalDelete;
   }
-
-  Future<int> insertWorkout(Insertable<Workout> workout) =>
-      into(workouts).insert(workout);
-
-  Future<int> insertSet(Insertable<WorkoutSet> set) =>
-      into(workoutSets).insert(set);
 }
 
 LazyDatabase _openConnection() {
   return LazyDatabase(() async {
     final dbFolder = await getApplicationDocumentsDirectory();
     final file = File(p.join(dbFolder.path, 'db.sqlite'));
+
+    /// 데이터베이스 초기화
+    /// 개발 중 데이터베이스 스키마의 변화가 생겼을 경우 사용
+    // if (await file.exists()) {
+    //   await file.delete();
+    // }
 
     if (Platform.isAndroid) {
       await applyWorkaroundToOpenSqlite3OnOldAndroidVersions();
@@ -80,29 +63,9 @@ LazyDatabase _openConnection() {
 /// 오늘 완료한 루틴, 루틴 저장소에 종속되어야 함
 class Routines extends Table {
   IntColumn get id => integer().autoIncrement()();
-  TextColumn get routineName => text().nullable()();
-  DateTimeColumn get date => dateTime().nullable()();
+  TextColumn get routineName => text()();
+  DateTimeColumn get date => dateTime()();
+
   BoolColumn get isFavor => boolean().withDefault(const Constant(false))();
-}
-
-///루틴 안 운동, 루틴에 종속되어야 함
-class Workouts extends Table {
-  IntColumn get id => integer().autoIncrement()();
-  IntColumn get routineId => integer().nullable().references(Routines, #id)();
-  TextColumn get name => text().nullable()();
-  RealColumn get targetRpe => real().withDefault(const Constant(0))();
-  BoolColumn get showE1rm => boolean().withDefault(const Constant(false))();
-}
-
-/// 운동 안 세트, 운동에 종속되어야 함
-class WorkoutSets extends Table {
-  IntColumn get id => integer().autoIncrement()();
-  IntColumn get workoutId => integer().nullable().references(Workouts, #id)();
-
-  IntColumn get setIndex => integer().nullable()();
-  RealColumn get weight => real().withDefault(const Constant(0))();
-  IntColumn get reps => integer().withDefault(const Constant(0))();
-  RealColumn get rpe => real().withDefault(const Constant(0))();
-  RealColumn get e1rm => real().withDefault(const Constant(0))();
-  BoolColumn get setComplete => boolean().withDefault(const Constant(false))();
+  TextColumn get children => text()();
 }

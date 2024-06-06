@@ -1,6 +1,3 @@
-import 'package:drift/drift.dart';
-import 'package:work_out_app/database/database.dart';
-
 class Program {
   late String? programName;
   late List<Week>? weeks;
@@ -84,11 +81,21 @@ class Workout {
     List<Set>? sets,
   }) : sets = sets ?? [];
 
-  WorkoutsCompanion toWorkoutCompanion(Workout workout) {
-    return WorkoutsCompanion.insert(
-      name: Value(workout.name),
-      targetRpe: Value(workout.targetRpe),
-      showE1rm: Value(workout.showE1rm),
+  Map<String, dynamic> toJsonEncode() {
+    return {
+      "name": name,
+      "targetRpe": targetRpe,
+      "showE1rm": showE1rm,
+      "sets": sets?.map((set) => set.toJsonEncode()).toList(),
+    };
+  }
+
+  static Workout toJsonDecode(Map<String, dynamic> json) {
+    return Workout(
+      name: json["name"],
+      targetRpe: json["targetRpe"],
+      showE1rm: json["showE1rm"],
+      sets: (json["sets"] as List).map((set) => Set.toJsonDecode(set)).toList(),
     );
   }
 
@@ -132,14 +139,25 @@ class Set {
     this.onUpdate,
   });
 
-  WorkoutSetsCompanion toSetCompanion(Set set) {
-    return WorkoutSetsCompanion.insert(
-      setIndex: Value(set.setIndex),
-      weight: Value(set.weight),
-      reps: Value(set.reps),
-      rpe: Value(set.rpe),
-      e1rm: Value(set.e1rm),
-      setComplete: Value(set.setComplete),
+  Map<String, dynamic> toJsonEncode() {
+    return {
+      "setIndex": setIndex,
+      "reps": reps,
+      "weight": weight,
+      "rpe": rpe,
+      "e1rm": e1rm,
+      "setComplete": setComplete,
+    };
+  }
+
+  static Set toJsonDecode(Map<String, dynamic> json) {
+    return Set(
+      setIndex: json["setIndex"],
+      weight: json["weight"],
+      reps: json["reps"],
+      rpe: json["rpe"],
+      e1rm: json["e1rm"],
+      setComplete: json["setComplete"],
     );
   }
 
