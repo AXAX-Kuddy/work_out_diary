@@ -5,6 +5,7 @@ class WidgetsBox extends StatelessWidget {
   final Color backgroundColor;
   final double? height;
   final double? width;
+  final List<BoxShadow>? boxShadow;
   final Widget child;
   final Border? border;
   final EdgeInsetsGeometry? margin;
@@ -14,6 +15,7 @@ class WidgetsBox extends StatelessWidget {
     this.backgroundColor = Colors.white,
     this.height,
     this.width,
+    this.boxShadow,
     required this.child,
     this.border,
     this.margin,
@@ -29,6 +31,7 @@ class WidgetsBox extends StatelessWidget {
         color: backgroundColor,
         border: border,
         borderRadius: BorderRadius.circular(15),
+        boxShadow: boxShadow,
       ),
       child: Padding(
         padding: const EdgeInsets.all(10),

@@ -20,3 +20,4 @@ const Color tierHigh = Color.fromRGBO(82, 179, 175, 1);
 // 기타색
 const Color colorRed = Color.fromARGB(255, 255, 0, 0);
 const Color colorBlue = Color.fromARGB(255, 0, 174, 255);
+const Color colorWhite = Color.fromARGB(242, 255, 255, 255);

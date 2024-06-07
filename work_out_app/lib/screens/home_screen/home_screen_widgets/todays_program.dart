@@ -3,11 +3,14 @@ import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:line_icons/line_icon.dart';
+import 'package:line_icons/line_icons.dart';
 import 'package:work_out_app/database/database.dart';
 import 'package:work_out_app/util/palette.dart' as palette;
 import 'package:work_out_app/widgets/box_widget/widget_box.dart';
 import 'package:work_out_app/util/keys.dart';
 import 'package:work_out_app/provider/store.dart' as provider;
+import 'package:work_out_app/widgets/buttons/wide_button.dart';
 
 class TodayWorkOutCard extends StatefulWidget {
   const TodayWorkOutCard({
@@ -51,6 +54,7 @@ class _TodayWorkOutCardState extends State<TodayWorkOutCard> {
   @override
   Widget build(BuildContext context) {
     return WidgetsBox(
+      height: 300,
       backgroundColor: palette.cardColorWhite,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -82,8 +86,7 @@ class _TodayWorkOutCardState extends State<TodayWorkOutCard> {
           const SizedBox(
             height: 15,
           ),
-          SizedBox(
-            height: 250,
+          Expanded(
             child: FutureBuilder(
               future: database.getRoutines(),
               builder: (
@@ -99,34 +102,71 @@ class _TodayWorkOutCardState extends State<TodayWorkOutCard> {
                     child: Text("데이터를 가져오지 못했습니다."),
                   );
                 } else {
-                  return CustomScrollView(
-                    slivers: [
-                      SliverGrid.builder(
-                        itemCount: snapshot.data?.length ?? 10,
-                        gridDelegate:
-                            const SliverGridDelegateWithMaxCrossAxisExtent(
-                          maxCrossAxisExtent: 200.0,
-                          mainAxisSpacing: 10.0,
-                          crossAxisSpacing: 10.0,
-                          childAspectRatio: 4.0,
-                        ),
-                        itemBuilder: (BuildContext context, int index) {
-                          final routines = snapshot.data;
+                  final routines = snapshot.data!;
 
-                          return Container(
-                            alignment: Alignment.center,
-                            color: palette.cardColorYelGreen,
-                            child: const Text(
-                              "아무글자",
+                  return ListView.separated(
+                    separatorBuilder: (context, index) =>
+                        const SizedBox(height: 13),
+                    itemCount: routines.isEmpty ? 1 : routines.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      if (routines.isEmpty) {
+                        return Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Text(
+                              "🤔 루틴이 비어있습니다.",
                               style: TextStyle(
-                                fontSize: 15,
-                                color: palette.bgColor,
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
-                          );
-                        },
-                      ),
-                    ],
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            TextButton.icon(
+                              onPressed: () {},
+                              icon: const LineIcon(
+                                LineIcons.angleRight,
+                                color: palette.bgColor,
+                              ),
+                              label: const Text(
+                                "운동 계획하러가기",
+                                style: TextStyle(
+                                  color: palette.bgColor,
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      } else {
+                        return WideButton(
+                          height: 41,
+                          tapColor: palette.cardColorWhite,
+                          unTapColor: palette.colorWhite,
+                          boxShadow: [
+                            BoxShadow(
+                              color: palette.bgColor.withOpacity(0.6),
+                              offset: const Offset(0, 1.5),
+                              blurRadius: 2.5,
+                            ),
+                          ],
+                          child: Row(
+                            children: [
+                              Text(
+                                routines[index].routineName,
+                              ),
+                              const Spacer(),
+                              const LineIcon(
+                                LineIcons.angleRight,
+                                color: palette.bgColor,
+                                size: 20,
+                              ),
+                            ],
+                          ),
+                        );
+                      }
+                    },
                   );
                 }
               },

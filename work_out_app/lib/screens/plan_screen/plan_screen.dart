@@ -53,7 +53,7 @@ class _PlanningScreenState extends State<PlanningScreen> {
 
   void setRoutineName() {
     String nowTime = DateTime.now().toString();
-    routineTitle = nowTime.substring(0, 10);
+    routineTitle = "${nowTime.substring(0, 10)}일자 루틴";
   }
 
   void changeTitle(String value) {
