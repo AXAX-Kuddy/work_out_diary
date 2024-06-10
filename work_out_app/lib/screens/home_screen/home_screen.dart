@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_sliding_up_panel/flutter_sliding_up_panel.dart';
 import 'package:line_icons/line_icon.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:work_out_app/util/palette.dart' as palette;
@@ -6,15 +7,27 @@ import 'package:work_out_app/screens/plan_screen/plan_screen.dart';
 import 'package:work_out_app/screens/home_screen/home_screen_widgets/todays_program.dart';
 import 'package:work_out_app/screens/home_screen/home_screen_widgets/top_profile_card.dart';
 import 'package:work_out_app/widgets/base_screen/base_page.dart';
+import 'package:work_out_app/util/keys.dart';
 
-class HomeScreen extends StatelessWidget {
+
+class HomeScreen extends StatefulWidget {
   const HomeScreen({
     super.key,
   });
 
   @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  final SlidingUpPanelController panelController = SlidingUpPanelController();
+
+  @override
   Widget build(BuildContext context) {
     return BasePage(
+      // slidingUpPanelWidget: SlidingUpPanelWidget(
+      //   child: Container(),
+      // ),
       floatingActionButton: SizedBox(
         width: 180,
         height: 60,

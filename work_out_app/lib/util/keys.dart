@@ -1,3 +1,5 @@
+import 'package:work_out_app/provider/make_program.dart' as maked;
+
 class PageNumber {
   static int pageNum = 0;
 
@@ -61,4 +63,10 @@ extension SharedPreferencesKeyExtension on RoutinePreferencesKey {
         return '';
     }
   }
+}
+
+enum HandlePanelStatusCommand {
+  spread,
+  anchor,
+  hide,
 }

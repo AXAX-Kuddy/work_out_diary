@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_sliding_up_panel/flutter_sliding_up_panel.dart';
 import 'package:provider/provider.dart';
 import 'package:work_out_app/provider/make_program.dart' as maked;
 import 'package:work_out_app/util/palette.dart' as palette;
@@ -9,24 +10,24 @@ import 'package:work_out_app/screens/plan_screen/plan_screen.dart';
 import 'package:work_out_app/widgets/drop_downs/drop_down.dart';
 import 'package:work_out_app/widgets/text_field/non_form_text_field.dart';
 import 'package:work_out_app/provider/store.dart' as provider;
+import 'package:work_out_app/util/keys.dart';
 
 class WorkoutDetail extends StatefulWidget {
   final int index;
   final void Function(maked.Workout) removeWorkout;
   final maked.Workout workoutInstance;
   final void Function({
-    required WorkoutDetailPanelControllerCommand command,
+    required HandlePanelStatusCommand command,
     maked.Workout? workoutInstance,
     int? workoutInstanceIndex,
   }) workoutDetailPanelController;
 
-  const WorkoutDetail({
-    super.key,
-    required this.index,
-    required this.removeWorkout,
-    required this.workoutInstance,
-    required this.workoutDetailPanelController,
-  });
+  const WorkoutDetail(
+      {super.key,
+      required this.index,
+      required this.removeWorkout,
+      required this.workoutInstance,
+      required this.workoutDetailPanelController});
 
   @override
   State<WorkoutDetail> createState() => _WorkoutDetailState();
@@ -247,7 +248,7 @@ class _WorkoutDetailState extends State<WorkoutDetail> {
               visualDensity: VisualDensity.compact,
               onPressed: () {
                 widget.workoutDetailPanelController(
-                  command: WorkoutDetailPanelControllerCommand.spread,
+                  command: HandlePanelStatusCommand.spread,
                   workoutInstance: widget.workoutInstance,
                   workoutInstanceIndex: widget.index,
                 );
@@ -259,7 +260,7 @@ class _WorkoutDetailState extends State<WorkoutDetail> {
                 //       backgroundColor: Colors.transparent,
                 //       content: Text(
                 //         "${widget.workoutInstance.name}를(을) 목록에서 삭제 하시겠습니까?",
-                //         style: TextStyle(
+                //         style: const TextStyle(
                 //           fontSize: 16,
                 //           color: palette.cardColorWhite,
                 //         ),
@@ -272,7 +273,7 @@ class _WorkoutDetailState extends State<WorkoutDetail> {
                 //               onPressed: () {
                 //                 Navigator.pop(context);
                 //               },
-                //               child: Text(
+                //               child: const Text(
                 //                 "취소",
                 //                 style: TextStyle(
                 //                   color: palette.cardColorWhite,
@@ -286,7 +287,7 @@ class _WorkoutDetailState extends State<WorkoutDetail> {
                 //                 });
                 //                 Navigator.pop(context);
                 //               },
-                //               child: Text(
+                //               child: const Text(
                 //                 "확인",
                 //                 style: TextStyle(
                 //                   color: palette.cardColorYelGreen,
