@@ -50,7 +50,7 @@ dependencies:
   path: ^1.9.0
   sqlite3: ^2.4.2
   shared_preferences: ^2.2.3
-  sliding_up_panel: ^2.0.0+1
+  flutter_sliding_up_panel: ^2.1.1
 
 dev_dependencies:
   flutter_test:

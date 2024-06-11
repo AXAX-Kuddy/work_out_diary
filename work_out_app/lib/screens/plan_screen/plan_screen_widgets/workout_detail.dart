@@ -9,24 +9,24 @@ import 'package:work_out_app/screens/plan_screen/plan_screen.dart';
 import 'package:work_out_app/widgets/drop_downs/drop_down.dart';
 import 'package:work_out_app/widgets/text_field/non_form_text_field.dart';
 import 'package:work_out_app/provider/store.dart' as provider;
-import 'package:work_out_app/util/keys.dart';
 
 class WorkoutDetail extends StatefulWidget {
   final int index;
   final void Function(maked.Workout) removeWorkout;
   final maked.Workout workoutInstance;
   final void Function({
-    required HandlePanelStatusCommand command,
+    required WorkoutDetailPanelControllerCommand command,
     maked.Workout? workoutInstance,
     int? workoutInstanceIndex,
   }) workoutDetailPanelController;
 
-  const WorkoutDetail(
-      {super.key,
-      required this.index,
-      required this.removeWorkout,
-      required this.workoutInstance,
-      required this.workoutDetailPanelController});
+  const WorkoutDetail({
+    super.key,
+    required this.index,
+    required this.removeWorkout,
+    required this.workoutInstance,
+    required this.workoutDetailPanelController,
+  });
 
   @override
   State<WorkoutDetail> createState() => _WorkoutDetailState();
@@ -247,7 +247,7 @@ class _WorkoutDetailState extends State<WorkoutDetail> {
               visualDensity: VisualDensity.compact,
               onPressed: () {
                 widget.workoutDetailPanelController(
-                  command: HandlePanelStatusCommand.spread,
+                  command: WorkoutDetailPanelControllerCommand.spread,
                   workoutInstance: widget.workoutInstance,
                   workoutInstanceIndex: widget.index,
                 );
@@ -259,7 +259,7 @@ class _WorkoutDetailState extends State<WorkoutDetail> {
                 //       backgroundColor: Colors.transparent,
                 //       content: Text(
                 //         "${widget.workoutInstance.name}를(을) 목록에서 삭제 하시겠습니까?",
-                //         style: const TextStyle(
+                //         style: TextStyle(
                 //           fontSize: 16,
                 //           color: palette.cardColorWhite,
                 //         ),
@@ -272,7 +272,7 @@ class _WorkoutDetailState extends State<WorkoutDetail> {
                 //               onPressed: () {
                 //                 Navigator.pop(context);
                 //               },
-                //               child: const Text(
+                //               child: Text(
                 //                 "취소",
                 //                 style: TextStyle(
                 //                   color: palette.cardColorWhite,
@@ -286,7 +286,7 @@ class _WorkoutDetailState extends State<WorkoutDetail> {
                 //                 });
                 //                 Navigator.pop(context);
                 //               },
-                //               child: const Text(
+                //               child: Text(
                 //                 "확인",
                 //                 style: TextStyle(
                 //                   color: palette.cardColorYelGreen,

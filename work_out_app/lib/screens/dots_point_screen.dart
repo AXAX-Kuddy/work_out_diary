@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:work_out_app/util/palette.dart' as palette;
 import 'package:work_out_app/widgets/base_screen/base_page.dart';
 

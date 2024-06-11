@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:sliding_up_panel/sliding_up_panel.dart';
+import 'package:provider/provider.dart';
 import 'package:work_out_app/util/palette.dart' as palette;
+import 'package:work_out_app/provider/store.dart' as provider;
 
 class BasePage extends StatefulWidget {
   final List<Widget> children;
@@ -28,31 +29,35 @@ class BasePage extends StatefulWidget {
 
 class _BasePageState extends State<BasePage> {
 
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: widget.appBar,
-      body: Container(
-        decoration: BoxDecoration(
-          color: widget.backgroundColor,
-        ),
-        // ignore: prefer_const_constructors
-        child: Padding(
-          padding: widget.padding,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              const SizedBox(
-                height: 30,
+    return Stack(
+      children: [
+        Scaffold(
+          appBar: widget.appBar,
+          body: Container(
+            decoration: BoxDecoration(
+              color: widget.backgroundColor,
+            ),
+            // ignore: prefer_const_constructors
+            child: Padding(
+              padding: widget.padding,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const SizedBox(
+                    height: 30,
+                  ),
+                  ...widget.children
+                ],
               ),
-              ...widget.children
-            ],
+            ),
           ),
+          floatingActionButton: widget.floatingActionButton,
+          floatingActionButtonLocation: widget.floatingActionButtonLocation,
         ),
-      ),
-      floatingActionButton: widget.floatingActionButton,
-      floatingActionButtonLocation: widget.floatingActionButtonLocation,
+        widget.slidingUpPanelWidget,
+      ],
     );
   }
 }
