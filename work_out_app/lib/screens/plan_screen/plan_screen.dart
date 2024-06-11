@@ -4,11 +4,11 @@ import 'dart:convert';
 import 'package:animated_snack_bar/animated_snack_bar.dart';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_sliding_up_panel/flutter_sliding_up_panel.dart';
 import 'package:line_icons/line_icon.dart';
 import 'package:line_icons/line_icons.dart';
+import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:work_out_app/database/database.dart';
-import 'package:work_out_app/screens/plan_screen/plan_screen_widgets/workout_panel_button.dart';
+import 'package:work_out_app/widgets/sliding_up_panel/panel_button.dart';
 import 'package:work_out_app/util/palette.dart' as palette;
 import 'package:work_out_app/screens/plan_screen/plan_screen_widgets/select_work_out_screen.dart';
 import 'package:work_out_app/screens/plan_screen/plan_screen_widgets/workout_complete.dart';
@@ -34,7 +34,7 @@ class PlanningScreen extends StatefulWidget {
 
 class _PlanningScreenState extends State<PlanningScreen> {
   final AppDatabase database = AppDatabase();
-  final SlidingUpPanelController panelController = SlidingUpPanelController();
+  final PanelController panelController = PanelController();
   maked.Workout panelCallingInstance = maked.Workout(
     name: "placeHold",
   );
@@ -134,12 +134,12 @@ class _PlanningScreenState extends State<PlanningScreen> {
           setState(() {
             panelCallingInstance = workoutInstance;
             panelCallingInstanceIndex = workoutInstanceIndex;
-            panelController.anchor();
+            panelController.show();
           });
         }
       case HandlePanelStatusCommand.anchor:
         setState(() {
-          panelController.anchor();
+          panelController.show();
         });
       case HandlePanelStatusCommand.hide:
         setState(() {
@@ -432,7 +432,6 @@ class _PlanningScreenState extends State<PlanningScreen> {
   @override
   void dispose() {
     super.dispose();
-    panelController.dispose();
   }
 
   @override
@@ -457,23 +456,9 @@ class _PlanningScreenState extends State<PlanningScreen> {
         ),
       ),
       slidingUpPanelWidget: CustomSlidingUpPanelWidget(
-        panelController: panelController,
-        panelCallingInstance: panelCallingInstance,
-        panelCallingInstanceIndex: panelCallingInstanceIndex,
-        onStatusChanged: (status) {
-          if (status == SlidingUpPanelStatus.expanded) {
-            setState(() {
-              panelController.anchor();
-            });
-          }
-          if (status == SlidingUpPanelStatus.collapsed) {
-            setState(() {
-              panelController.hide();
-            });
-          }
-        },
         children: [
-          (BoxConstraints constraints) {
+          PanelItemBuilder(
+              builder: (BuildContext context, BoxConstraints constraints) {
             return Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -499,8 +484,9 @@ class _PlanningScreenState extends State<PlanningScreen> {
                 ),
               ],
             );
-          },
-          (BoxConstraints constraints) {
+          }),
+          PanelItemBuilder(
+              builder: (BuildContext context, BoxConstraints constraints) {
             return InnerPanelButton(
               constraints: constraints,
               contentText: "교체",
@@ -524,72 +510,74 @@ class _PlanningScreenState extends State<PlanningScreen> {
                 );
               },
             );
-          },
-          (BoxConstraints constraints) {
-            return InnerPanelButton(
-              constraints: constraints,
-              contentText: "삭제",
-              contentTextStyle: const TextStyle(
-                fontSize: 18,
-                color: Colors.red,
-              ),
-              icon: LineIcons.trash,
-              iconColor: Colors.red,
-              showAngle: false,
-              onTap: () {
-                showDialog(
-                  context: context,
-                  builder: (context) {
-                    return AlertDialog(
-                      contentPadding: const EdgeInsets.all(25),
-                      backgroundColor: Colors.transparent,
-                      content: Text(
-                        "${panelCallingInstance.name}를(을) 목록에서 삭제 하시겠습니까?",
-                        style: const TextStyle(
-                          fontSize: 16,
-                          color: palette.cardColorWhite,
+          }),
+          PanelItemBuilder(
+            builder: (BuildContext context, BoxConstraints constraints) {
+              return InnerPanelButton(
+                constraints: constraints,
+                contentText: "삭제",
+                contentTextStyle: const TextStyle(
+                  fontSize: 18,
+                  color: Colors.red,
+                ),
+                icon: LineIcons.trash,
+                iconColor: Colors.red,
+                showAngle: false,
+                onTap: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) {
+                      return AlertDialog(
+                        contentPadding: const EdgeInsets.all(25),
+                        backgroundColor: Colors.transparent,
+                        content: Text(
+                          "${panelCallingInstance.name}를(을) 목록에서 삭제 하시겠습니까?",
+                          style: const TextStyle(
+                            fontSize: 16,
+                            color: palette.cardColorWhite,
+                          ),
                         ),
-                      ),
-                      actions: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            TextButton(
-                              onPressed: () {
-                                Navigator.pop(context);
-                              },
-                              child: const Text(
-                                "취소",
-                                style: TextStyle(
-                                  color: palette.cardColorWhite,
+                        actions: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                                child: const Text(
+                                  "취소",
+                                  style: TextStyle(
+                                    color: palette.cardColorWhite,
+                                  ),
                                 ),
                               ),
-                            ),
-                            TextButton(
-                              onPressed: () {
-                                setState(() {
-                                  panelController.hide();
-                                  routineProvider.removeUserSelectWorkout(
-                                      panelCallingInstance);
-                                });
-                                Navigator.pop(context);
-                              },
-                              child: const Text(
-                                "확인",
-                                style: TextStyle(
-                                  color: palette.cardColorYelGreen,
+                              TextButton(
+                                onPressed: () {
+                                  setState(() {
+                                    panelController.hide();
+                                    routineProvider.removeUserSelectWorkout(
+                                        panelCallingInstance);
+                                  });
+                                  Navigator.pop(context);
+                                },
+                                child: const Text(
+                                  "확인",
+                                  style: TextStyle(
+                                    color: palette.cardColorYelGreen,
+                                  ),
                                 ),
                               ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    );
-                  },
-                );
-              },
-            );
-          },
+                            ],
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                },
+              );
+            },
+          ),
         ],
       ),
       children: [

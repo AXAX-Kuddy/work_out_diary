@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:work_out_app/util/palette.dart' as palette;
 
-class BasePage extends StatelessWidget {
+class BasePage extends StatefulWidget {
   final List<Widget> children;
   final Widget slidingUpPanelWidget;
   final AppBar? appBar;
@@ -22,34 +23,36 @@ class BasePage extends StatelessWidget {
   });
 
   @override
+  State<BasePage> createState() => _BasePageState();
+}
+
+class _BasePageState extends State<BasePage> {
+
+
+  @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Scaffold(
-          appBar: appBar,
-          body: Container(
-            decoration: BoxDecoration(
-              color: backgroundColor,
-            ),
-            // ignore: prefer_const_constructors
-            child: Padding(
-              padding: padding,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  const SizedBox(
-                    height: 30,
-                  ),
-                  ...children
-                ],
-              ),
-            ),
-          ),
-          floatingActionButton: floatingActionButton,
-          floatingActionButtonLocation: floatingActionButtonLocation,
+    return Scaffold(
+      appBar: widget.appBar,
+      body: Container(
+        decoration: BoxDecoration(
+          color: widget.backgroundColor,
         ),
-        slidingUpPanelWidget,
-      ],
+        // ignore: prefer_const_constructors
+        child: Padding(
+          padding: widget.padding,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const SizedBox(
+                height: 30,
+              ),
+              ...widget.children
+            ],
+          ),
+        ),
+      ),
+      floatingActionButton: widget.floatingActionButton,
+      floatingActionButtonLocation: widget.floatingActionButtonLocation,
     );
   }
 }

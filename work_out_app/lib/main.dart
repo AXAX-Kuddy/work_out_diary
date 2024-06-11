@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 import 'package:work_out_app/widgets/base_screen/base_page.dart';
 import 'package:work_out_app/provider/make_program.dart' as maked;

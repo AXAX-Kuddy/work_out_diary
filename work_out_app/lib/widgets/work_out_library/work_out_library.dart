@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:line_icons/line_icon.dart';
 import 'package:line_icons/line_icons.dart';
+import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:work_out_app/util/keys.dart';
 import 'package:work_out_app/widgets/buttons/wide_button.dart';
 import 'package:work_out_app/widgets/work_out_library/widgets/listview_of_part.dart';

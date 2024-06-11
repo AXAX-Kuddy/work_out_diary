@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_sliding_up_panel/flutter_sliding_up_panel.dart';
 import 'package:line_icons/line_icon.dart';
 import 'package:line_icons/line_icons.dart';
+import 'package:sliding_up_panel/sliding_up_panel.dart';
+import 'package:work_out_app/database/database.dart' as db;
 import 'package:work_out_app/util/palette.dart' as palette;
 import 'package:work_out_app/screens/plan_screen/plan_screen.dart';
 import 'package:work_out_app/screens/home_screen/home_screen_widgets/todays_program.dart';
 import 'package:work_out_app/screens/home_screen/home_screen_widgets/top_profile_card.dart';
 import 'package:work_out_app/widgets/base_screen/base_page.dart';
 import 'package:work_out_app/util/keys.dart';
-
+import 'package:work_out_app/widgets/sliding_up_panel/sliding_up_panel.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({
@@ -20,14 +21,36 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final SlidingUpPanelController panelController = SlidingUpPanelController();
+  final PanelController panelController = PanelController();
+  db.Routine panelCallingInstance = db.Routine(
+    id: 0,
+    routineName: "placeHold",
+    date: DateTime.now(),
+    isFavor: false,
+    children: "",
+  );
+
 
   @override
   Widget build(BuildContext context) {
     return BasePage(
-      // slidingUpPanelWidget: SlidingUpPanelWidget(
-      //   child: Container(),
-      // ),
+      slidingUpPanelWidget: CustomSlidingUpPanelWidget(
+        children: [
+          PanelItemBuilder(
+              builder: (BuildContext context, BoxConstraints constraints) {
+            return Row(
+              children: [
+                Text(
+                  panelCallingInstance.routineName,
+                  style: const TextStyle(
+                    color: palette.cardColorWhite,
+                  ),
+                ),
+              ],
+            );
+          }),
+        ],
+      ),
       floatingActionButton: SizedBox(
         width: 180,
         height: 60,
@@ -86,7 +109,8 @@ class _HomeScreenState extends State<HomeScreen> {
         const SizedBox(
           height: 15,
         ),
-        const TodayWorkOutCard(),
+        TodayWorkOutCard(
+        ),
       ],
     );
   }

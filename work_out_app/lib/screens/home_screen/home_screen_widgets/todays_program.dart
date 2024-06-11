@@ -142,6 +142,7 @@ class _TodayWorkOutCardState extends State<TodayWorkOutCard> {
                       } else {
                         return WideButton(
                           height: 41,
+                          onTapUpFunction: () {},
                           tapColor: palette.cardColorWhite,
                           unTapColor: palette.colorWhite,
                           boxShadow: [
