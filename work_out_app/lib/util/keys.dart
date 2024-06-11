@@ -62,3 +62,9 @@ extension SharedPreferencesKeyExtension on RoutinePreferencesKey {
     }
   }
 }
+
+enum PanelControllerCommand {
+  spread,
+  anchor,
+  hide,
+}

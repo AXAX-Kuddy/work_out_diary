@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_sliding_up_panel/flutter_sliding_up_panel.dart';
 import 'package:line_icons/line_icon.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:work_out_app/database/database.dart';
@@ -11,10 +12,17 @@ import 'package:work_out_app/widgets/box_widget/widget_box.dart';
 import 'package:work_out_app/util/keys.dart';
 import 'package:work_out_app/provider/store.dart' as provider;
 import 'package:work_out_app/widgets/buttons/wide_button.dart';
+import 'package:work_out_app/database/database.dart' as db;
 
 class TodayWorkOutCard extends StatefulWidget {
+  final void Function({
+    required PanelControllerCommand command,
+    db.Routine? routine,
+  }) handlePanelController;
+
   const TodayWorkOutCard({
     super.key,
+    required this.handlePanelController,
   });
 
   @override
@@ -142,7 +150,13 @@ class _TodayWorkOutCardState extends State<TodayWorkOutCard> {
                       } else {
                         return WideButton(
                           height: 41,
-                          onTapUpFunction: () {},
+                          onTapUpFunction: () {
+                            setState(() {
+                              widget.handlePanelController(
+                                command: PanelControllerCommand.spread,
+                              );
+                            });
+                          },
                           tapColor: palette.cardColorWhite,
                           unTapColor: palette.colorWhite,
                           boxShadow: [

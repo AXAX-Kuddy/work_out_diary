@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:work_out_app/provider/make_program.dart' as maked;
+import 'package:work_out_app/util/keys.dart';
 import 'package:work_out_app/util/palette.dart' as palette;
 import 'package:line_icons/line_icon.dart';
 import 'package:line_icons/line_icons.dart';
@@ -15,7 +16,7 @@ class WorkoutDetail extends StatefulWidget {
   final void Function(maked.Workout) removeWorkout;
   final maked.Workout workoutInstance;
   final void Function({
-    required WorkoutDetailPanelControllerCommand command,
+    required PanelControllerCommand command,
     maked.Workout? workoutInstance,
     int? workoutInstanceIndex,
   }) workoutDetailPanelController;
@@ -247,7 +248,7 @@ class _WorkoutDetailState extends State<WorkoutDetail> {
               visualDensity: VisualDensity.compact,
               onPressed: () {
                 widget.workoutDetailPanelController(
-                  command: WorkoutDetailPanelControllerCommand.spread,
+                  command: PanelControllerCommand.spread,
                   workoutInstance: widget.workoutInstance,
                   workoutInstanceIndex: widget.index,
                 );
