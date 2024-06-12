@@ -4,6 +4,7 @@ import 'package:line_icons/line_icon.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:work_out_app/database/database.dart' as db;
 import 'package:work_out_app/provider/store.dart';
+import 'package:work_out_app/screens/plan_screen/plan_screen_widgets/page_router.dart';
 import 'package:work_out_app/util/keys.dart';
 import 'package:work_out_app/util/palette.dart' as palette;
 import 'package:work_out_app/screens/plan_screen/plan_screen.dart';
@@ -22,7 +23,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  db.Routine panelCallingInstance = db.Routine(
+  db.Routine? panelCallingInstance = db.Routine(
     id: 0,
     routineName: "placeHold",
     date: DateTime.now(),
@@ -38,6 +39,7 @@ class _HomeScreenState extends State<HomeScreen> {
     switch (command) {
       case PanelControllerCommand.spread:
         setState(() {
+          panelCallingInstance = routine;
           panelController.expand();
         });
 
@@ -60,28 +62,7 @@ class _HomeScreenState extends State<HomeScreen> {
         child: FloatingActionButton(
           backgroundColor: palette.bgFadeColor,
           onPressed: () {
-            Navigator.push(
-              context,
-              PageRouteBuilder(
-                pageBuilder: (context, animation, secondaryAnimation) =>
-                    const PlanningScreen(),
-                transitionsBuilder:
-                    (context, animation, secondaryAnimation, child) {
-                  var begin = const Offset(1.0, 0.0); // 오른쪽에서 왼쪽으로 슬라이드
-                  var end = Offset.zero;
-                  var curve = Curves.ease;
-
-                  var tween = Tween(begin: begin, end: end)
-                      .chain(CurveTween(curve: curve));
-                  var offsetAnimation = animation.drive(tween);
-
-                  return SlideTransition(
-                    position: offsetAnimation,
-                    child: child,
-                  );
-                },
-              ),
-            );
+            PlanningScreenRouter.go(context);
           },
           child: const Padding(
             padding: EdgeInsets.symmetric(
@@ -109,11 +90,41 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       slidingUpPanelWidget: CustomSlidingUpPanelWidget(
         onlyAnchor: false,
+        showDragHandle: false,
         controller: panelController,
+        onStatusChanged: (status) {
+          if (status == SlidingUpPanelStatus.anchored) {
+            panelController.hide();
+          }
+        },
         children: [
           PanelItemBuilder(
               builder: (BuildContext context, BoxConstraints constraints) {
-            return const Row(
+            return Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  panelCallingInstance?.routineName ?? "placeHold",
+                  style: const TextStyle(
+                    color: palette.colorWhite,
+                    fontSize: 18,
+                  ),
+                ),
+                IconButton(
+                  onPressed: () {
+                    panelController.hide();
+                  },
+                  icon: const Icon(
+                    Icons.close,
+                    color: palette.colorRed,
+                  ),
+                )
+              ],
+            );
+          }),
+          PanelItemBuilder(
+              builder: (BuildContext context, BoxConstraints constraints) {
+            return const Column(
               children: [],
             );
           }),

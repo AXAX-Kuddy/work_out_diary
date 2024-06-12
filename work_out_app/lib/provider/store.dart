@@ -281,6 +281,7 @@ class RoutineProvider extends ChangeNotifier {
   void onStoppedRestTimer() {
     Routine.onRestStart = false;
     Routine.restTimer.onStopTimer();
+
     notifyListeners();
   }
 
@@ -291,6 +292,8 @@ class RoutineProvider extends ChangeNotifier {
   }
 
   Future<void> onDisposeRestTimer() async {
+    onStoppedRestTimer();
+    Routine.restTimer.clearPresetTime();
     await Routine.restTimer.dispose();
     notifyListeners();
   }

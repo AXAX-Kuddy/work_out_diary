@@ -252,54 +252,6 @@ class _WorkoutDetailState extends State<WorkoutDetail> {
                   workoutInstance: widget.workoutInstance,
                   workoutInstanceIndex: widget.index,
                 );
-                // showDialog(
-                //   context: context,
-                //   builder: (context) {
-                //     return AlertDialog(
-                //       contentPadding: const EdgeInsets.all(25),
-                //       backgroundColor: Colors.transparent,
-                //       content: Text(
-                //         "${widget.workoutInstance.name}를(을) 목록에서 삭제 하시겠습니까?",
-                //         style: TextStyle(
-                //           fontSize: 16,
-                //           color: palette.cardColorWhite,
-                //         ),
-                //       ),
-                //       actions: [
-                //         Row(
-                //           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                //           children: [
-                //             TextButton(
-                //               onPressed: () {
-                //                 Navigator.pop(context);
-                //               },
-                //               child: Text(
-                //                 "취소",
-                //                 style: TextStyle(
-                //                   color: palette.cardColorWhite,
-                //                 ),
-                //               ),
-                //             ),
-                //             TextButton(
-                //               onPressed: () {
-                //                 setState(() {
-                //                   widget.removeWorkout(widget.workoutInstance);
-                //                 });
-                //                 Navigator.pop(context);
-                //               },
-                //               child: Text(
-                //                 "확인",
-                //                 style: TextStyle(
-                //                   color: palette.cardColorYelGreen,
-                //                 ),
-                //               ),
-                //             ),
-                //           ],
-                //         ),
-                //       ],
-                //     );
-                //   },
-                // );
               },
               icon: const LineIcon(
                 color: palette.cardColorWhite,

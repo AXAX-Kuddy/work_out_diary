@@ -7,12 +7,16 @@ import 'package:flutter_sliding_up_panel/flutter_sliding_up_panel.dart';
 import 'package:line_icons/line_icon.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:work_out_app/database/database.dart';
+import 'package:work_out_app/screens/plan_screen/plan_screen.dart';
+import 'package:work_out_app/screens/plan_screen/plan_screen_widgets/page_router.dart';
 import 'package:work_out_app/util/palette.dart' as palette;
 import 'package:work_out_app/widgets/box_widget/widget_box.dart';
 import 'package:work_out_app/util/keys.dart';
 import 'package:work_out_app/provider/store.dart' as provider;
+import 'package:work_out_app/widgets/buttons/trash_can_button.dart';
 import 'package:work_out_app/widgets/buttons/wide_button.dart';
 import 'package:work_out_app/database/database.dart' as db;
+import 'package:work_out_app/widgets/dialog/custom_dialog.dart';
 
 class TodayWorkOutCard extends StatefulWidget {
   final void Function({
@@ -132,7 +136,9 @@ class _TodayWorkOutCardState extends State<TodayWorkOutCard> {
                               height: 10,
                             ),
                             TextButton.icon(
-                              onPressed: () {},
+                              onPressed: () {
+                                PlanningScreenRouter.go(context);
+                              },
                               icon: const LineIcon(
                                 LineIcons.angleRight,
                                 color: palette.bgColor,
@@ -148,37 +154,83 @@ class _TodayWorkOutCardState extends State<TodayWorkOutCard> {
                           ],
                         );
                       } else {
-                        return WideButton(
-                          height: 41,
-                          onTapUpFunction: () {
-                            setState(() {
-                              widget.handlePanelController(
-                                command: PanelControllerCommand.spread,
-                              );
-                            });
-                          },
-                          tapColor: palette.cardColorWhite,
-                          unTapColor: palette.colorWhite,
-                          boxShadow: [
-                            BoxShadow(
-                              color: palette.bgColor.withOpacity(0.6),
-                              offset: const Offset(0, 1.5),
-                              blurRadius: 2.5,
+                        return Row(
+                          children: [
+                            Expanded(
+                              child: WideButton(
+                                height: 41,
+                                onTapUpFunction: () {
+                                  setState(() {
+                                    widget.handlePanelController(
+                                      command: PanelControllerCommand.spread,
+                                      routine: routines[index],
+                                    );
+                                  });
+                                },
+                                tapColor: palette.cardColorWhite,
+                                unTapColor: palette.colorWhite,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: palette.bgColor.withOpacity(0.6),
+                                    offset: const Offset(0, 1.5),
+                                    blurRadius: 2.5,
+                                  ),
+                                ],
+                                child: Row(
+                                  children: [
+                                    Text(
+                                      routines[index].routineName,
+                                    ),
+                                    const Spacer(),
+                                    const LineIcon(
+                                      LineIcons.angleRight,
+                                      color: palette.bgColor,
+                                      size: 20,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            TrashCan(
+                              onPressed: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return CustomDialog(
+                                      children: [
+                                        const Text(
+                                          "정말로 삭제하시겠습니까?",
+                                          style: TextStyle(
+                                            color: palette.cardColorWhite,
+                                          ),
+                                        ),
+                                        Row(
+                                          children: [
+                                            TextButton(
+                                              onPressed: () {
+                                                Navigator.pop(context);
+                                              },
+                                              child: const Text("않이오"),
+                                            ),
+                                            TextButton(
+                                              onPressed: () {
+                                                setState(() {
+                                                  database.removeRoutine(
+                                                      routines[index]);
+                                                });
+                                                Navigator.pop(context);
+                                              },
+                                              child: const Text("내"),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                );
+                              },
                             ),
                           ],
-                          child: Row(
-                            children: [
-                              Text(
-                                routines[index].routineName,
-                              ),
-                              const Spacer(),
-                              const LineIcon(
-                                LineIcons.angleRight,
-                                color: palette.bgColor,
-                                size: 20,
-                              ),
-                            ],
-                          ),
                         );
                       }
                     },

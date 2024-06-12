@@ -75,7 +75,7 @@ class _PlanningScreenState extends State<PlanningScreen> {
     if (mounted) {
       routineProvider.clearUserSelectWorkout();
       routineProvider.onDisposeWorkoutTimer();
-      routineProvider.onDisposeRestTimer();
+      routineProvider.onStoppedRestTimer();
       Navigator.push(context, MaterialPageRoute(builder: (context) {
         return const WorkoutCompleteScreen();
       }));

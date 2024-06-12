@@ -7,6 +7,7 @@ import 'package:work_out_app/util/palette.dart' as palette;
 class CustomSlidingUpPanelWidget extends StatefulWidget {
   final List<PanelItemBuilder> children;
   final SlidingUpPanelController controller;
+  final bool showDragHandle;
   final bool onlyAnchor;
   final void Function(SlidingUpPanelStatus status)? onStatusChanged;
 
@@ -15,6 +16,7 @@ class CustomSlidingUpPanelWidget extends StatefulWidget {
     required this.children,
     required this.controller,
     this.onStatusChanged,
+    this.showDragHandle = true,
     this.onlyAnchor = true,
   });
 
@@ -63,15 +65,16 @@ class _CustomSlidingUpPanelWidgetState
             ),
             child: Column(
               children: [
-                Container(
-                  margin: const EdgeInsets.only(top: 8),
-                  width: constraints.maxWidth * 0.3,
-                  height: 2.5,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(50),
-                    color: palette.cardColorYelGreen,
+                if (widget.showDragHandle)
+                  Container(
+                    margin: const EdgeInsets.only(top: 8),
+                    width: constraints.maxWidth * 0.3,
+                    height: 2.5,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(50),
+                      color: palette.cardColorYelGreen,
+                    ),
                   ),
-                ),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Column(
@@ -92,7 +95,9 @@ class _CustomSlidingUpPanelWidgetState
 class PanelItemBuilder {
   final Widget Function(BuildContext, BoxConstraints) builder;
 
-  PanelItemBuilder({required this.builder});
+  PanelItemBuilder({
+    required this.builder,
+  });
 
   Widget build(BuildContext context, BoxConstraints constraints) {
     return builder(context, constraints);
