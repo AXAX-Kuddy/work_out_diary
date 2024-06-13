@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_sliding_up_panel/flutter_sliding_up_panel.dart';
 import 'package:line_icons/line_icon.dart';
@@ -12,6 +14,7 @@ import 'package:work_out_app/screens/home_screen/home_screen_widgets/todays_prog
 import 'package:work_out_app/screens/home_screen/home_screen_widgets/top_profile_card.dart';
 import 'package:work_out_app/widgets/base_screen/base_page.dart';
 import 'package:work_out_app/widgets/sliding_up_panel/sliding_up_panel.dart';
+import 'package:work_out_app/provider/make_program.dart' as maked;
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({
@@ -30,6 +33,9 @@ class _HomeScreenState extends State<HomeScreen> {
     isFavor: false,
     children: "",
   );
+  List<Widget> panelItems = [];
+  List<maked.Workout> panelCallingList = [];
+
   final SlidingUpPanelController panelController = SlidingUpPanelController();
 
   void handlePanelController({
@@ -40,6 +46,7 @@ class _HomeScreenState extends State<HomeScreen> {
       case PanelControllerCommand.spread:
         setState(() {
           panelCallingInstance = routine;
+          routineChildrenDecode(routine!.children);
           panelController.expand();
         });
 
@@ -50,6 +57,33 @@ class _HomeScreenState extends State<HomeScreen> {
 
       default:
         null;
+    }
+  }
+
+  void routineChildrenDecode(String children) {
+    dynamic decodeJson = jsonDecode(children);
+
+
+
+    try {
+      if (decodeJson is List<String>) {
+        for (var workout in decodeJson) {
+          maked.Workout instance =
+              maked.Workout.toJsonDecode(jsonDecode(workout));
+          panelCallingList.add(instance);
+        }
+      } else if (decodeJson is Map<String, dynamic>) {
+        final maked.Workout workout = maked.Workout.toJsonDecode(decodeJson);
+        print(workout);
+        panelCallingList.add(workout);
+      } else {
+        throw TypeError();
+      }
+      print(panelCallingList);
+    } catch (event) {
+      setState(() {
+        panelItems.add(ErrorWidget("타입에러가 발생하였습니다. 발생경위 : $event"));
+      });
     }
   }
 
@@ -124,8 +158,8 @@ class _HomeScreenState extends State<HomeScreen> {
           }),
           PanelItemBuilder(
               builder: (BuildContext context, BoxConstraints constraints) {
-            return const Column(
-              children: [],
+            return Column(
+              children: panelItems,
             );
           }),
         ],
@@ -139,6 +173,19 @@ class _HomeScreenState extends State<HomeScreen> {
           handlePanelController: handlePanelController,
         ),
       ],
+    );
+  }
+}
+
+class PanelItem extends StatelessWidget {
+  final maked.Workout workoutInstance;
+
+  const PanelItem({super.key, required this.workoutInstance});
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      workoutInstance.name!,
     );
   }
 }
