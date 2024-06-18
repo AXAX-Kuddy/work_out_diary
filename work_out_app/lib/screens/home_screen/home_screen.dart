@@ -1,9 +1,12 @@
 import 'dart:convert';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_sliding_up_panel/flutter_sliding_up_panel.dart';
 import 'package:line_icons/line_icon.dart';
 import 'package:line_icons/line_icons.dart';
+import 'package:provider/provider.dart';
 import 'package:work_out_app/database/database.dart' as db;
 import 'package:work_out_app/provider/store.dart';
 import 'package:work_out_app/screens/plan_screen/plan_screen_widgets/page_router.dart';
@@ -13,8 +16,11 @@ import 'package:work_out_app/screens/plan_screen/plan_screen.dart';
 import 'package:work_out_app/screens/home_screen/home_screen_widgets/todays_program.dart';
 import 'package:work_out_app/screens/home_screen/home_screen_widgets/top_profile_card.dart';
 import 'package:work_out_app/widgets/base_screen/base_page.dart';
+import 'package:work_out_app/widgets/box_widget/widget_box.dart';
+import 'package:work_out_app/widgets/buttons/wide_button.dart';
 import 'package:work_out_app/widgets/sliding_up_panel/sliding_up_panel.dart';
 import 'package:work_out_app/provider/make_program.dart' as maked;
+import 'package:work_out_app/provider/store.dart' as provider;
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({
@@ -26,6 +32,8 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  late RoutineProvider routineProvider;
+
   db.Routine? panelCallingInstance = db.Routine(
     id: 0,
     routineName: "placeHold",
@@ -33,8 +41,8 @@ class _HomeScreenState extends State<HomeScreen> {
     isFavor: false,
     children: "",
   );
+  List<maked.Workout> panelCallingWorkouts = [];
   List<Widget> panelItems = [];
-  List<maked.Workout> panelCallingList = [];
 
   final SlidingUpPanelController panelController = SlidingUpPanelController();
 
@@ -62,29 +70,56 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void routineChildrenDecode(String children) {
     dynamic decodeJson = jsonDecode(children);
-
-
+    debugPrint("$decodeJson");
 
     try {
-      if (decodeJson is List<String>) {
+      if (decodeJson is List<dynamic>) {
         for (var workout in decodeJson) {
           maked.Workout instance =
               maked.Workout.toJsonDecode(jsonDecode(workout));
-          panelCallingList.add(instance);
+          setState(() {
+            panelCallingWorkouts.add(instance);
+            panelItems.add(
+              PanelItem(
+                index: panelItems.length,
+                workoutInstance: instance,
+              ),
+            );
+          });
         }
       } else if (decodeJson is Map<String, dynamic>) {
-        final maked.Workout workout = maked.Workout.toJsonDecode(decodeJson);
-        print(workout);
-        panelCallingList.add(workout);
+        final maked.Workout instance = maked.Workout.toJsonDecode(decodeJson);
+        setState(() {
+          panelCallingWorkouts.add(instance);
+          panelItems.add(
+            PanelItem(
+              index: panelItems.length,
+              workoutInstance: instance,
+            ),
+          );
+        });
       } else {
         throw TypeError();
       }
-      print(panelCallingList);
     } catch (event) {
       setState(() {
         panelItems.add(ErrorWidget("타입에러가 발생하였습니다. 발생경위 : $event"));
       });
     }
+  }
+
+  void addWorkoutToPlanningScreen() {
+    for (maked.Workout workout in panelCallingWorkouts) {
+      routineProvider.addUserSelectWorkout(workout);
+      print("실행됨");
+    }
+    print("실행됨");
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    routineProvider = context.read<provider.RoutineProvider>();
   }
 
   @override
@@ -130,36 +165,76 @@ class _HomeScreenState extends State<HomeScreen> {
           if (status == SlidingUpPanelStatus.anchored) {
             panelController.hide();
           }
+          if (status == SlidingUpPanelStatus.hidden) {
+            setState(() {
+              panelItems.clear();
+            });
+          }
         },
         children: [
           PanelItemBuilder(
               builder: (BuildContext context, BoxConstraints constraints) {
-            return Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  panelCallingInstance?.routineName ?? "placeHold",
-                  style: const TextStyle(
-                    color: palette.colorWhite,
-                    fontSize: 18,
+            return Container(
+              margin: const EdgeInsets.only(
+                bottom: 15,
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    panelCallingInstance?.routineName ?? "placeHold",
+                    style: const TextStyle(
+                      color: palette.colorWhite,
+                      fontSize: 18,
+                    ),
                   ),
-                ),
-                IconButton(
-                  onPressed: () {
-                    panelController.hide();
-                  },
-                  icon: const Icon(
-                    Icons.close,
-                    color: palette.colorRed,
-                  ),
-                )
-              ],
+                  IconButton(
+                    onPressed: () {
+                      setState(() {
+                        panelItems.clear();
+                      });
+                      panelController.hide();
+                    },
+                    icon: const Icon(
+                      Icons.close,
+                      color: palette.colorRed,
+                    ),
+                  )
+                ],
+              ),
             );
           }),
           PanelItemBuilder(
               builder: (BuildContext context, BoxConstraints constraints) {
             return Column(
-              children: panelItems,
+              children: [
+                ...panelItems,
+                WideButton(
+                  onTapUpFunction: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (BuildContext context) {
+                          return PlanningScreen(
+                            onPageLoaded: () {
+                              addWorkoutToPlanningScreen();
+                            },
+                          );
+                        },
+                      ),
+                    );
+                  },
+                  child: const Row(
+                    children: [
+                      Text("해당 루틴으로 운동하기"),
+                      Spacer(),
+                      LineIcon(
+                        LineIcons.angleRight,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             );
           }),
         ],
@@ -178,14 +253,127 @@ class _HomeScreenState extends State<HomeScreen> {
 }
 
 class PanelItem extends StatelessWidget {
+  final int index;
   final maked.Workout workoutInstance;
 
-  const PanelItem({super.key, required this.workoutInstance});
+  const PanelItem({
+    super.key,
+    required this.index,
+    required this.workoutInstance,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Text(
-      workoutInstance.name!,
+    return WidgetsBox(
+      width: 500,
+      margin: const EdgeInsets.only(
+        bottom: 20,
+      ),
+      backgroundColor: palette.bgColor,
+      border: Border.all(
+        color: palette.bgColor,
+      ),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Text(
+                (index + 1).toString(),
+                style: const TextStyle(
+                  fontSize: 17,
+                  color: palette.cardColorYelGreen,
+                ),
+              ),
+              const SizedBox(
+                width: 10,
+              ),
+              Text(
+                workoutInstance.name!,
+                style: const TextStyle(
+                  fontSize: 17,
+                  color: palette.cardColorWhite,
+                ),
+              ),
+              const SizedBox(
+                width: 5,
+              ),
+              Text(
+                "@${workoutInstance.targetRpe.toString()}",
+                style: const TextStyle(
+                  color: palette.cardColorWhite,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(
+            height: 12,
+          ),
+          Column(
+            children: List.generate(
+              workoutInstance.sets!.length,
+              (index) {
+                maked.Set set = workoutInstance.sets![index];
+
+                return Container(
+                  margin: const EdgeInsets.only(
+                    bottom: 8,
+                  ),
+                  child: Row(
+                    children: [
+                      Text(
+                        "${(set.setIndex! + 1).toString()}.",
+                        style: const TextStyle(
+                          color: palette.cardColorWhite,
+                        ),
+                      ),
+                      const SizedBox(
+                        width: 8,
+                      ),
+                      Row(
+                        children: [
+                          Text(
+                            "${set.weight}kg",
+                            style: const TextStyle(
+                              color: palette.cardColorWhite,
+                            ),
+                          ),
+                          const SizedBox(
+                            width: 5,
+                          ),
+                          const Text(
+                            "X",
+                            style: TextStyle(
+                              color: palette.cardColorWhite,
+                            ),
+                          ),
+                          const SizedBox(
+                            width: 5,
+                          ),
+                          Text(
+                            set.reps.toString(),
+                            style: const TextStyle(
+                              color: palette.cardColorWhite,
+                            ),
+                          ),
+                          const SizedBox(
+                            width: 7,
+                          ),
+                          Text(
+                            "@${set.rpe.toString()}",
+                            style: const TextStyle(
+                              color: palette.cardColorWhite,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

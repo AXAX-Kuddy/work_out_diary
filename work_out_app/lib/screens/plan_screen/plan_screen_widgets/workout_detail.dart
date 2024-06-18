@@ -40,17 +40,17 @@ class _WorkoutDetailState extends State<WorkoutDetail> {
   String e1rmWithSet = "";
   String target = "Target";
   final List<String> rpeList = [
-    "5",
+    "5.0",
     "5.5",
-    "6",
+    "6.0",
     "6.5",
-    "7",
+    "7.0",
     "7.5",
-    "8",
+    "8.0",
     "8.5",
-    "9",
+    "9.0",
     "9.5",
-    "10"
+    "10.0"
   ];
 
   void findE1rm() {

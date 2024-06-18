@@ -2,9 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:animated_snack_bar/animated_snack_bar.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_sliding_up_panel/flutter_sliding_up_panel.dart';
 import 'package:line_icons/line_icon.dart';
 import 'package:line_icons/line_icons.dart';
@@ -21,13 +19,16 @@ import 'package:work_out_app/provider/store.dart' as provider;
 import 'package:stop_watch_timer/stop_watch_timer.dart';
 
 import 'package:work_out_app/provider/make_program.dart' as maked;
-import 'package:drift/drift.dart' as drift;
-import 'package:work_out_app/widgets/buttons/wide_button.dart';
 import 'package:work_out_app/widgets/sliding_up_panel/sliding_up_panel.dart';
 import 'package:work_out_app/widgets/work_out_library/work_out_library.dart';
 
 class PlanningScreen extends StatefulWidget {
-  const PlanningScreen({super.key});
+  final VoidCallback? onPageLoaded;
+
+  const PlanningScreen({
+    super.key,
+    this.onPageLoaded,
+  });
 
   @override
   State<PlanningScreen> createState() => _PlanningScreenState();
@@ -155,6 +156,11 @@ class _PlanningScreenState extends State<PlanningScreen> {
   void initState() {
     super.initState();
     setRoutineName();
+
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      widget.onPageLoaded?.call();
+    });
+
     context.read<provider.RoutineProvider>().loadPreferences();
   }
 

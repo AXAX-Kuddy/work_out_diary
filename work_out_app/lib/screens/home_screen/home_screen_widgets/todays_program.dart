@@ -167,8 +167,6 @@ class _TodayWorkOutCardState extends State<TodayWorkOutCard> {
                                       routine: routines[index],
                                     );
                                   });
-
-                                  print(routines[index].children[0]);
                                 },
                                 tapColor: palette.cardColorWhite,
                                 unTapColor: palette.colorWhite,
