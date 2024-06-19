@@ -8,6 +8,9 @@ import 'package:line_icons/line_icon.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:work_out_app/database/database.dart';
 import 'package:work_out_app/util/keys.dart';
+import 'package:work_out_app/widgets/buttons/cancel_and_enter_buttons.dart';
+import 'package:work_out_app/widgets/buttons/trash_can_button.dart';
+import 'package:work_out_app/widgets/dialog/custom_dialog.dart';
 import 'package:work_out_app/widgets/sliding_up_panel/panel_button.dart';
 import 'package:work_out_app/util/palette.dart' as palette;
 import 'package:work_out_app/screens/plan_screen/plan_screen_widgets/select_work_out_screen.dart';
@@ -536,7 +539,7 @@ class _PlanningScreenState extends State<PlanningScreen> {
                   builder: (context) {
                     return AlertDialog(
                       contentPadding: const EdgeInsets.all(25),
-                      backgroundColor: Colors.transparent,
+                      backgroundColor: palette.bgColor,
                       content: Text(
                         "${panelCallingInstance.name}를(을) 목록에서 삭제 하시겠습니까?",
                         style: const TextStyle(
@@ -545,38 +548,31 @@ class _PlanningScreenState extends State<PlanningScreen> {
                         ),
                       ),
                       actions: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            TextButton(
-                              onPressed: () {
-                                Navigator.pop(context);
-                              },
-                              child: const Text(
-                                "취소",
-                                style: TextStyle(
-                                  color: palette.cardColorWhite,
-                                ),
-                              ),
+                        CancelAndEnterButton(
+                          cancelLabel: const Text(
+                            "취소",
+                            style: TextStyle(
+                              color: palette.cardColorWhite,
                             ),
-                            TextButton(
-                              onPressed: () {
-                                setState(() {
-                                  workoutDetailPanelController(
-                                      command: PanelControllerCommand.hide);
-                                  routineProvider.removeUserSelectWorkout(
-                                      panelCallingInstance);
-                                });
-                                Navigator.pop(context);
-                              },
-                              child: const Text(
-                                "확인",
-                                style: TextStyle(
-                                  color: palette.cardColorYelGreen,
-                                ),
-                              ),
+                          ),
+                          onCancelTap: () {
+                            Navigator.pop(context);
+                          },
+                          enterLabel: const Text(
+                            "확인",
+                            style: TextStyle(
+                              color: palette.cardColorYelGreen,
                             ),
-                          ],
+                          ),
+                          onEnterTap: () {
+                            setState(() {
+                              workoutDetailPanelController(
+                                  command: PanelControllerCommand.hide);
+                              routineProvider.removeUserSelectWorkout(
+                                  panelCallingInstance);
+                            });
+                            Navigator.pop(context);
+                          },
                         ),
                       ],
                     );
@@ -619,47 +615,109 @@ class _PlanningScreenState extends State<PlanningScreen> {
             ),
           ),
         ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            TextButton.icon(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  PageRouteBuilder(
-                    pageBuilder: (context, animation, secondaryAnimation) =>
-                        const SelectWorkoutPage(),
-                    transitionsBuilder:
-                        (context, animation, secondaryAnimation, child) {
-                      var begin = const Offset(0.0, 1.0);
-                      var end = Offset.zero;
-                      var curve = Curves.ease;
+        Container(
+          margin: const EdgeInsets.only(
+            bottom: 10,
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              TextButton.icon(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    PageRouteBuilder(
+                      pageBuilder: (context, animation, secondaryAnimation) =>
+                          const SelectWorkoutPage(),
+                      transitionsBuilder:
+                          (context, animation, secondaryAnimation, child) {
+                        var begin = const Offset(0.0, 1.0);
+                        var end = Offset.zero;
+                        var curve = Curves.ease;
 
-                      var tween = Tween(begin: begin, end: end)
-                          .chain(CurveTween(curve: curve));
-                      var offsetAnimation = animation.drive(tween);
+                        var tween = Tween(begin: begin, end: end)
+                            .chain(CurveTween(curve: curve));
+                        var offsetAnimation = animation.drive(tween);
 
-                      return SlideTransition(
-                        position: offsetAnimation,
-                        child: child,
-                      );
-                    },
+                        return SlideTransition(
+                          position: offsetAnimation,
+                          child: child,
+                        );
+                      },
+                    ),
+                  );
+                },
+                icon: const LineIcon.plus(
+                  color: palette.cardColorYelGreen,
+                  size: 28,
+                ),
+                label: const Text(
+                  "운동추가",
+                  style: TextStyle(
+                    fontSize: 17,
+                    color: palette.cardColorWhite,
                   ),
-                );
-              },
-              icon: const LineIcon.plus(
-                color: palette.cardColorYelGreen,
-                size: 28,
-              ),
-              label: const Text(
-                "운동추가",
-                style: TextStyle(
-                  fontSize: 17,
-                  color: palette.cardColorWhite,
                 ),
               ),
-            ),
-          ],
+              if (routineProvider.todayWorkouts.isNotEmpty)
+                TextButton.icon(
+                  onPressed: () {
+                    showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return CustomDialog(
+                            width: null,
+                            children: [
+                              const Text(
+                                "오늘 운동을 취소하고 모든 종목을 삭제하시겠어요?",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: palette.cardColorWhite,
+                                ),
+                              ),
+                              const SizedBox(
+                                height: 20,
+                              ),
+                              CancelAndEnterButton(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                spaceWidth: 40.0,
+                                cancelLabel: const Text(
+                                  "아뇨!",
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: palette.colorRed,
+                                  ),
+                                ),
+                                onCancelTap: () {
+                                  Navigator.pop(context);
+                                },
+                                enterLabel: const Text(
+                                  "네😭",
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: palette.cardColorYelGreen,
+                                  ),
+                                ),
+                                onEnterTap: () {
+                                  routineProvider.clearUserSelectWorkout();
+                                  Navigator.pop(context);
+                                },
+                              ),
+                            ],
+                          );
+                        });
+                  },
+                  icon: const TrashCanIcon(),
+                  label: const Text(
+                    "운동 취소",
+                    style: TextStyle(
+                      fontSize: 17,
+                      color: palette.cardColorWhite,
+                    ),
+                  ),
+                ),
+            ],
+          ),
         ),
         Visibility(
           visible: routineProvider.todayWorkouts.isNotEmpty,
@@ -675,8 +733,9 @@ class _PlanningScreenState extends State<PlanningScreen> {
               children: [
                 restTimerButton,
                 WorkoutTimeWidget(
-                    routineProvider: routineProvider,
-                    workoutTimerButton: workoutTimerButton),
+                  routineProvider: routineProvider,
+                  workoutTimerButton: workoutTimerButton,
+                ),
               ],
             ),
           ),

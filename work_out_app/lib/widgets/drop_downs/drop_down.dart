@@ -1,7 +1,5 @@
 import 'package:dropdown_button2/dropdown_button2.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:line_icons/line_icons.dart';
 import 'package:line_icons/line_icon.dart';
 import 'package:work_out_app/util/palette.dart' as palette;
 
@@ -10,18 +8,18 @@ class CustomDropDownButton extends StatefulWidget {
   final TextStyle? textStyle;
   final TextStyle? itemTextStyle;
   final List<String> itemList;
-  dynamic inputValue;
-  VoidCallback? selectChecker;
+  final dynamic inputValue;
+  final VoidCallback? selectChecker;
   final Function(String)? returnableChecker;
   final bool enabledValid;
-  String? nowValue;
+  final String? nowValue;
 
   ///setState는 기본값
   final void Function(String?)? onChanged;
   final double width;
   final double height;
 
-  CustomDropDownButton({
+  const CustomDropDownButton({
     super.key,
     required this.itemList,
     this.inputValue,

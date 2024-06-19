@@ -77,27 +77,11 @@ class _HomeScreenState extends State<HomeScreen> {
         for (var workout in decodeJson) {
           maked.Workout instance =
               maked.Workout.toJsonDecode(jsonDecode(workout));
-          setState(() {
-            panelCallingWorkouts.add(instance);
-            panelItems.add(
-              PanelItem(
-                index: panelItems.length,
-                workoutInstance: instance,
-              ),
-            );
-          });
+          setPanelItems(instance);
         }
       } else if (decodeJson is Map<String, dynamic>) {
         final maked.Workout instance = maked.Workout.toJsonDecode(decodeJson);
-        setState(() {
-          panelCallingWorkouts.add(instance);
-          panelItems.add(
-            PanelItem(
-              index: panelItems.length,
-              workoutInstance: instance,
-            ),
-          );
-        });
+        setPanelItems(instance);
       } else {
         throw TypeError();
       }
@@ -108,12 +92,31 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  void clearPanelItems() {
+    setState(() {
+      panelCallingWorkouts.clear();
+      panelItems.clear();
+    });
+  }
+
+  void setPanelItems(maked.Workout instance) {
+    setState(() {
+      panelCallingWorkouts.add(instance);
+      panelItems.add(
+        PanelItem(
+          index: panelItems.length,
+          workoutInstance: instance,
+        ),
+      );
+    });
+  }
+
   void addWorkoutToPlanningScreen() {
+    routineProvider.clearUserSelectWorkout();
     for (maked.Workout workout in panelCallingWorkouts) {
       routineProvider.addUserSelectWorkout(workout);
-      print("실행됨");
     }
-    print("실행됨");
+    panelController.hide();
   }
 
   @override
@@ -166,9 +169,7 @@ class _HomeScreenState extends State<HomeScreen> {
             panelController.hide();
           }
           if (status == SlidingUpPanelStatus.hidden) {
-            setState(() {
-              panelItems.clear();
-            });
+            clearPanelItems();
           }
         },
         children: [
@@ -190,9 +191,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   IconButton(
                     onPressed: () {
-                      setState(() {
-                        panelItems.clear();
-                      });
+                      clearPanelItems();
                       panelController.hide();
                     },
                     icon: const Icon(

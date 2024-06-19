@@ -14,6 +14,7 @@ import 'package:work_out_app/util/palette.dart' as palette;
 import 'package:work_out_app/widgets/box_widget/widget_box.dart';
 import 'package:work_out_app/util/keys.dart';
 import 'package:work_out_app/provider/store.dart' as provider;
+import 'package:work_out_app/widgets/buttons/cancel_and_enter_buttons.dart';
 import 'package:work_out_app/widgets/buttons/trash_can_button.dart';
 import 'package:work_out_app/widgets/buttons/wide_button.dart';
 import 'package:work_out_app/database/database.dart' as db;
@@ -192,7 +193,7 @@ class _TodayWorkOutCardState extends State<TodayWorkOutCard> {
                                 ),
                               ),
                             ),
-                            TrashCan(
+                            TrashCanButton(
                               onPressed: () {
                                 showDialog(
                                   context: context,
@@ -205,25 +206,17 @@ class _TodayWorkOutCardState extends State<TodayWorkOutCard> {
                                             color: palette.cardColorWhite,
                                           ),
                                         ),
-                                        Row(
-                                          children: [
-                                            TextButton(
-                                              onPressed: () {
-                                                Navigator.pop(context);
-                                              },
-                                              child: const Text("않이오"),
-                                            ),
-                                            TextButton(
-                                              onPressed: () {
-                                                setState(() {
-                                                  database.removeRoutine(
-                                                      routines[index]);
-                                                });
-                                                Navigator.pop(context);
-                                              },
-                                              child: const Text("내"),
-                                            ),
-                                          ],
+                                        CancelAndEnterButton(
+                                          onCancelTap: () {
+                                            Navigator.pop(context);
+                                          },
+                                          onEnterTap: () {
+                                            setState(() {
+                                              database.removeRoutine(
+                                                  routines[index]);
+                                            });
+                                            Navigator.pop(context);
+                                          },
                                         ),
                                       ],
                                     );

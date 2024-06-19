@@ -7,6 +7,8 @@ import 'package:line_icons/line_icon.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:work_out_app/screens/plan_screen/plan_screen_widgets/top_divider.dart';
 import 'package:work_out_app/screens/plan_screen/plan_screen.dart';
+import 'package:work_out_app/widgets/buttons/cancel_and_enter_buttons.dart';
+import 'package:work_out_app/widgets/dialog/custom_dialog.dart';
 import 'package:work_out_app/widgets/drop_downs/drop_down.dart';
 import 'package:work_out_app/widgets/text_field/non_form_text_field.dart';
 import 'package:work_out_app/provider/store.dart' as provider;
@@ -129,94 +131,75 @@ class _WorkoutDetailState extends State<WorkoutDetail> {
                   context: context,
                   builder: (context) {
                     String selectRpe = "0";
-                    return Dialog(
+                    return CustomDialog(
                       backgroundColor: palette.bgColor,
-                      child: Padding(
-                        padding: const EdgeInsets.all(10),
-                        child: SizedBox(
-                          height: 300,
-                          width: 100,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Text(
-                                "목표 RPE를 선택해주세요!",
-                                style: TextStyle(
-                                  fontSize: 17,
-                                  color: palette.cardColorWhite,
-                                ),
-                              ),
-                              const SizedBox(
-                                height: 20,
-                              ),
-                              CustomDropDownButton(
-                                hint: "RPE",
-                                textStyle: const TextStyle(
-                                  color: palette.cardColorWhite,
-                                ),
-                                itemList: rpeList,
-                                itemTextStyle: const TextStyle(
-                                  color: palette.cardColorWhite,
-                                ),
-                                onChanged: (value) {
-                                  selectRpe = value!;
-                                },
-                              ),
-                              const SizedBox(
-                                height: 20,
-                              ),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
-                                children: [
-                                  TextButton(
-                                    onPressed: () {
-                                      setState(() {
-                                        selectRpe = "0";
-                                        target = "Target";
-                                        widget.workoutInstance.editTargetRpe(
-                                            double.parse(selectRpe));
-                                      });
-                                      Navigator.pop(context);
-                                    },
-                                    child: const Text(
-                                      "초기화",
-                                      style: TextStyle(
-                                        color: palette.cardColorWhite,
-                                      ),
-                                    ),
-                                  ),
-                                  TextButton(
-                                    onPressed: () {
-                                      if (selectRpe == "0") {
-                                        setState(() {
-                                          widget.workoutInstance.editTargetRpe(
-                                              double.parse(selectRpe));
-                                          target = "Target";
-                                        });
-                                      } else {
-                                        setState(() {
-                                          widget.workoutInstance.editTargetRpe(
-                                              double.parse(selectRpe));
-                                          target = selectRpe;
-                                        });
-                                      }
-
-                                      Navigator.pop(context);
-                                    },
-                                    child: const Text(
-                                      "확인",
-                                      style: TextStyle(
-                                        color: palette.cardColorYelGreen,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
+                      children: [
+                        const Text(
+                          "목표 RPE를 선택해주세요!",
+                          style: TextStyle(
+                            fontSize: 17,
+                            color: palette.cardColorWhite,
                           ),
                         ),
-                      ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        CustomDropDownButton(
+                          hint: "RPE",
+                          textStyle: const TextStyle(
+                            color: palette.cardColorWhite,
+                          ),
+                          itemList: rpeList,
+                          itemTextStyle: const TextStyle(
+                            color: palette.cardColorWhite,
+                          ),
+                          onChanged: (value) {
+                            selectRpe = value!;
+                          },
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        CancelAndEnterButton(
+                          cancelLabel: const Text(
+                            "초기화",
+                            style: TextStyle(
+                              color: palette.cardColorWhite,
+                            ),
+                          ),
+                          onCancelTap: () {
+                            setState(() {
+                              selectRpe = "0";
+                              target = "Target";
+                              widget.workoutInstance
+                                  .editTargetRpe(double.parse(selectRpe));
+                            });
+                            Navigator.pop(context);
+                          },
+                          enterLabel: const Text(
+                            "확인",
+                            style: TextStyle(
+                              color: palette.cardColorYelGreen,
+                            ),
+                          ),
+                          onEnterTap: () {
+                            if (selectRpe == "0") {
+                              setState(() {
+                                widget.workoutInstance
+                                    .editTargetRpe(double.parse(selectRpe));
+                                target = "Target";
+                              });
+                            } else {
+                              setState(() {
+                                widget.workoutInstance
+                                    .editTargetRpe(double.parse(selectRpe));
+                                target = selectRpe;
+                              });
+                            }
+                            Navigator.pop(context);
+                          },
+                        ),
+                      ],
                     );
                   },
                 );

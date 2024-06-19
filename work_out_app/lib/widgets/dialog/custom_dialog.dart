@@ -7,8 +7,8 @@ class CustomDialog extends StatelessWidget {
   final EdgeInsets padding;
   final MainAxisAlignment mainAxisAlignment;
   final Color backgroundColor;
-  final double width;
-  final double height;
+  final double? width;
+  final double? height;
 
   const CustomDialog({
     super.key,
