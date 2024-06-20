@@ -32,6 +32,12 @@ import 'package:work_out_app/widgets/work_out_library/work_out_library.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  AppDatabase database = AppDatabase();
+
+  final workoutData = await database.getAllWorkoutMenu();
+  if (workoutData.isEmpty) {
+    await database.insertInitialData(database);
+  }
 
   runApp(
     MultiProvider(

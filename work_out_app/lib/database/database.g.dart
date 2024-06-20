@@ -293,15 +293,305 @@ class RoutinesCompanion extends UpdateCompanion<Routine> {
   }
 }
 
+class $WorkoutMenuTable extends WorkoutMenu
+    with TableInfo<$WorkoutMenuTable, WorkoutMenuData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $WorkoutMenuTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+      'id', aliasedName, false,
+      hasAutoIncrement: true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+      'name', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _memoMeta = const VerificationMeta('memo');
+  @override
+  late final GeneratedColumn<String> memo = GeneratedColumn<String>(
+      'memo', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _showE1rmMeta =
+      const VerificationMeta('showE1rm');
+  @override
+  late final GeneratedColumn<bool> showE1rm = GeneratedColumn<bool>(
+      'show_e1rm', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('CHECK ("show_e1rm" IN (0, 1))'),
+      defaultValue: const Constant(false));
+  static const VerificationMeta _partMeta = const VerificationMeta('part');
+  @override
+  late final GeneratedColumnWithTypeConverter<WorkoutListKeys, String> part =
+      GeneratedColumn<String>('part', aliasedName, false,
+              type: DriftSqlType.string, requiredDuringInsert: true)
+          .withConverter<WorkoutListKeys>($WorkoutMenuTable.$converterpart);
+  @override
+  List<GeneratedColumn> get $columns => [id, name, memo, showE1rm, part];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'workout_menu';
+  @override
+  VerificationContext validateIntegrity(Insertable<WorkoutMenuData> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+          _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('memo')) {
+      context.handle(
+          _memoMeta, memo.isAcceptableOrUnknown(data['memo']!, _memoMeta));
+    }
+    if (data.containsKey('show_e1rm')) {
+      context.handle(_showE1rmMeta,
+          showE1rm.isAcceptableOrUnknown(data['show_e1rm']!, _showE1rmMeta));
+    }
+    context.handle(_partMeta, const VerificationResult.success());
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  WorkoutMenuData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return WorkoutMenuData(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      name: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
+      memo: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}memo']),
+      showE1rm: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}show_e1rm'])!,
+      part: $WorkoutMenuTable.$converterpart.fromSql(attachedDatabase
+          .typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}part'])!),
+    );
+  }
+
+  @override
+  $WorkoutMenuTable createAlias(String alias) {
+    return $WorkoutMenuTable(attachedDatabase, alias);
+  }
+
+  static TypeConverter<WorkoutListKeys, String> $converterpart =
+      const WorkoutListKeysConverter();
+}
+
+class WorkoutMenuData extends DataClass implements Insertable<WorkoutMenuData> {
+  final int id;
+  final String name;
+  final String? memo;
+  final bool showE1rm;
+  final WorkoutListKeys part;
+  const WorkoutMenuData(
+      {required this.id,
+      required this.name,
+      this.memo,
+      required this.showE1rm,
+      required this.part});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['name'] = Variable<String>(name);
+    if (!nullToAbsent || memo != null) {
+      map['memo'] = Variable<String>(memo);
+    }
+    map['show_e1rm'] = Variable<bool>(showE1rm);
+    {
+      map['part'] =
+          Variable<String>($WorkoutMenuTable.$converterpart.toSql(part));
+    }
+    return map;
+  }
+
+  WorkoutMenuCompanion toCompanion(bool nullToAbsent) {
+    return WorkoutMenuCompanion(
+      id: Value(id),
+      name: Value(name),
+      memo: memo == null && nullToAbsent ? const Value.absent() : Value(memo),
+      showE1rm: Value(showE1rm),
+      part: Value(part),
+    );
+  }
+
+  factory WorkoutMenuData.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return WorkoutMenuData(
+      id: serializer.fromJson<int>(json['id']),
+      name: serializer.fromJson<String>(json['name']),
+      memo: serializer.fromJson<String?>(json['memo']),
+      showE1rm: serializer.fromJson<bool>(json['showE1rm']),
+      part: serializer.fromJson<WorkoutListKeys>(json['part']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'name': serializer.toJson<String>(name),
+      'memo': serializer.toJson<String?>(memo),
+      'showE1rm': serializer.toJson<bool>(showE1rm),
+      'part': serializer.toJson<WorkoutListKeys>(part),
+    };
+  }
+
+  WorkoutMenuData copyWith(
+          {int? id,
+          String? name,
+          Value<String?> memo = const Value.absent(),
+          bool? showE1rm,
+          WorkoutListKeys? part}) =>
+      WorkoutMenuData(
+        id: id ?? this.id,
+        name: name ?? this.name,
+        memo: memo.present ? memo.value : this.memo,
+        showE1rm: showE1rm ?? this.showE1rm,
+        part: part ?? this.part,
+      );
+  @override
+  String toString() {
+    return (StringBuffer('WorkoutMenuData(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('memo: $memo, ')
+          ..write('showE1rm: $showE1rm, ')
+          ..write('part: $part')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, name, memo, showE1rm, part);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is WorkoutMenuData &&
+          other.id == this.id &&
+          other.name == this.name &&
+          other.memo == this.memo &&
+          other.showE1rm == this.showE1rm &&
+          other.part == this.part);
+}
+
+class WorkoutMenuCompanion extends UpdateCompanion<WorkoutMenuData> {
+  final Value<int> id;
+  final Value<String> name;
+  final Value<String?> memo;
+  final Value<bool> showE1rm;
+  final Value<WorkoutListKeys> part;
+  const WorkoutMenuCompanion({
+    this.id = const Value.absent(),
+    this.name = const Value.absent(),
+    this.memo = const Value.absent(),
+    this.showE1rm = const Value.absent(),
+    this.part = const Value.absent(),
+  });
+  WorkoutMenuCompanion.insert({
+    this.id = const Value.absent(),
+    required String name,
+    this.memo = const Value.absent(),
+    this.showE1rm = const Value.absent(),
+    required WorkoutListKeys part,
+  })  : name = Value(name),
+        part = Value(part);
+  static Insertable<WorkoutMenuData> custom({
+    Expression<int>? id,
+    Expression<String>? name,
+    Expression<String>? memo,
+    Expression<bool>? showE1rm,
+    Expression<String>? part,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (name != null) 'name': name,
+      if (memo != null) 'memo': memo,
+      if (showE1rm != null) 'show_e1rm': showE1rm,
+      if (part != null) 'part': part,
+    });
+  }
+
+  WorkoutMenuCompanion copyWith(
+      {Value<int>? id,
+      Value<String>? name,
+      Value<String?>? memo,
+      Value<bool>? showE1rm,
+      Value<WorkoutListKeys>? part}) {
+    return WorkoutMenuCompanion(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      memo: memo ?? this.memo,
+      showE1rm: showE1rm ?? this.showE1rm,
+      part: part ?? this.part,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (memo.present) {
+      map['memo'] = Variable<String>(memo.value);
+    }
+    if (showE1rm.present) {
+      map['show_e1rm'] = Variable<bool>(showE1rm.value);
+    }
+    if (part.present) {
+      map['part'] =
+          Variable<String>($WorkoutMenuTable.$converterpart.toSql(part.value));
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('WorkoutMenuCompanion(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('memo: $memo, ')
+          ..write('showE1rm: $showE1rm, ')
+          ..write('part: $part')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   _$AppDatabaseManager get managers => _$AppDatabaseManager(this);
   late final $RoutinesTable routines = $RoutinesTable(this);
+  late final $WorkoutMenuTable workoutMenu = $WorkoutMenuTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
-  List<DatabaseSchemaEntity> get allSchemaEntities => [routines];
+  List<DatabaseSchemaEntity> get allSchemaEntities => [routines, workoutMenu];
 }
 
 typedef $$RoutinesTableInsertCompanionBuilder = RoutinesCompanion Function({
@@ -439,9 +729,150 @@ class $$RoutinesTableOrderingComposer
           ColumnOrderings(column, joinBuilders: joinBuilders));
 }
 
+typedef $$WorkoutMenuTableInsertCompanionBuilder = WorkoutMenuCompanion
+    Function({
+  Value<int> id,
+  required String name,
+  Value<String?> memo,
+  Value<bool> showE1rm,
+  required WorkoutListKeys part,
+});
+typedef $$WorkoutMenuTableUpdateCompanionBuilder = WorkoutMenuCompanion
+    Function({
+  Value<int> id,
+  Value<String> name,
+  Value<String?> memo,
+  Value<bool> showE1rm,
+  Value<WorkoutListKeys> part,
+});
+
+class $$WorkoutMenuTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $WorkoutMenuTable,
+    WorkoutMenuData,
+    $$WorkoutMenuTableFilterComposer,
+    $$WorkoutMenuTableOrderingComposer,
+    $$WorkoutMenuTableProcessedTableManager,
+    $$WorkoutMenuTableInsertCompanionBuilder,
+    $$WorkoutMenuTableUpdateCompanionBuilder> {
+  $$WorkoutMenuTableTableManager(_$AppDatabase db, $WorkoutMenuTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          filteringComposer:
+              $$WorkoutMenuTableFilterComposer(ComposerState(db, table)),
+          orderingComposer:
+              $$WorkoutMenuTableOrderingComposer(ComposerState(db, table)),
+          getChildManagerBuilder: (p) =>
+              $$WorkoutMenuTableProcessedTableManager(p),
+          getUpdateCompanionBuilder: ({
+            Value<int> id = const Value.absent(),
+            Value<String> name = const Value.absent(),
+            Value<String?> memo = const Value.absent(),
+            Value<bool> showE1rm = const Value.absent(),
+            Value<WorkoutListKeys> part = const Value.absent(),
+          }) =>
+              WorkoutMenuCompanion(
+            id: id,
+            name: name,
+            memo: memo,
+            showE1rm: showE1rm,
+            part: part,
+          ),
+          getInsertCompanionBuilder: ({
+            Value<int> id = const Value.absent(),
+            required String name,
+            Value<String?> memo = const Value.absent(),
+            Value<bool> showE1rm = const Value.absent(),
+            required WorkoutListKeys part,
+          }) =>
+              WorkoutMenuCompanion.insert(
+            id: id,
+            name: name,
+            memo: memo,
+            showE1rm: showE1rm,
+            part: part,
+          ),
+        ));
+}
+
+class $$WorkoutMenuTableProcessedTableManager extends ProcessedTableManager<
+    _$AppDatabase,
+    $WorkoutMenuTable,
+    WorkoutMenuData,
+    $$WorkoutMenuTableFilterComposer,
+    $$WorkoutMenuTableOrderingComposer,
+    $$WorkoutMenuTableProcessedTableManager,
+    $$WorkoutMenuTableInsertCompanionBuilder,
+    $$WorkoutMenuTableUpdateCompanionBuilder> {
+  $$WorkoutMenuTableProcessedTableManager(super.$state);
+}
+
+class $$WorkoutMenuTableFilterComposer
+    extends FilterComposer<_$AppDatabase, $WorkoutMenuTable> {
+  $$WorkoutMenuTableFilterComposer(super.$state);
+  ColumnFilters<int> get id => $state.composableBuilder(
+      column: $state.table.id,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get name => $state.composableBuilder(
+      column: $state.table.name,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get memo => $state.composableBuilder(
+      column: $state.table.memo,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<bool> get showE1rm => $state.composableBuilder(
+      column: $state.table.showE1rm,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnWithTypeConverterFilters<WorkoutListKeys, WorkoutListKeys, String>
+      get part => $state.composableBuilder(
+          column: $state.table.part,
+          builder: (column, joinBuilders) => ColumnWithTypeConverterFilters(
+              column,
+              joinBuilders: joinBuilders));
+}
+
+class $$WorkoutMenuTableOrderingComposer
+    extends OrderingComposer<_$AppDatabase, $WorkoutMenuTable> {
+  $$WorkoutMenuTableOrderingComposer(super.$state);
+  ColumnOrderings<int> get id => $state.composableBuilder(
+      column: $state.table.id,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get name => $state.composableBuilder(
+      column: $state.table.name,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get memo => $state.composableBuilder(
+      column: $state.table.memo,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<bool> get showE1rm => $state.composableBuilder(
+      column: $state.table.showE1rm,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get part => $state.composableBuilder(
+      column: $state.table.part,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+}
+
 class _$AppDatabaseManager {
   final _$AppDatabase _db;
   _$AppDatabaseManager(this._db);
   $$RoutinesTableTableManager get routines =>
       $$RoutinesTableTableManager(_db, _db.routines);
+  $$WorkoutMenuTableTableManager get workoutMenu =>
+      $$WorkoutMenuTableTableManager(_db, _db.workoutMenu);
 }

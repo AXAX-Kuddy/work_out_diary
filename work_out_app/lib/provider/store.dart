@@ -78,15 +78,6 @@ class MainStoreProvider extends ChangeNotifier {
   }
 }
 
-class MemoList {
-  final String? notifiMemo;
-  final List<Map<DateTime, String>>? memos;
-
-  MemoList({
-    this.notifiMemo,
-    this.memos,
-  });
-}
 
 /// 운동 종목 구성
 class WorkoutMenu {
@@ -94,7 +85,7 @@ class WorkoutMenu {
   final String name;
 
   /// 메모
-  final MemoList? memo;
+  final String? memo;
 
   ///e1rm표시유무
   final bool showE1rm;
