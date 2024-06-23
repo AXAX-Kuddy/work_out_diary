@@ -95,6 +95,19 @@ class WorkoutMenu {
     this.memo,
     this.showE1rm = false,
   });
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is WorkoutMenu &&
+        other.name == name &&
+        other.memo == memo &&
+        other.showE1rm == showE1rm;
+  }
+
+  @override
+  int get hashCode => name.hashCode ^ memo.hashCode ^ showE1rm.hashCode;
 }
 
 class WorkoutListStore extends ChangeNotifier {
@@ -166,11 +179,11 @@ class WorkoutListStore extends ChangeNotifier {
           memo: data.memo,
           showE1rm: data.showE1rm,
         );
-
-        workouts[data.part]?.add(newMenu);
+        if (!workouts[data.part]!.contains(newMenu)) {
+          workouts[data.part]?.add(newMenu);
+        }
       }
     }
-    notifyListeners();
   }
 }
 

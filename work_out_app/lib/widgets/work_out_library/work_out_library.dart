@@ -115,7 +115,6 @@ class _WorkoutLibraryState extends State<WorkoutLibrary> {
   }
 
   Future<int> categorize() async {
-    workoutListStore.initializeWorkouts();
     allWorkoutList.clear();
 
     /// 운동 목록 데이터를 부위별로 스토어의 자료에 삽입
@@ -135,6 +134,9 @@ class _WorkoutLibraryState extends State<WorkoutLibrary> {
   @override
   void initState() {
     super.initState();
+    workoutListStore = context.read<provider.WorkoutListStore>();
+
+    workoutList = workoutListStore.workouts;
 
     if (widget.showAddPlanningScreen) {
       bottomAddButton = WideButton(
@@ -172,9 +174,6 @@ class _WorkoutLibraryState extends State<WorkoutLibrary> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     routineProvider = context.watch<provider.RoutineProvider>();
-    workoutListStore = context.read<provider.WorkoutListStore>();
-
-    workoutList = workoutListStore.workouts;
   }
 
   @override
