@@ -1,18 +1,16 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:line_icons/line_icon.dart';
 import 'package:line_icons/line_icons.dart';
+import 'package:sqlite3/sqlite3.dart' as sql;
+import 'package:work_out_app/database/database.dart' as db;
 import 'package:work_out_app/util/keys.dart';
 import 'package:work_out_app/widgets/buttons/wide_button.dart';
 import 'package:work_out_app/widgets/work_out_library/widgets/listview_of_part.dart';
 import 'package:work_out_app/widgets/work_out_library/widgets/search_of_workout.dart';
 import 'package:work_out_app/widgets/base_screen/base_page.dart';
-import 'package:work_out_app/widgets/box_widget/widget_box.dart';
 import 'package:work_out_app/util/palette.dart' as palette;
 import 'package:provider/provider.dart';
 import 'package:work_out_app/provider/store.dart' as provider;
-import 'package:animated_snack_bar/animated_snack_bar.dart';
 
 import 'package:work_out_app/provider/make_program.dart' as maked;
 import 'package:work_out_app/widgets/work_out_library/widgets/workout_list_viewer.dart';
@@ -50,7 +48,9 @@ class WorkoutLibrary extends StatefulWidget {
 }
 
 class _WorkoutLibraryState extends State<WorkoutLibrary> {
+  db.AppDatabase database = db.AppDatabase();
   late provider.RoutineProvider routineProvider;
+  late provider.WorkoutListStore workoutListStore;
 
   late Map<WorkoutListKeys, List<provider.WorkoutMenu>> workoutList;
   final List<WorkoutListKeys> keys = WorkoutListKeys.values;
@@ -114,15 +114,27 @@ class _WorkoutLibraryState extends State<WorkoutLibrary> {
     });
   }
 
-  @override
-  void initState() {
-    super.initState();
-    workoutList = context.read<provider.WorkoutListStore>().workouts;
+  Future<int> categorize() async {
+    workoutListStore.initializeWorkouts();
+    allWorkoutList.clear();
+
+    /// 운동 목록 데이터를 부위별로 스토어의 자료에 삽입
+    for (var key in keys) {
+      final data = await database.getWorkoutMenusByPart(key);
+      workoutListStore.categorizeOfPart(data);
+    }
 
     /// 모든 운동들을 전체 리스트에 추가
     for (var workout in workoutList.values) {
       allWorkoutList.addAll(workout);
     }
+
+    return 0;
+  }
+
+  @override
+  void initState() {
+    super.initState();
 
     if (widget.showAddPlanningScreen) {
       bottomAddButton = WideButton(
@@ -160,6 +172,9 @@ class _WorkoutLibraryState extends State<WorkoutLibrary> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     routineProvider = context.watch<provider.RoutineProvider>();
+    workoutListStore = context.read<provider.WorkoutListStore>();
+
+    workoutList = workoutListStore.workouts;
   }
 
   @override
@@ -204,51 +219,68 @@ class _WorkoutLibraryState extends State<WorkoutLibrary> {
           color: palette.cardColorWhite,
         ),
         Expanded(
-          child: [
-            WorkoutList(
-              items: workoutList[keys[0]]!,
-              tempoList: tempoList,
-              managementTempoList: managementTempoList,
-              exchangedWorkoutIndex: widget.exchangedWorkoutIndex,
-            ),
-            WorkoutList(
-              items: workoutList[keys[1]]!,
-              tempoList: tempoList,
-              managementTempoList: managementTempoList,
-              exchangedWorkoutIndex: widget.exchangedWorkoutIndex,
-            ),
-            WorkoutList(
-              items: workoutList[keys[2]]!,
-              tempoList: tempoList,
-              managementTempoList: managementTempoList,
-              exchangedWorkoutIndex: widget.exchangedWorkoutIndex,
-            ),
-            WorkoutList(
-              items: workoutList[keys[3]]!,
-              tempoList: tempoList,
-              managementTempoList: managementTempoList,
-              exchangedWorkoutIndex: widget.exchangedWorkoutIndex,
-            ),
-            WorkoutList(
-              items: workoutList[keys[4]]!,
-              tempoList: tempoList,
-              managementTempoList: managementTempoList,
-              exchangedWorkoutIndex: widget.exchangedWorkoutIndex,
-            ),
-            WorkoutList(
-              items: workoutList[keys[5]]!,
-              tempoList: tempoList,
-              managementTempoList: managementTempoList,
-              exchangedWorkoutIndex: widget.exchangedWorkoutIndex,
-            ),
-            WorkoutListAll(
-              searchText: searchText,
-              allWorkoutList: allWorkoutList,
-              tempoList: tempoList,
-              managementTempoList: managementTempoList,
-              exchangedWorkoutIndex: widget.exchangedWorkoutIndex,
-            ),
-          ][ChangePart.index],
+          child: FutureBuilder(
+              future: categorize(),
+              builder: (BuildContext context, AsyncSnapshot snapshot) {
+                if (!snapshot.hasData) {
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                } else if (snapshot.hasError) {
+                  return Text(
+                    "운동 목록을 불러오는 도중 오류가 발생하였습니다. 에러: ${snapshot.error}",
+                    style: const TextStyle(
+                      color: palette.cardColorWhite,
+                    ),
+                  );
+                } else {
+                  return [
+                    WorkoutList(
+                      items: workoutList[keys[0]]!,
+                      tempoList: tempoList,
+                      managementTempoList: managementTempoList,
+                      exchangedWorkoutIndex: widget.exchangedWorkoutIndex,
+                    ),
+                    WorkoutList(
+                      items: workoutList[keys[1]]!,
+                      tempoList: tempoList,
+                      managementTempoList: managementTempoList,
+                      exchangedWorkoutIndex: widget.exchangedWorkoutIndex,
+                    ),
+                    WorkoutList(
+                      items: workoutList[keys[2]]!,
+                      tempoList: tempoList,
+                      managementTempoList: managementTempoList,
+                      exchangedWorkoutIndex: widget.exchangedWorkoutIndex,
+                    ),
+                    WorkoutList(
+                      items: workoutList[keys[3]]!,
+                      tempoList: tempoList,
+                      managementTempoList: managementTempoList,
+                      exchangedWorkoutIndex: widget.exchangedWorkoutIndex,
+                    ),
+                    WorkoutList(
+                      items: workoutList[keys[4]]!,
+                      tempoList: tempoList,
+                      managementTempoList: managementTempoList,
+                      exchangedWorkoutIndex: widget.exchangedWorkoutIndex,
+                    ),
+                    WorkoutList(
+                      items: workoutList[keys[5]]!,
+                      tempoList: tempoList,
+                      managementTempoList: managementTempoList,
+                      exchangedWorkoutIndex: widget.exchangedWorkoutIndex,
+                    ),
+                    WorkoutListAll(
+                      searchText: searchText,
+                      allWorkoutList: allWorkoutList,
+                      tempoList: tempoList,
+                      managementTempoList: managementTempoList,
+                      exchangedWorkoutIndex: widget.exchangedWorkoutIndex,
+                    ),
+                  ][ChangePart.index];
+                }
+              }),
         ),
         // tempoListViewer,
         WorkoutListViewer(

@@ -34,9 +34,11 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   AppDatabase database = AppDatabase();
 
-  final workoutData = await database.getAllWorkoutMenu();
-  if (workoutData.isEmpty) {
-    await database.insertInitialData(database);
+  for (var value in WorkoutListKeys.values) {
+    final workoutData = await database.getWorkoutMenusByPart(value);
+    if (workoutData.isEmpty) {
+      await database.insertInitialData(database);
+    }
   }
 
   runApp(

@@ -48,6 +48,14 @@ class AppDatabase extends _$AppDatabase {
     return select(workoutMenu).get();
   }
 
+  Future<List<WorkoutMenuData>> getWorkoutMenusByPart(WorkoutListKeys part) {
+    return (select(workoutMenu)
+          ..where(
+            (tbl) => tbl.part.equals(part.toString()),
+          ))
+        .get();
+  }
+
   ///운동 종목 삽입
   Future insertWorkoutMenu(Insertable<WorkoutMenuData> data) async {
     into(workoutMenu).insert(data);
@@ -55,62 +63,76 @@ class AppDatabase extends _$AppDatabase {
 
   ///앱 최초 실행 시 운동목록 삽입
   Future<void> insertInitialData(AppDatabase db) async {
-    final initialData = [
-      WorkoutMenuCompanion.insert(
-        name: '스쿼트',
-        showE1rm: const Value(true),
-        part: WorkoutListKeys.leg,
-      ),
-      WorkoutMenuCompanion.insert(
-        name: '데드리프트',
-        showE1rm: const Value(true),
-        part: WorkoutListKeys.leg,
-      ),
-      WorkoutMenuCompanion.insert(
-        name: '랫 풀 다운',
-        part: WorkoutListKeys.back,
-      ),
-      WorkoutMenuCompanion.insert(
-        name: '바벨 로우',
-        part: WorkoutListKeys.back,
-      ),
-      WorkoutMenuCompanion.insert(
-        name: '바벨 벤치 프레스',
-        showE1rm: const Value(true),
-        part: WorkoutListKeys.chest,
-      ),
-      WorkoutMenuCompanion.insert(
-        name: '인클라인 덤벨 프레스',
-        part: WorkoutListKeys.chest,
-      ),
-      WorkoutMenuCompanion.insert(
-        name: '바벨 밀리터리 프레스',
-        part: WorkoutListKeys.shoulder,
-      ),
-      WorkoutMenuCompanion.insert(
-        name: '사이드 레터럴 레이즈',
-        part: WorkoutListKeys.shoulder,
-      ),
-      WorkoutMenuCompanion.insert(
-        name: '바벨 컬',
-        part: WorkoutListKeys.biceps,
-      ),
-      WorkoutMenuCompanion.insert(
-        name: '해머 컬',
-        part: WorkoutListKeys.biceps,
-      ),
-      WorkoutMenuCompanion.insert(
-        name: '클로즈 그립 벤치프레스',
-        part: WorkoutListKeys.triceps,
-      ),
-      WorkoutMenuCompanion.insert(
-        name: '덤벨 스컬 크러셔',
-        part: WorkoutListKeys.triceps,
-      ),
-    ];
+    final initialData = {
+      WorkoutListKeys.leg: [
+        WorkoutMenuCompanion.insert(
+          name: '스쿼트',
+          showE1rm: const Value(true),
+          part: WorkoutListKeys.leg,
+        ),
+        WorkoutMenuCompanion.insert(
+          name: '데드리프트',
+          showE1rm: const Value(true),
+          part: WorkoutListKeys.leg,
+        ),
+      ],
+      WorkoutListKeys.back: [
+        WorkoutMenuCompanion.insert(
+          name: '랫 풀 다운',
+          part: WorkoutListKeys.back,
+        ),
+        WorkoutMenuCompanion.insert(
+          name: '바벨 로우',
+          part: WorkoutListKeys.back,
+        ),
+      ],
+      WorkoutListKeys.chest: [
+        WorkoutMenuCompanion.insert(
+          name: '바벨 벤치 프레스',
+          showE1rm: const Value(true),
+          part: WorkoutListKeys.chest,
+        ),
+        WorkoutMenuCompanion.insert(
+          name: '인클라인 덤벨 프레스',
+          part: WorkoutListKeys.chest,
+        ),
+      ],
+      WorkoutListKeys.shoulder: [
+        WorkoutMenuCompanion.insert(
+          name: '바벨 밀리터리 프레스',
+          part: WorkoutListKeys.shoulder,
+        ),
+        WorkoutMenuCompanion.insert(
+          name: '사이드 레터럴 레이즈',
+          part: WorkoutListKeys.shoulder,
+        ),
+      ],
+      WorkoutListKeys.biceps: [
+        WorkoutMenuCompanion.insert(
+          name: '바벨 컬',
+          part: WorkoutListKeys.biceps,
+        ),
+        WorkoutMenuCompanion.insert(
+          name: '해머 컬',
+          part: WorkoutListKeys.biceps,
+        ),
+      ],
+      WorkoutListKeys.triceps: [
+        WorkoutMenuCompanion.insert(
+          name: '클로즈 그립 벤치프레스',
+          part: WorkoutListKeys.triceps,
+        ),
+        WorkoutMenuCompanion.insert(
+          name: '덤벨 스컬 크러셔',
+          part: WorkoutListKeys.triceps,
+        ),
+      ],
+    };
 
-    for (var data in initialData) {
-      await db.insertWorkoutMenu(data);
+    for (var entry in initialData.entries) {
+      for (var data in entry.value) {
+        await db.insertWorkoutMenu(data);
+      }
     }
   }
 }
@@ -122,9 +144,9 @@ LazyDatabase _openConnection() {
 
     /// 데이터베이스 초기화
     /// 개발 중 데이터베이스 스키마의 변화가 생겼을 경우 사용
-    if (await file.exists()) {
-      await file.delete();
-    }
+    // if (await file.exists()) {
+    //   await file.delete();
+    // }
 
     if (Platform.isAndroid) {
       await applyWorkaroundToOpenSqlite3OnOldAndroidVersions();

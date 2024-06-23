@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:work_out_app/provider/make_program.dart' as maked;
 import 'package:work_out_app/util/keys.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
+import 'package:work_out_app/database/database.dart';
 
 typedef UserInfo = Map<UserInfoField, dynamic>;
 
@@ -78,7 +79,6 @@ class MainStoreProvider extends ChangeNotifier {
   }
 }
 
-
 /// 운동 종목 구성
 class WorkoutMenu {
   ///운동 이름
@@ -98,59 +98,80 @@ class WorkoutMenu {
 }
 
 class WorkoutListStore extends ChangeNotifier {
-  var workouts = {
+  Map<WorkoutListKeys, List<WorkoutMenu>> workouts = {
     WorkoutListKeys.leg: [
-      WorkoutMenu(
-        name: "스쿼트",
-        showE1rm: true,
-      ),
-      WorkoutMenu(
-        name: "데드리프트",
-        showE1rm: true,
-      ),
+      // WorkoutMenu(
+      //   name: "스쿼트",
+      //   showE1rm: true,
+      // ),
+      // WorkoutMenu(
+      //   name: "데드리프트",
+      //   showE1rm: true,
+      // ),
     ],
     WorkoutListKeys.back: [
-      WorkoutMenu(
-        name: "랫 풀 다운",
-      ),
-      WorkoutMenu(
-        name: "바벨 로우",
-      ),
+      // WorkoutMenu(
+      //   name: "랫 풀 다운",
+      // ),
+      // WorkoutMenu(
+      //   name: "바벨 로우",
+      // ),
     ],
     WorkoutListKeys.chest: [
-      WorkoutMenu(
-        name: "바벨 벤치 프레스",
-        showE1rm: true,
-      ),
-      WorkoutMenu(
-        name: "인클라인 덤벨 프레스",
-      ),
+      // WorkoutMenu(
+      //   name: "바벨 벤치 프레스",
+      //   showE1rm: true,
+      // ),
+      // WorkoutMenu(
+      //   name: "인클라인 덤벨 프레스",
+      // ),
     ],
     WorkoutListKeys.shoulder: [
-      WorkoutMenu(
-        name: "바벨 밀리터리 프레스",
-      ),
-      WorkoutMenu(
-        name: "사이드 레터럴 레이즈",
-      ),
+      // WorkoutMenu(
+      //   name: "바벨 밀리터리 프레스",
+      // ),
+      // WorkoutMenu(
+      //   name: "사이드 레터럴 레이즈",
+      // ),
     ],
     WorkoutListKeys.biceps: [
-      WorkoutMenu(
-        name: "바벨 컬",
-      ),
-      WorkoutMenu(
-        name: "해머 컬",
-      ),
+      // WorkoutMenu(
+      //   name: "바벨 컬",
+      // ),
+      // WorkoutMenu(
+      //   name: "해머 컬",
+      // ),
     ],
     WorkoutListKeys.triceps: [
-      WorkoutMenu(
-        name: "클로즈 그립 벤치프레스",
-      ),
-      WorkoutMenu(
-        name: "덤벨 스컬 크러셔",
-      ),
+      // WorkoutMenu(
+      //   name: "클로즈 그립 벤치프레스",
+      // ),
+      // WorkoutMenu(
+      //   name: "덤벨 스컬 크러셔",
+      // ),
     ],
   };
+
+  void initializeWorkouts() {
+    for (var workout in workouts.values) {
+      workout.clear();
+    }
+  }
+
+  Future<void> categorizeOfPart(List<WorkoutMenuData> workoutData) async {
+    for (var data in workoutData) {
+      if (workouts.containsKey(data.part)) {
+        WorkoutMenu newMenu = WorkoutMenu(
+          name: data.name,
+          memo: data.memo,
+          showE1rm: data.showE1rm,
+        );
+
+        workouts[data.part]?.add(newMenu);
+      }
+    }
+    notifyListeners();
+  }
 }
 
 class Routine {
