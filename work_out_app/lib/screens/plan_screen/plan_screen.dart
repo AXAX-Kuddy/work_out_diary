@@ -512,6 +512,7 @@ class _PlanningScreenState extends State<PlanningScreen> {
                   MaterialPageRoute(
                     builder: (context) {
                       return WorkoutLibrary(
+                        showAppbarCloseButton: true,
                         showAddPlanningScreen: false,
                         exchangedWorkoutIndex: panelCallingInstanceIndex,
                       );

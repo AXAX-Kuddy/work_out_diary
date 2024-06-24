@@ -22,6 +22,7 @@ class MainStore {
     UserInfoField.age: 20,
     UserInfoField.weight: 100.0,
     UserInfoField.isFemale: false,
+    UserInfoField.isEdit: false,
   };
 }
 
@@ -112,65 +113,22 @@ class WorkoutMenu {
 
 class WorkoutListStore extends ChangeNotifier {
   Map<WorkoutListKeys, List<WorkoutMenu>> workouts = {
-    WorkoutListKeys.leg: [
-      // WorkoutMenu(
-      //   name: "스쿼트",
-      //   showE1rm: true,
-      // ),
-      // WorkoutMenu(
-      //   name: "데드리프트",
-      //   showE1rm: true,
-      // ),
-    ],
-    WorkoutListKeys.back: [
-      // WorkoutMenu(
-      //   name: "랫 풀 다운",
-      // ),
-      // WorkoutMenu(
-      //   name: "바벨 로우",
-      // ),
-    ],
-    WorkoutListKeys.chest: [
-      // WorkoutMenu(
-      //   name: "바벨 벤치 프레스",
-      //   showE1rm: true,
-      // ),
-      // WorkoutMenu(
-      //   name: "인클라인 덤벨 프레스",
-      // ),
-    ],
-    WorkoutListKeys.shoulder: [
-      // WorkoutMenu(
-      //   name: "바벨 밀리터리 프레스",
-      // ),
-      // WorkoutMenu(
-      //   name: "사이드 레터럴 레이즈",
-      // ),
-    ],
-    WorkoutListKeys.biceps: [
-      // WorkoutMenu(
-      //   name: "바벨 컬",
-      // ),
-      // WorkoutMenu(
-      //   name: "해머 컬",
-      // ),
-    ],
-    WorkoutListKeys.triceps: [
-      // WorkoutMenu(
-      //   name: "클로즈 그립 벤치프레스",
-      // ),
-      // WorkoutMenu(
-      //   name: "덤벨 스컬 크러셔",
-      // ),
-    ],
+    WorkoutListKeys.leg: [],
+    WorkoutListKeys.back: [],
+    WorkoutListKeys.chest: [],
+    WorkoutListKeys.shoulder: [],
+    WorkoutListKeys.biceps: [],
+    WorkoutListKeys.triceps: [],
   };
 
+  ///운동 목록 초기화
   void initializeWorkouts() {
     for (var workout in workouts.values) {
       workout.clear();
     }
   }
 
+  ///특정 부위에 해당하는 운동 목록 리스트를 스토어에 삽입함
   Future<void> categorizeOfPart(List<WorkoutMenuData> workoutData) async {
     for (var data in workoutData) {
       if (workouts.containsKey(data.part)) {

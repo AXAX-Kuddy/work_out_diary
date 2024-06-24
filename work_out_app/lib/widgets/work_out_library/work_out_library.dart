@@ -5,6 +5,7 @@ import 'package:sqlite3/sqlite3.dart' as sql;
 import 'package:work_out_app/database/database.dart' as db;
 import 'package:work_out_app/util/keys.dart';
 import 'package:work_out_app/widgets/buttons/wide_button.dart';
+import 'package:work_out_app/widgets/grid_loading_circle/loading_circle.dart';
 import 'package:work_out_app/widgets/work_out_library/widgets/listview_of_part.dart';
 import 'package:work_out_app/widgets/work_out_library/widgets/search_of_workout.dart';
 import 'package:work_out_app/widgets/base_screen/base_page.dart';
@@ -29,19 +30,17 @@ class ChangePart {
 
 class WorkoutLibrary extends StatefulWidget {
   final bool showAddPlanningScreen;
+  final bool showAppbarCloseButton;
   final int? exchangedWorkoutIndex;
   final void Function()? changedListner;
 
   const WorkoutLibrary({
     Key? key,
     required this.showAddPlanningScreen,
+    required this.showAppbarCloseButton,
     this.exchangedWorkoutIndex,
     this.changedListner,
-  })  : assert(
-            (showAddPlanningScreen && exchangedWorkoutIndex == null) ||
-                (!showAddPlanningScreen && exchangedWorkoutIndex != null),
-            '서로 다른 페이지의 기능이 충돌함.'),
-        super(key: key);
+  }) : super(key: key);
 
   @override
   State<WorkoutLibrary> createState() => _WorkoutLibraryState();
@@ -115,9 +114,10 @@ class _WorkoutLibraryState extends State<WorkoutLibrary> {
   }
 
   Future<int> categorize() async {
+    /// 전체 운동목록 리스트 초기화
     allWorkoutList.clear();
 
-    /// 운동 목록 데이터를 부위별로 스토어의 자료에 삽입
+    /// 운동 목록 데이터를 부위별로 스토어에 삽입
     for (var key in keys) {
       final data = await database.getWorkoutMenusByPart(key);
       workoutListStore.categorizeOfPart(data);
@@ -193,16 +193,18 @@ class _WorkoutLibraryState extends State<WorkoutLibrary> {
           allWorkoutList: allWorkoutList,
           changedSearchText: changedSearchText,
         ),
-        leading: IconButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          icon: const Icon(
-            Icons.close,
-            size: 30,
-            color: palette.cardColorWhite,
-          ),
-        ),
+        leading: widget.showAppbarCloseButton
+            ? IconButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                icon: const Icon(
+                  Icons.close,
+                  size: 30,
+                  color: palette.cardColorWhite,
+                ),
+              )
+            : null,
       ),
       children: [
         PartList(
@@ -223,7 +225,7 @@ class _WorkoutLibraryState extends State<WorkoutLibrary> {
               builder: (BuildContext context, AsyncSnapshot snapshot) {
                 if (!snapshot.hasData) {
                   return const Center(
-                    child: CircularProgressIndicator(),
+                    child: LoadingCircle(),
                   );
                 } else if (snapshot.hasError) {
                   return Text(

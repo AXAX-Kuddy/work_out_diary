@@ -3,6 +3,8 @@ import 'dart:io';
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:work_out_app/screens/debug/debug_screen.dart';
+import 'package:work_out_app/screens/user_info_screen.dart/user_info_screen.dart';
 
 import 'package:work_out_app/widgets/base_screen/base_page.dart';
 import 'package:work_out_app/provider/make_program.dart' as maked;
@@ -13,7 +15,7 @@ import 'package:work_out_app/util/keys.dart';
 import 'package:work_out_app/screens/home_screen/home_screen.dart';
 import 'package:work_out_app/screens/plan_screen/plan_screen.dart';
 import 'package:work_out_app/screens/diary_screen/diary_screen.dart';
-import 'package:work_out_app/screens/dots_point_screen.dart';
+import 'package:work_out_app/screens/dots_screen/dots_point_screen.dart';
 import 'package:work_out_app/dump/input_userInfo.dart';
 
 //패키지들
@@ -91,38 +93,25 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  bool notWriteUserInfo = true;
   late provider.MainStoreProvider mainStoreProvider;
 
   @override
   void initState() {
     super.initState();
+    mainStoreProvider = context.read<provider.MainStoreProvider>();
 
-    // WidgetsBinding.instance.addPostFrameCallback((_) {
-    //   if (store.infoChecker(store.userInfo) == false && notWriteUserInfo) {
-    //     Navigator.push(
-    //       context,
-    //       MaterialPageRoute(
-    //         builder: (context) => UserInfoPage(
-    //           updateInfo: updateUserInfo,
-    //           userInfo: store.userInfo,
-    //           notWriteUserInfo: notWriteUserInfo,
-    //         ),
-    //       ),
-    //     );
-    //   }
-    // });
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    mainStoreProvider = context.watch<provider.MainStoreProvider>();
-  }
-
-  void updateUserInfo(bool infoCondition) {
-    setState(() {
-      infoCondition = false;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      bool isEdit = mainStoreProvider.getUserInfo()[UserInfoField.isEdit];
+      if (!isEdit) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (BuildContext context) {
+              return const UserInfoScreen();
+            },
+          ),
+        );
+      }
     });
   }
 
@@ -133,9 +122,11 @@ class _MyAppState extends State<MyApp> {
         const HomeScreen(),
         const DiaryScreen(),
         const WorkoutLibrary(
-          showAddPlanningScreen: true,
+          showAppbarCloseButton: false,
+          showAddPlanningScreen: false,
         ),
         const DotsPointScreen(),
+        const DebugScreen(),
       ][PageNumber.pageNum],
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: PageNumber.pageNum,
@@ -164,6 +155,10 @@ class _MyAppState extends State<MyApp> {
           BottomNavigationBarItem(
             icon: LineIcon.raisedFist(),
             label: "DOTS 포인트",
+          ),
+          BottomNavigationBarItem(
+            icon: LineIcon.bug(),
+            label: "디버그",
           ),
         ],
       ),

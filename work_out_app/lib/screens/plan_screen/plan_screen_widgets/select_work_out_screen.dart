@@ -14,6 +14,7 @@ class _SelectWorkoutPageState extends State<SelectWorkoutPage> {
   @override
   Widget build(BuildContext context) {
     return const WorkoutLibrary(
+      showAppbarCloseButton: true,
       showAddPlanningScreen: true,
     );
   }

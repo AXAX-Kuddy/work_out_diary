@@ -19,6 +19,7 @@ import 'package:work_out_app/widgets/buttons/trash_can_button.dart';
 import 'package:work_out_app/widgets/buttons/wide_button.dart';
 import 'package:work_out_app/database/database.dart' as db;
 import 'package:work_out_app/widgets/dialog/custom_dialog.dart';
+import 'package:work_out_app/widgets/grid_loading_circle/loading_circle.dart';
 
 class TodayWorkOutCard extends StatefulWidget {
   final void Function({
@@ -109,7 +110,7 @@ class _TodayWorkOutCardState extends State<TodayWorkOutCard> {
               ) {
                 if (!snapshot.hasData) {
                   return const Center(
-                    child: CircularProgressIndicator(),
+                    child: LoadingCircle(),
                   );
                 } else if (snapshot.hasError) {
                   return const Center(

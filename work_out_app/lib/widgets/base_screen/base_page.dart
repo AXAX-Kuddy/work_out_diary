@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:work_out_app/util/palette.dart' as palette;
-import 'package:work_out_app/provider/store.dart' as provider;
 
-class BasePage extends StatefulWidget {
+class BasePage extends StatelessWidget {
   final List<Widget> children;
   final Widget slidingUpPanelWidget;
   final AppBar? appBar;
@@ -11,6 +9,9 @@ class BasePage extends StatefulWidget {
   final FloatingActionButtonLocation? floatingActionButtonLocation;
   final EdgeInsets padding;
   final Color backgroundColor;
+
+  final MainAxisAlignment mainAxisAlignment;
+  final CrossAxisAlignment crossAxisAlignment;
 
   const BasePage({
     super.key,
@@ -21,42 +22,39 @@ class BasePage extends StatefulWidget {
     this.floatingActionButtonLocation,
     this.padding = const EdgeInsets.all(15),
     this.backgroundColor = palette.bgColor,
+    this.mainAxisAlignment = MainAxisAlignment.start,
+    this.crossAxisAlignment = CrossAxisAlignment.center,
   });
-
-  @override
-  State<BasePage> createState() => _BasePageState();
-}
-
-class _BasePageState extends State<BasePage> {
 
   @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
         Scaffold(
-          appBar: widget.appBar,
+          appBar: appBar,
           body: Container(
             decoration: BoxDecoration(
-              color: widget.backgroundColor,
+              color: backgroundColor,
             ),
             // ignore: prefer_const_constructors
             child: Padding(
-              padding: widget.padding,
+              padding: padding,
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: mainAxisAlignment,
+                crossAxisAlignment: crossAxisAlignment,
                 children: [
                   const SizedBox(
                     height: 30,
                   ),
-                  ...widget.children
+                  ...children
                 ],
               ),
             ),
           ),
-          floatingActionButton: widget.floatingActionButton,
-          floatingActionButtonLocation: widget.floatingActionButtonLocation,
+          floatingActionButton: floatingActionButton,
+          floatingActionButtonLocation: floatingActionButtonLocation,
         ),
-        widget.slidingUpPanelWidget,
+        slidingUpPanelWidget,
       ],
     );
   }

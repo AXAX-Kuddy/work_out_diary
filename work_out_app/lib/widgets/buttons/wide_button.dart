@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:work_out_app/widgets/box_widget/widget_box.dart';
 
-
 class WideButton extends StatefulWidget {
   final Color unTapColor;
   final Color tapColor;
@@ -14,6 +13,7 @@ class WideButton extends StatefulWidget {
 
   final double height;
   final double? width;
+  final EdgeInsetsGeometry? margin;
 
   const WideButton({
     super.key,
@@ -27,6 +27,7 @@ class WideButton extends StatefulWidget {
     this.height = 50,
     this.width,
     this.tapBorderColor = const Color.fromRGBO(0, 0, 0, 0),
+    this.margin,
   });
 
   @override
@@ -75,6 +76,7 @@ class _WideButtonState extends State<WideButton> {
         });
       },
       child: WidgetsBox(
+        margin: widget.margin,
         backgroundColor: btnColor,
         border: Border.all(
           color: borderColor,

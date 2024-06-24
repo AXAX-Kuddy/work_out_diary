@@ -13,6 +13,7 @@ enum UserInfoField {
   age,
   weight,
   isFemale,
+  isEdit,
 }
 
 enum SBDkeys {
