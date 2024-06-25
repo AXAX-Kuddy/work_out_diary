@@ -35,7 +35,7 @@ class MainStoreProvider extends ChangeNotifier {
 
   void setUserInfo({
     required UserInfoField userInfoField,
-    dynamic value,
+    required dynamic value,
   }) {
     MainStore.userInfo[userInfoField] = value;
   }

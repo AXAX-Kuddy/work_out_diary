@@ -13,6 +13,7 @@ class CustomTextField extends StatefulWidget {
   final TextStyle? textStyle;
   final double? width;
   final double? height;
+  final EdgeInsets? margin;
   final TextInputType? textInputType;
   final TextEditingController? controller;
   final FocusNode? focusNode;
@@ -32,6 +33,7 @@ class CustomTextField extends StatefulWidget {
     this.controller,
     this.focusNode,
     this.onFocusout,
+    this.margin,
   });
 
   static void submit(GlobalKey<FormState> key) {
@@ -61,9 +63,10 @@ class _CustomTextFieldState extends State<CustomTextField> {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
+    return Container(
       width: widget.width,
       height: widget.height,
+      margin: widget.margin,
       child: TextFormField(
         focusNode: widget.focusNode,
         controller: widget.controller,

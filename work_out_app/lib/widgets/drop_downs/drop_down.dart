@@ -16,8 +16,9 @@ class CustomDropDownButton extends StatefulWidget {
 
   ///setState는 기본값
   final void Function(String?)? onChanged;
-  final double width;
-  final double height;
+  final double? width;
+  final double? height;
+  final EdgeInsets? margin;
 
   const CustomDropDownButton({
     super.key,
@@ -33,6 +34,7 @@ class CustomDropDownButton extends StatefulWidget {
     this.itemTextStyle,
     this.enabledValid = true,
     this.nowValue,
+    this.margin,
   });
 
   @override
@@ -56,9 +58,10 @@ class _CustomDropDownButtonState extends State<CustomDropDownButton> {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: widget.width,
+    return Container(
       height: widget.height,
+      width: widget.width,
+      margin: widget.margin,
       child: DropdownButtonHideUnderline(
         child: DropdownButton2<String>(
           isExpanded: true,

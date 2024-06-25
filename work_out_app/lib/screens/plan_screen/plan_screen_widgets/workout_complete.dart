@@ -1,9 +1,7 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:work_out_app/main.dart';
-import 'package:work_out_app/screens/home_screen/home_screen.dart';
 import 'package:work_out_app/widgets/base_screen/base_page.dart';
 import 'package:work_out_app/util/palette.dart' as palette;
+import 'package:work_out_app/widgets/router/main_screen_router.dart';
 
 class WorkoutCompleteScreen extends StatelessWidget {
   const WorkoutCompleteScreen({super.key});
@@ -24,13 +22,7 @@ class WorkoutCompleteScreen extends StatelessWidget {
         ),
         TextButton(
           onPressed: () {
-            Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(builder: (context) {
-                return const MyApp();
-              }),
-              (route) => false,
-            );
+            MainScreenRouter.removeUntilAndGo(context);
           },
           child: const Text(
             "운동 완료",

@@ -9,7 +9,6 @@ import 'package:line_icons/line_icon.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:work_out_app/database/database.dart';
 import 'package:work_out_app/screens/plan_screen/plan_screen.dart';
-import 'package:work_out_app/screens/plan_screen/plan_screen_widgets/page_router.dart';
 import 'package:work_out_app/util/palette.dart' as palette;
 import 'package:work_out_app/widgets/box_widget/widget_box.dart';
 import 'package:work_out_app/util/keys.dart';
@@ -20,6 +19,7 @@ import 'package:work_out_app/widgets/buttons/wide_button.dart';
 import 'package:work_out_app/database/database.dart' as db;
 import 'package:work_out_app/widgets/dialog/custom_dialog.dart';
 import 'package:work_out_app/widgets/grid_loading_circle/loading_circle.dart';
+import 'package:work_out_app/widgets/router/plan_screen_router.dart';
 
 class TodayWorkOutCard extends StatefulWidget {
   final void Function({

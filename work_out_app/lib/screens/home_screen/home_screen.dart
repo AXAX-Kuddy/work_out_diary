@@ -9,7 +9,6 @@ import 'package:line_icons/line_icons.dart';
 import 'package:provider/provider.dart';
 import 'package:work_out_app/database/database.dart' as db;
 import 'package:work_out_app/provider/store.dart';
-import 'package:work_out_app/screens/plan_screen/plan_screen_widgets/page_router.dart';
 import 'package:work_out_app/util/keys.dart';
 import 'package:work_out_app/util/palette.dart' as palette;
 import 'package:work_out_app/screens/plan_screen/plan_screen.dart';
@@ -18,6 +17,7 @@ import 'package:work_out_app/screens/home_screen/home_screen_widgets/top_profile
 import 'package:work_out_app/widgets/base_screen/base_page.dart';
 import 'package:work_out_app/widgets/box_widget/widget_box.dart';
 import 'package:work_out_app/widgets/buttons/wide_button.dart';
+import 'package:work_out_app/widgets/router/plan_screen_router.dart';
 import 'package:work_out_app/widgets/sliding_up_panel/sliding_up_panel.dart';
 import 'package:work_out_app/provider/make_program.dart' as maked;
 import 'package:work_out_app/provider/store.dart' as provider;
