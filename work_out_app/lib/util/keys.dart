@@ -70,4 +70,15 @@ enum PanelControllerCommand {
   hide,
 }
 
+enum DevelopName {
+  devName,
+}
 
+extension DevelopNameExtension on DevelopName {
+  String get key {
+    switch (this) {
+      case DevelopName.devName:
+        return "TemporaryUser";
+    }
+  }
+}

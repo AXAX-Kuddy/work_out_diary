@@ -16,6 +16,29 @@ class CustomDropDownButton extends StatefulWidget {
   /// 선택한 값 반환
   final Function(String)? returnableChecker;
   final bool enabledValid;
+
+  /// 아이템이 숫자의 나열일 경우, 선택된 아이템을 해당 변수로 설정함
+  ///
+  /// 예 :
+  /// ```
+  /// if (widget.nowNum != null) {
+  ///   if (widget.nowNum! != 0) {
+  ///     selectedValue = widget.nowNum.toString();
+  ///   }
+  /// }
+  /// ```
+  final num? nowNum;
+
+  ///아이템이 String의 나열일 경우, 선택된 아이템을 해당 변수로 설정함
+  ///
+  ///예 :
+  ///```
+  ///if (widget.nowNum != null) {
+  ///   if (widget.nowNum! != 0) {
+  ///     selectedValue = widget.nowNum.toString();
+  ///   }
+  /// }
+  /// ```
   final String? nowValue;
 
   ///setState는 기본값
@@ -37,6 +60,7 @@ class CustomDropDownButton extends StatefulWidget {
     this.textStyle,
     this.itemTextStyle,
     this.enabledValid = true,
+    this.nowNum,
     this.nowValue,
     this.margin,
   });
@@ -50,14 +74,22 @@ class _CustomDropDownButtonState extends State<CustomDropDownButton> {
   bool _isSelectd = false;
 
   @override
-  void initState() {
-    super.initState();
-
+  void didChangeDependencies() {
     if (widget.nowValue != null) {
-      if (double.parse(widget.nowValue!) != 0) {
+      if (widget.nowValue!.isNotEmpty) {
+        _isSelectd = true;
         selectedValue = widget.nowValue;
       }
     }
+
+    if (widget.nowNum != null) {
+      if (widget.nowNum! != 0) {
+        _isSelectd = true;
+        selectedValue = widget.nowNum.toString();
+      }
+    }
+
+    super.didChangeDependencies();
   }
 
   @override
@@ -86,6 +118,7 @@ class _CustomDropDownButtonState extends State<CustomDropDownButton> {
           value: selectedValue,
           onChanged: (value) {
             selectedValue = value;
+            _isSelectd = true;
 
             /// 값을 선택했는지 유무 체크
             if (widget.selectChecker != null) {
@@ -96,6 +129,8 @@ class _CustomDropDownButtonState extends State<CustomDropDownButton> {
             if (widget.returnableChecker != null) {
               widget.returnableChecker!(value!);
             }
+
+            /// 위젯 리빌드 시, valid를 true로 설정해야한다면
             if (widget.enabledValid) {
               setState(() {
                 _isSelectd = true;

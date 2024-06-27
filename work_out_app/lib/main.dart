@@ -47,7 +47,7 @@ void main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(
-          create: (context) => provider.MainStoreProvider(provider.MainStore()),
+          create: (context) => provider.MainStoreProvider(),
         ),
         ChangeNotifierProvider(
           create: (context) => provider.WorkoutListStore(),

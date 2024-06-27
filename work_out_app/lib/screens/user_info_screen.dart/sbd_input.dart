@@ -2,12 +2,15 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:provider/provider.dart';
 import 'package:work_out_app/screens/user_info_screen.dart/age_input.dart';
 import 'package:work_out_app/screens/user_info_screen.dart/user_info_screen_widgets/input.dart';
 import 'package:work_out_app/widgets/base_screen/base_page.dart';
 import 'package:work_out_app/widgets/router/main_screen_router.dart';
 import 'package:work_out_app/widgets/text_field/text_field.dart';
 import 'package:work_out_app/util/palette.dart' as palette;
+import 'package:work_out_app/provider/store.dart' as provider;
+import 'package:work_out_app/util/keys.dart';
 
 class SBDInput extends StatefulWidget {
   const SBDInput({super.key});
@@ -17,6 +20,10 @@ class SBDInput extends StatefulWidget {
 }
 
 class _SBDInputState extends State<SBDInput> {
+  late provider.UserInfo userInfo;
+  late Function({required UserInfoField userInfoField, required dynamic value})
+      setUserInfo;
+
   final FocusNode squatFocusNode = FocusNode();
   final FocusNode benchFocusNode = FocusNode();
   final FocusNode deadFocusNode = FocusNode();
@@ -51,6 +58,13 @@ class _SBDInputState extends State<SBDInput> {
     setState(() {
       deadValid = newValue;
     });
+  }
+
+  @override
+  void initState() {
+    userInfo = context.read<provider.MainStoreProvider>().userInfo;
+    setUserInfo = context.read<provider.MainStoreProvider>().setUserInfo;
+    super.initState();
   }
 
   @override
@@ -149,10 +163,10 @@ class _SBDFieldState extends State<SBDField> {
       textStyle: const TextStyle(
         color: palette.cardColorWhite,
       ),
-      validator: (String? value) {
-        ///값이 null이 아닐때
+      validator: (value) {
+        // 값이 null이 아닐 때
         if (value != null) {
-          ///값이 비어있다면
+          // 값이 비어있다면
           if (value.isEmpty) {
             setState(() {
               widget.validChanger(false);
@@ -161,18 +175,18 @@ class _SBDFieldState extends State<SBDField> {
             return "값이 비었어요!";
           }
 
-          /// 값이 숫자가 아니라면
+          // 값이 숫자가 아니라면
           if (double.tryParse(value) == null) {
             setState(() {
               widget.validChanger(false);
               widget.valid = false;
             });
-
             return "숫자만 입력해주세요!";
+          }
 
-            ///값이 숫자라면
-          } else if (double.tryParse(value) != null) {
-            ///비정상적인 값을 입력했을 경우
+          // 값이 숫자일 때
+          if (double.tryParse(value) != null) {
+            // 비정상적인 값을 입력했을 경우
             if (double.parse(value) >= 1999 || double.parse(value) <= 0) {
               setState(() {
                 widget.validChanger(false);
@@ -183,7 +197,7 @@ class _SBDFieldState extends State<SBDField> {
           }
         }
 
-        /// 모든 예외를 통과했다면
+        // 모든 예외를 통과했다면
         setState(() {
           widget.validChanger(true);
           widget.valid = true;

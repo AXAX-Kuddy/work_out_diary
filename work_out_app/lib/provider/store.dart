@@ -12,14 +12,14 @@ typedef UserInfo = Map<UserInfoField, dynamic>;
 
 class MainStore {
   static UserInfo userInfo = {
-    UserInfoField.userName: "유저",
+    UserInfoField.userName: DevelopName.devName.key,
     UserInfoField.userSBD: {
       SBDkeys.squat: 0.0,
       SBDkeys.benchPress: 0.0,
       SBDkeys.deadlift: 0.0,
     },
     UserInfoField.dotsPoint: 0.0,
-    UserInfoField.age: 20,
+    UserInfoField.age: 999,
     UserInfoField.weight: 100.0,
     UserInfoField.isFemale: false,
     UserInfoField.isEdit: false,
@@ -27,11 +27,7 @@ class MainStore {
 }
 
 class MainStoreProvider extends ChangeNotifier {
-  final MainStore _mainStore;
-  MainStoreProvider(
-    this._mainStore,
-  );
-  MainStore get mainStore => _mainStore;
+  UserInfo get userInfo => MainStore.userInfo;
 
   void setUserInfo({
     required UserInfoField userInfoField,
