@@ -15,8 +15,9 @@ class CustomTextField extends StatefulWidget {
   final double? height;
   final EdgeInsets? margin;
   final TextInputType? textInputType;
+  final GlobalKey<FormState> formKey;
   final TextEditingController? controller;
-  final FocusNode? focusNode;
+  final FocusNode focusNode;
 
   CustomTextField({
     super.key,
@@ -31,11 +32,15 @@ class CustomTextField extends StatefulWidget {
     this.textStyle,
     this.textInputType,
     this.controller,
-    this.focusNode,
+   required this.focusNode,
     this.onFocusout,
     this.margin,
+    required this.formKey,
   });
 
+
+    /// 텍스트 필드의 Form의 유휴성을 검사하고 통과한다면 저장합니다.
+    /// 저장하고나면 validator가 null이 아니라면 실행됩니다.
   static void submit(GlobalKey<FormState> key) {
     final formKeyState = key.currentState!;
     if (formKeyState.validate()) {
@@ -50,8 +55,8 @@ class CustomTextField extends StatefulWidget {
 class _CustomTextFieldState extends State<CustomTextField> {
   @override
   void initState() {
-    widget.focusNode?.addListener(() {
-      if (widget.focusNode!.hasFocus) {
+    widget.focusNode.addListener(() {
+      if (widget.focusNode.hasFocus) {
         return;
       } else {
         widget.onFocusout?.call();
@@ -67,52 +72,55 @@ class _CustomTextFieldState extends State<CustomTextField> {
       width: widget.width,
       height: widget.height,
       margin: widget.margin,
-      child: TextFormField(
-        focusNode: widget.focusNode,
-        controller: widget.controller,
-        keyboardType: widget.textInputType,
-        onFieldSubmitted: widget.onFieldSubmitted,
-        onSaved: widget.onSaved,
-        validator: widget.validator,
-        cursorColor: palette.cardColorYelGreen,
-        textAlign: TextAlign.center,
-        textAlignVertical: TextAlignVertical.top,
-        style: widget.textStyle,
-        decoration: InputDecoration(
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(14),
-            borderSide: BorderSide(
-              color: widget.isValid
-                  ? palette.cardColorYelGreen
-                  : palette.cardColorYelGreen,
-              width: 1,
+      child: Form(
+        key: widget.formKey,
+        child: TextFormField(
+          focusNode: widget.focusNode,
+          controller: widget.controller,
+          keyboardType: widget.textInputType,
+          onFieldSubmitted: widget.onFieldSubmitted,
+          onSaved: widget.onSaved,
+          validator: widget.validator,
+          cursorColor: palette.cardColorYelGreen,
+          textAlign: TextAlign.center,
+          textAlignVertical: TextAlignVertical.top,
+          style: widget.textStyle,
+          decoration: InputDecoration(
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(14),
+              borderSide: BorderSide(
+                color: widget.isValid
+                    ? palette.cardColorYelGreen
+                    : palette.cardColorYelGreen,
+                width: 1,
+              ),
             ),
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(14),
-            borderSide: BorderSide(
-              color: widget.isValid
-                  ? palette.cardColorYelGreen
-                  : palette.bgFadeColor,
-              width: 1,
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(14),
+              borderSide: BorderSide(
+                color: widget.isValid
+                    ? palette.cardColorYelGreen
+                    : palette.bgFadeColor,
+                width: 1,
+              ),
             ),
-          ),
-          errorBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(14),
-            borderSide: const BorderSide(
-              color: Colors.red,
-              width: 1,
+            errorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(14),
+              borderSide: const BorderSide(
+                color: Colors.red,
+                width: 1,
+              ),
             ),
-          ),
-          focusedErrorBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(14),
-            borderSide: const BorderSide(
-              color: Colors.red,
-              width: 1,
+            focusedErrorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(14),
+              borderSide: const BorderSide(
+                color: Colors.red,
+                width: 1,
+              ),
             ),
+            hintText: widget.hintText,
+            hintStyle: widget.textStyle,
           ),
-          hintText: widget.hintText,
-          hintStyle: widget.textStyle,
         ),
       ),
     );

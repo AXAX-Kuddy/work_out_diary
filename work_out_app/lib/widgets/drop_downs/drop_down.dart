@@ -9,7 +9,11 @@ class CustomDropDownButton extends StatefulWidget {
   final TextStyle? itemTextStyle;
   final List<String> itemList;
   final dynamic inputValue;
+
+  /// 값 선택 유무
   final VoidCallback? selectChecker;
+
+  /// 선택한 값 반환
   final Function(String)? returnableChecker;
   final bool enabledValid;
   final String? nowValue;
@@ -82,9 +86,13 @@ class _CustomDropDownButtonState extends State<CustomDropDownButton> {
           value: selectedValue,
           onChanged: (value) {
             selectedValue = value;
+
+            /// 값을 선택했는지 유무 체크
             if (widget.selectChecker != null) {
               widget.selectChecker!();
             }
+
+            /// 선택한 값을 반환함
             if (widget.returnableChecker != null) {
               widget.returnableChecker!(value!);
             }

@@ -20,7 +20,7 @@ class InputField {
     double? childrenHeight,
     required VoidCallback onTapUp,
     bool backButton = true,
-
+    Widget? backTo,
   }) {
     return [
       Row(
@@ -63,10 +63,12 @@ class InputField {
                         right: 10,
                       ),
                       onTapUpFunction: () {
+                        assert(!(backButton && backTo == null),
+                            '뒤로가기 버튼이 true라면, 반드시 backTo가 null이 아니여야 함');
                         SlidePage.removeUntiAndGoto(
                           context: context,
                           animationDirection: AnimationDirection.rightToLeft,
-                          page: const NameInput(),
+                          page: backButton ? backTo! : const NameInput(),
                         );
                       },
                       child: const Row(

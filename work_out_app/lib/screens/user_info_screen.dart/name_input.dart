@@ -24,7 +24,6 @@ class _NameInputState extends State<NameInput> {
   bool nameValid = false;
 
   String? _name;
-
   @override
   void dispose() {
     controller.dispose();
@@ -38,62 +37,74 @@ class _NameInputState extends State<NameInput> {
       children: InputField.mainInput(
         backButton: false,
         context: context,
-        title: "환영합니다! 당신의 이름을 알려주세요!",
+        title: "반갑습니다! 당신의 이름을 알려주세요!",
         children: [
-          Form(
-            key: nameKey,
-            child: CustomTextField(
-              controller: controller,
-              focusNode: focusNode,
-              onFocusout: () {
-                CustomTextField.submit(nameKey);
-              },
-              textInputType: TextInputType.name,
-              width: 300,
-              hintText: "이름을 입력해주세요",
-              textStyle: const TextStyle(
-                color: palette.cardColorWhite,
-                fontSize: 15,
-              ),
-              isValid: nameValid,
-              validator: (value) {
-                RegExp regex = RegExp(r'^[ㄱ-ㅎ가-힣a-zA-Z0-9]+$');
-                if (value!.isEmpty) {
-                  setState(() {
-                    nameValid = false;
-                  });
-                  return "이름을 입력해주세요!";
-                } else if (value.length > 10) {
-                  setState(() {
-                    nameValid = false;
-                  });
-                  return "이름은 10글자 이하로 해주세요!";
-                } else if (!regex.hasMatch(value)) {
-                  setState(() {});
-                  return "특수문자나 띄어쓰기를 제외해야해요!";
-                } else {
-                  setState(() {
-                    nameValid = true;
-                  });
-                  return null;
-                }
-              },
-              onSaved: (String? newValue) {
-                setState(() {
-                  _name = newValue;
-                });
-              },
-              onFieldSubmitted: (String? value) {
-                CustomTextField.submit(nameKey);
-              },
+          CustomTextField(
+            formKey: nameKey,
+            controller: controller,
+            focusNode: focusNode,
+            onFocusout: () {
+              CustomTextField.submit(nameKey);
+            },
+            textInputType: TextInputType.name,
+            width: 300,
+            hintText: "이름을 입력해주세요",
+            textStyle: const TextStyle(
+              color: palette.cardColorWhite,
+              fontSize: 15,
             ),
+            isValid: nameValid,
+            validator: (value) {
+              /// 정규식
+              RegExp regex = RegExp(r'^[ㄱ-ㅎ가-힣a-zA-Z0-9]+$');
+
+              /// 값이 비어있다면
+              if (value!.isEmpty) {
+                setState(() {
+                  nameValid = false;
+                });
+                return "이름을 입력해주세요!";
+
+                ///이름이 10글자를 초과했다면
+              } else if (value.length > 10) {
+                setState(() {
+                  nameValid = false;
+                });
+                return "이름은 10글자 이하로 해주세요!";
+
+                ///글자 이외에 다른 문자가 들어갈 경우
+              } else if (!regex.hasMatch(value)) {
+                setState(() {});
+                return "특수문자나 띄어쓰기를 제외해야해요!";
+              } else {
+                /// 모든 예외를 통과했다면
+                setState(() {
+                  nameValid = true;
+                });
+                return null;
+              }
+            },
+            onSaved: (String? newValue) {
+              setState(() {
+                _name = newValue;
+              });
+            },
+            onFieldSubmitted: (String? value) {
+              CustomTextField.submit(nameKey);
+            },
           ),
         ],
         onTapUp: () {
-          SlidePage.goto(
-            context: context,
-            page: const AgeInput(),
-          );
+          /// 다음페이지로 넘어가기 전 검사
+          CustomTextField.submit(nameKey);
+
+          /// 모든 입력을 완료했을 때
+          if (nameValid) {
+            SlidePage.goto(
+              context: context,
+              page: const AgeInput(),
+            );
+          }
         },
       ),
     );
