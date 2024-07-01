@@ -1,5 +1,4 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
@@ -26,9 +25,13 @@ class _AgeInputState extends State<AgeInput> {
   late Function({required UserInfoField userInfoField, required dynamic value})
       setUserInfo;
 
-  final TextEditingController controller = TextEditingController();
+  final TextEditingController ageController = TextEditingController();
   final GlobalKey<FormState> ageKey = GlobalKey<FormState>();
-  final FocusNode focusNode = FocusNode();
+  final FocusNode ageFocusNode = FocusNode();
+
+  final TextEditingController weightController = TextEditingController();
+  final GlobalKey<FormState> weightKey = GlobalKey<FormState>();
+  final FocusNode weightFocusNode = FocusNode();
 
   ///현재 선택된 드롭다운 아이템 변수
   ///페이지를 불러올 때 값이 있다면
@@ -36,9 +39,11 @@ class _AgeInputState extends State<AgeInput> {
 
   bool isFemale = false;
   int? userAge;
+  double? weight;
 
   bool ageValid = false;
   bool genderValid = false;
+  bool weightValid = false;
 
   @override
   void initState() {
@@ -47,7 +52,7 @@ class _AgeInputState extends State<AgeInput> {
 
     /// 사용자가 나이 및 성별을 기입했는지 여부
     if (userInfo[UserInfoField.age] != 999) {
-      controller.text = userInfo[UserInfoField.age].toString();
+      ageController.text = userInfo[UserInfoField.age].toString();
       setState(() {
         genderValid = true;
         ageValid = true;
@@ -83,8 +88,8 @@ class _AgeInputState extends State<AgeInput> {
           Expanded(
             child: CustomTextField(
               formKey: ageKey,
-              focusNode: focusNode,
-              controller: controller,
+              focusNode: ageFocusNode,
+              controller: ageController,
               margin: const EdgeInsets.only(
                 right: 10,
               ),
@@ -149,9 +154,6 @@ class _AgeInputState extends State<AgeInput> {
           ),
           Expanded(
             child: CustomDropDownButton(
-              margin: const EdgeInsets.only(
-                left: 10,
-              ),
               hint: "성별",
               textStyle: const TextStyle(
                 color: palette.cardColorWhite,
@@ -182,6 +184,16 @@ class _AgeInputState extends State<AgeInput> {
               },
             ),
           ),
+          Expanded(
+            child: CustomTextField(
+              margin: const EdgeInsets.only(
+                left: 10,
+              ),
+              isValid: weightValid,
+              focusNode: weightFocusNode,
+              formKey: weightKey,
+            ),
+          ),
         ],
         onTapUp: () {
           /// 다음페이지로 넘어가기 전 검사
@@ -198,7 +210,6 @@ class _AgeInputState extends State<AgeInput> {
               userInfoField: UserInfoField.isFemale,
               value: isFemale,
             );
-            print(userInfo[UserInfoField.isFemale]);
 
             SlidePage.goto(
               context: context,

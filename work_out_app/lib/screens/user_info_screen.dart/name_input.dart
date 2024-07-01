@@ -119,6 +119,7 @@ class _NameInputState extends State<NameInput> {
                 _name = value;
                 nameValid = true;
               });
+              
               return null;
             },
             onSaved: (String? newValue) {

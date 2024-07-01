@@ -16,10 +16,51 @@ enum UserInfoField {
   isEdit,
 }
 
+extension UserInfoFieldExtention on UserInfoField {
+  String get key {
+    switch (this) {
+      case UserInfoField.userName:
+        return 'userName';
+      case UserInfoField.userSBD:
+        return 'userSBD';
+      case UserInfoField.dotsPoint:
+        return 'dotsPoint';
+      case UserInfoField.age:
+        return 'age';
+      case UserInfoField.weight:
+        return 'weight';
+      case UserInfoField.isFemale:
+        return 'isFemale';
+      case UserInfoField.isEdit:
+        return 'isEdit';
+      default:
+        return '';
+    }
+  }
+}
+
 enum SBDkeys {
   squat,
   benchPress,
-  deadlift,
+  deadLift,
+}
+
+extension SBDKeysExtention on SBDkeys {
+  String get key {
+    switch (this) {
+      case SBDkeys.squat:
+        return "squat";
+
+      case SBDkeys.benchPress:
+        return "benchPress";
+
+      case SBDkeys.deadLift:
+        return "deadLift";
+
+      default:
+        return "";
+    }
+  }
 }
 
 enum WorkoutListKeys {

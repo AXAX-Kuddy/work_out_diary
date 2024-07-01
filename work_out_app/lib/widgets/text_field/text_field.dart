@@ -13,6 +13,7 @@ class CustomTextField extends StatefulWidget {
   final VoidCallback? onFocusout;
   final String? hintText;
   final TextStyle? textStyle;
+  final TextStyle? hintStyle;
   final double? width;
   final double? height;
   final EdgeInsets? margin;
@@ -32,17 +33,17 @@ class CustomTextField extends StatefulWidget {
     this.onFieldSubmitted,
     this.onSaved,
     this.textStyle,
+    this.hintStyle,
     this.textInputType,
     this.controller,
-   required this.focusNode,
+    required this.focusNode,
     this.onFocusout,
     this.margin,
     required this.formKey,
   });
 
-
-    /// 텍스트 필드의 Form의 유휴성을 검사하고 통과한다면 저장합니다.
-    /// 저장하고나면 validator가 null이 아니라면 실행됩니다.
+  /// 텍스트 필드의 Form의 유휴성을 검사하고 통과한다면 저장합니다.
+  /// 저장하고나면 validator가 null이 아니라면 실행됩니다.
   static void submit(GlobalKey<FormState> key) {
     final formKeyState = key.currentState!;
     if (formKeyState.validate()) {

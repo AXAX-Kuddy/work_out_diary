@@ -13,7 +13,7 @@ class ProfileCard extends StatelessWidget {
       provider.MainStore.userInfo[UserInfoField.userSBD][SBDkeys.benchPress];
 
   final double dl =
-      provider.MainStore.userInfo[UserInfoField.userSBD][SBDkeys.deadlift];
+      provider.MainStore.userInfo[UserInfoField.userSBD][SBDkeys.deadLift];
 
   final double dots = provider.MainStore.userInfo[UserInfoField.dotsPoint];
 

@@ -13,10 +13,10 @@ typedef UserInfo = Map<UserInfoField, dynamic>;
 class MainStore {
   static UserInfo userInfo = {
     UserInfoField.userName: DevelopName.devName.key,
-    UserInfoField.userSBD: {
+    UserInfoField.userSBD: <SBDkeys, double>{
       SBDkeys.squat: 0.0,
       SBDkeys.benchPress: 0.0,
-      SBDkeys.deadlift: 0.0,
+      SBDkeys.deadLift: 0.0,
     },
     UserInfoField.dotsPoint: 0.0,
     UserInfoField.age: 999,
@@ -29,15 +29,86 @@ class MainStore {
 class MainStoreProvider extends ChangeNotifier {
   UserInfo get userInfo => MainStore.userInfo;
 
+  Map<SBDkeys, double> get sbd => userInfo[UserInfoField.userSBD];
+  double get squatWeight => userInfo[UserInfoField.userSBD][SBDkeys.squat];
+  double get benchWeight => userInfo[UserInfoField.userSBD][SBDkeys.benchPress];
+  double get deadWeight => userInfo[UserInfoField.userSBD][SBDkeys.deadLift];
+
   void setUserInfo({
     required UserInfoField userInfoField,
     required dynamic value,
   }) {
+    /// 유저명 타입 불일치 검사
+    if (userInfoField == UserInfoField.userName) {
+      if (value is! String) {
+        throw ArgumentError(
+          "userInfoField가 UserInfoField.userName일 경우, 반드시 value는 String타입이여야 함.",
+          "타입 불일치",
+        );
+      }
+    }
+
+    /// 유저 SBD기록 타입 불일치 검사
+    if (userInfoField == UserInfoField.userSBD) {
+      throw ArgumentError(
+        "userInfoField가 UserInfoField.userSBD일 경우, 반드시 MainStoreProvider의 setSBD 메서드로 SBD값을 수정해야함.",
+        "틀린 사용",
+      );
+    }
+
+    /// 유저 닷츠 포인트 타입 불일치 검사
+    if (userInfoField == UserInfoField.dotsPoint) {
+      if (value is! double) {
+        throw ArgumentError(
+          "userInfoField가 UserInfoField.dotsPoint일 경우, 반드시 value는 double타입이여야 함.",
+          "타입 불일치",
+        );
+      }
+    }
+
+    /// 유저 나이 타입 불일치 검사
+    if (userInfoField == UserInfoField.age) {
+      if (value is! int) {
+        throw ArgumentError(
+          "userInfoField가 UserInfoField.age일 경우, 반드시 value는 int타입이여야 함.",
+          "타입 불일치",
+        );
+      }
+    }
+
+    /// 유저 성별 타입 불일치 검사
+    if (userInfoField == UserInfoField.isFemale) {
+      if (value is! bool) {
+        throw ArgumentError(
+          "userInfoField가 UserInfoField.isFemale일 경우, 반드시 value는 bool타입이여야 함.",
+          "타입 불일치",
+        );
+      }
+    }
+
+    /// 유저 성별 타입 불일치 검사
+    if (userInfoField == UserInfoField.isEdit) {
+      if (value is! bool) {
+        throw ArgumentError(
+          "userInfoField가 UserInfoField.isEdit일 경우, 반드시 value는 bool타입이여야 함.",
+          "타입 불일치",
+        );
+      }
+    }
+
     MainStore.userInfo[userInfoField] = value;
   }
 
   UserInfo getUserInfo() {
     return MainStore.userInfo;
+  }
+
+  /// 사용자 SBD 기록 설정
+  void setSBD({
+    required SBDkeys key,
+    required double value,
+  }) {
+    sbd[key] = value;
   }
 
   static double dotsCal({
@@ -74,17 +145,72 @@ class MainStoreProvider extends ChangeNotifier {
     var score = result.toStringAsFixed(2);
     return double.parse(score);
   }
+
+  /// 기기에 userInfo 저장
+  Future<void> savePreferences() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    /// 유저 이름
+    prefs.setString(
+      UserInfoField.userName.key,
+      userInfo[UserInfoField.userName],
+    );
+
+    /// 유저 SBD 기록
+    prefs.setDouble(
+      SBDkeys.squat.key,
+      squatWeight,
+    );
+    prefs.setDouble(
+      SBDkeys.benchPress.key,
+      benchWeight,
+    );
+    prefs.setDouble(
+      SBDkeys.deadLift.key,
+      deadWeight,
+    );
+
+    /// 닷츠 포인트
+    prefs.setDouble(
+      UserInfoField.dotsPoint.key,
+      userInfo[UserInfoField.dotsPoint],
+    );
+
+    /// 유저 나이
+    prefs.setInt(
+      UserInfoField.age.key,
+      userInfo[UserInfoField.age],
+    );
+
+    /// 몸무게
+    prefs.setDouble(
+      UserInfoField.weight.key,
+      userInfo[UserInfoField.weight],
+    );
+
+    /// 성별
+    prefs.setBool(
+      UserInfoField.isFemale.key,
+      userInfo[UserInfoField.isFemale],
+    );
+
+    /// 유저 정보 수정 여부
+    prefs.setBool(
+      UserInfoField.isEdit.key,
+      userInfo[UserInfoField.isEdit],
+    );
+  }
 }
 
 /// 운동 종목 구성
 class WorkoutMenu {
-  ///운동 이름
+  /// 운동 이름
   final String name;
 
   /// 메모
   final String? memo;
 
-  ///e1rm표시유무
+  /// e1rm표시유무
   final bool showE1rm;
 
   WorkoutMenu({
@@ -117,14 +243,14 @@ class WorkoutListStore extends ChangeNotifier {
     WorkoutListKeys.triceps: [],
   };
 
-  ///운동 목록 초기화
+  /// 운동 목록 초기화
   void initializeWorkouts() {
     for (var workout in workouts.values) {
       workout.clear();
     }
   }
 
-  ///특정 부위에 해당하는 운동 목록 리스트를 스토어에 삽입함
+  /// 특정 부위에 해당하는 운동 목록 리스트를 스토어에 삽입함
   Future<void> categorizeOfPart(List<WorkoutMenuData> workoutData) async {
     for (var data in workoutData) {
       if (workouts.containsKey(data.part)) {

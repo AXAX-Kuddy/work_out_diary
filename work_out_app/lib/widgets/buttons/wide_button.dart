@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:work_out_app/widgets/box_widget/widget_box.dart';
+import 'package:work_out_app/util/palette.dart' as palette;
 
 class WideButton extends StatefulWidget {
   final Color unTapColor;
@@ -45,6 +46,8 @@ class _WideButtonState extends State<WideButton> {
     btnColor = widget.unTapColor;
     buttonTest = widget.buttonTest;
     currentBoxShadow = widget.boxShadow;
+
+    super.initState();
   }
 
   @override
@@ -88,4 +91,21 @@ class _WideButtonState extends State<WideButton> {
       ),
     );
   }
+}
+
+class WideButtonBlack extends WideButton {
+  const WideButtonBlack({
+    super.key,
+    super.width,
+    super.height,
+    super.margin,
+    super.child,
+    super.onTapDownFunction,
+    super.onTapUpFunction,
+    super.buttonTest = false,
+    super.boxShadow,
+    super.tapColor = palette.bgColor,
+    super.unTapColor = palette.bgFadeColor,
+    super.tapBorderColor = palette.cardColorYelGreen,
+  });
 }
