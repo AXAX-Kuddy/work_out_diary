@@ -58,22 +58,15 @@ class CancelAndEnterButtonWithIcon extends BaseCancelAndEnterButton {
 
   const CancelAndEnterButtonWithIcon({
     super.key,
-    mainAxisAlignment = MainAxisAlignment.spaceEvenly,
-    double? spaceWidth,
-    required onCancelTap,
+    super.mainAxisAlignment,
+    super.spaceWidth,
+    required super.onCancelTap,
     required this.cancelIcon,
-    required cancelLabel,
-    required onEnterTap,
+    required super.cancelLabel,
+    required super.onEnterTap,
     required this.enterIcon,
-    required enterLabel,
-  }) : super(
-          mainAxisAlignment: mainAxisAlignment,
-          spaceWidth: spaceWidth,
-          onCancelTap: onCancelTap,
-          cancelLabel: cancelLabel,
-          onEnterTap: onEnterTap,
-          enterLabel: enterLabel,
-        );
+    required super.enterLabel,
+  });
 
   @override
   Widget build(BuildContext context) {

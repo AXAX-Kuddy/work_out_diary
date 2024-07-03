@@ -4,8 +4,10 @@ import 'package:line_icons/line_icons.dart';
 import 'package:provider/provider.dart';
 import 'package:work_out_app/screens/user_info_screen.dart/name_input.dart';
 import 'package:work_out_app/util/keys.dart';
+import 'package:work_out_app/widgets/buttons/cancel_and_enter_buttons.dart';
 import 'package:work_out_app/widgets/buttons/wide_button.dart';
 import 'package:work_out_app/util/palette.dart' as palette;
+import 'package:work_out_app/widgets/dialog/custom_dialog.dart';
 import 'package:work_out_app/widgets/router/main_screen_router.dart';
 import 'package:work_out_app/provider/store.dart' as provider;
 import 'package:work_out_app/widgets/router/sliding_builder.dart';
@@ -171,13 +173,64 @@ class InputField {
                 children: [
                   TextButton(
                     onPressed: () {
-                      Provider.of<provider.MainStoreProvider>(context,
-                              listen: false)
-                          .setUserInfo(
-                        userInfoField: UserInfoField.isEdit,
-                        value: true,
-                      );
-                      MainScreenRouter.removeUntilAndGo(context);
+                      showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return CustomDialog(
+                              children: [
+                                const Text(
+                                  "해당 입력 정보까지만 입력하고 마칠까요?",
+                                  style: TextStyle(
+                                    color: palette.cardColorWhite,
+                                  ),
+                                ),
+                                const SizedBox(
+                                  height: 20,
+                                ),
+                                CancelAndEnterButtonWithIcon(
+                                  onCancelTap: () {
+                                    Navigator.pop(context);
+                                  },
+                                  cancelIcon: const Icon(
+                                    Icons.close,
+                                    color: palette.colorRed,
+                                  ),
+                                  cancelLabel: const Text(
+                                    "취소",
+                                    style: TextStyle(
+                                      color: palette.colorRed,
+                                    ),
+                                  ),
+                                  onEnterTap: () async {
+                                    Provider.of<provider.MainStoreProvider>(
+                                            context,
+                                            listen: false)
+                                        .setUserInfo(
+                                      userInfoField: UserInfoField.isEdit,
+                                      value: true,
+                                    );
+                                    await Provider.of<
+                                                provider.MainStoreProvider>(
+                                            context,
+                                            listen: false)
+                                        .savePreferences();
+
+                                    MainScreenRouter.removeUntilAndGo(context);
+                                  },
+                                  enterIcon: const LineIcon(
+                                    LineIcons.check,
+                                    color: palette.cardColorYelGreen,
+                                  ),
+                                  enterLabel: const Text(
+                                    "확인",
+                                    style: TextStyle(
+                                      color: palette.cardColorYelGreen,
+                                    ),
+                                  ),
+                                )
+                              ],
+                            );
+                          });
                     },
                     child: Row(
                       children: [

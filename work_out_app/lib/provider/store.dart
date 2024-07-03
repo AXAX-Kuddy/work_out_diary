@@ -200,6 +200,42 @@ class MainStoreProvider extends ChangeNotifier {
       userInfo[UserInfoField.isEdit],
     );
   }
+
+  /// 기기에 저장된 userInfo 불러오기
+  Future<void> loadPreferences() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    /// 유저 이름
+    userInfo[UserInfoField.userName] =
+        prefs.getString(UserInfoField.userName.key) ?? DevelopName.devName.key;
+
+    /// 유저 SBD 기록
+    userInfo[UserInfoField.userSBD][SBDkeys.squat] =
+        prefs.getDouble(SBDkeys.squat.key) ?? 0.0;
+    userInfo[UserInfoField.userSBD][SBDkeys.benchPress] =
+        prefs.getDouble(SBDkeys.benchPress.key) ?? 0.0;
+    userInfo[UserInfoField.userSBD][SBDkeys.deadLift] =
+        prefs.getDouble(SBDkeys.deadLift.key) ?? 0.0;
+
+    /// 닷츠 포인트
+    userInfo[UserInfoField.dotsPoint] =
+        prefs.getDouble(UserInfoField.dotsPoint.key) ?? 0.0;
+
+    /// 나이
+    userInfo[UserInfoField.age] = prefs.getInt(UserInfoField.age.key) ?? 0;
+
+    /// 몸무게
+    userInfo[UserInfoField.weight] =
+        prefs.getDouble(UserInfoField.weight.key) ?? 0.0;
+
+    /// 성별
+    userInfo[UserInfoField.isFemale] =
+        prefs.getBool(UserInfoField.isFemale.key) ?? false;
+
+    /// userInfo 수정 여부
+    userInfo[UserInfoField.isEdit] =
+        prefs.getBool(UserInfoField.isEdit.key) ?? false;
+  }
 }
 
 /// 운동 종목 구성
