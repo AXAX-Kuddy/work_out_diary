@@ -99,7 +99,7 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     mainStoreProvider = context.read<provider.MainStoreProvider>();
-    mainStoreProvider.loadPreferences();
+    mainStoreProvider.resetPreferences();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       bool isEdit = mainStoreProvider.getUserInfo()[UserInfoField.isEdit];

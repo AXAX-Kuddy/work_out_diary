@@ -24,6 +24,8 @@ class _SBDInputState extends State<SBDInput> {
   late Function({required UserInfoField userInfoField, required dynamic value})
       setUserInfo;
   late Function({required SBDkeys key, required double value}) setSBD;
+  late VoidCallback setDots;
+  late Future<void> Function() savePreferences;
 
   final FocusNode squatFocusNode = FocusNode();
   final FocusNode benchFocusNode = FocusNode();
@@ -41,6 +43,8 @@ class _SBDInputState extends State<SBDInput> {
   double? benchWeight;
   double? deadWeight;
 
+  double? dotsPoint;
+
   /// valid를 매개변수로 받은 값으로 변경합니다.
   /// 하위 클래스에서 valid를 변경할 수 없는 경우에 사용합니다.
   void squatValidChanger({required bool newValue, required double? weight}) {
@@ -51,6 +55,8 @@ class _SBDInputState extends State<SBDInput> {
     if (newValue) {
       squatWeight = weight;
       debugPrint("$squatWeight");
+
+      updateDots();
     }
   }
 
@@ -64,11 +70,14 @@ class _SBDInputState extends State<SBDInput> {
     if (newValue) {
       benchWeight = weight;
       debugPrint("$benchWeight");
+
+      updateDots();
     }
   }
 
   /// valid를 매개변수로 받은 값으로 변경합니다.
   /// 하위 클래스에서 valid를 변경할 수 없는 경우에 사용합니다.
+
   void deadValidChanger({required bool newValue, required double? weight}) {
     setState(() {
       deadValid = newValue;
@@ -77,7 +86,17 @@ class _SBDInputState extends State<SBDInput> {
     if (newValue) {
       deadWeight = weight;
       debugPrint("$deadWeight");
+
+      updateDots();
     }
+  }
+
+  void updateDots() {
+    setDots();
+    setState(() {
+      dotsPoint = userInfo[UserInfoField.dotsPoint];
+      debugPrint(dotsPoint.toString());
+    });
   }
 
   @override
@@ -85,6 +104,14 @@ class _SBDInputState extends State<SBDInput> {
     userInfo = context.read<provider.MainStoreProvider>().userInfo;
     setUserInfo = context.read<provider.MainStoreProvider>().setUserInfo;
     setSBD = context.read<provider.MainStoreProvider>().setSBD;
+    savePreferences =
+        context.read<provider.MainStoreProvider>().savePreferences;
+    setDots = context.read<provider.MainStoreProvider>().setDots;
+
+
+
+    
+
     super.initState();
   }
 
@@ -136,7 +163,7 @@ class _SBDInputState extends State<SBDInput> {
             ),
           ),
         ],
-        onTapUp: () {
+        onTapUp: () async {
           CustomTextField.submit(squatKey);
           CustomTextField.submit(benchKey);
           CustomTextField.submit(deadKey);
@@ -161,6 +188,8 @@ class _SBDInputState extends State<SBDInput> {
               userInfoField: UserInfoField.isEdit,
               value: true,
             );
+
+            await savePreferences();
 
             MainScreenRouter.removeUntilAndGo(context);
           }

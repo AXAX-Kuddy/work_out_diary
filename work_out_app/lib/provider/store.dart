@@ -20,7 +20,7 @@ class MainStore {
     },
     UserInfoField.dotsPoint: 0.0,
     UserInfoField.age: 999,
-    UserInfoField.weight: 100.0,
+    UserInfoField.weight: 999.0,
     UserInfoField.isFemale: false,
     UserInfoField.isEdit: false,
   };
@@ -97,6 +97,7 @@ class MainStoreProvider extends ChangeNotifier {
     }
 
     MainStore.userInfo[userInfoField] = value;
+    debugPrint(MainStore.userInfo[userInfoField].toString());
   }
 
   UserInfo getUserInfo() {
@@ -144,6 +145,17 @@ class MainStoreProvider extends ChangeNotifier {
     var result = (500 / denominator) * weightLifted;
     var score = result.toStringAsFixed(2);
     return double.parse(score);
+  }
+
+  void setDots() {
+    num weightLifted = squatWeight + benchWeight + deadWeight;
+
+    double result = dotsCal(
+        bodyWeight: userInfo[UserInfoField.weight],
+        weightLifted: weightLifted,
+        isFemale: userInfo[UserInfoField.isFemale]);
+
+    userInfo[UserInfoField.dotsPoint] = result;
   }
 
   /// 기기에 userInfo 저장
@@ -235,6 +247,61 @@ class MainStoreProvider extends ChangeNotifier {
     /// userInfo 수정 여부
     userInfo[UserInfoField.isEdit] =
         prefs.getBool(UserInfoField.isEdit.key) ?? false;
+  }
+
+  /// 기기에 저장된 userInfo 불러오기
+  Future<void> resetPreferences() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    /// 유저 이름
+    prefs.setString(
+      UserInfoField.userName.key,
+      DevelopName.devName.key,
+    );
+
+    /// 유저 SBD 기록
+    prefs.setDouble(
+      SBDkeys.squat.key,
+      0.0,
+    );
+    prefs.setDouble(
+      SBDkeys.benchPress.key,
+      0.0,
+    );
+    prefs.setDouble(
+      SBDkeys.deadLift.key,
+      0.0,
+    );
+
+    /// 닷츠 포인트
+    prefs.setDouble(
+      UserInfoField.dotsPoint.key,
+      0.0,
+    );
+
+    /// 유저 나이
+    prefs.setInt(
+      UserInfoField.age.key,
+      0,
+    );
+
+    /// 몸무게
+    prefs.setDouble(
+      UserInfoField.weight.key,
+      0.0,
+    );
+
+    /// 성별
+    prefs.setBool(
+      UserInfoField.isFemale.key,
+      false,
+    );
+
+    /// 유저 정보 수정 여부
+    prefs.setBool(
+      UserInfoField.isEdit.key,
+      false,
+    );
   }
 }
 

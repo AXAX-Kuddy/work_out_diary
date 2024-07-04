@@ -4,8 +4,14 @@ import 'package:work_out_app/widgets/box_widget/widget_box.dart';
 import 'package:work_out_app/provider/store.dart' as provider;
 import 'package:work_out_app/util/keys.dart';
 
-class ProfileCard extends StatelessWidget {
-  ProfileCard({super.key});
+class ProfileCard extends StatefulWidget {
+  const ProfileCard({super.key});
+
+  @override
+  State<ProfileCard> createState() => _ProfileCardState();
+}
+
+class _ProfileCardState extends State<ProfileCard> {
   final double squat =
       provider.MainStore.userInfo[UserInfoField.userSBD][SBDkeys.squat];
 
@@ -46,6 +52,11 @@ class ProfileCard extends StatelessWidget {
     } else {
       return 0;
     }
+  }
+
+  @override
+  void initState() {
+    super.initState();
   }
 
   @override

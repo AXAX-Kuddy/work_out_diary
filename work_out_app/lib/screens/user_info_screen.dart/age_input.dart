@@ -51,11 +51,15 @@ class _AgeInputState extends State<AgeInput> {
     setUserInfo = context.read<provider.MainStoreProvider>().setUserInfo;
 
     /// 사용자가 나이 및 성별을 기입했는지 여부
-    if (userInfo[UserInfoField.age] != 999) {
+    if (userInfo[UserInfoField.age] != 999 &&
+        userInfo[UserInfoField.weight] != 999.0) {
       ageController.text = userInfo[UserInfoField.age].toString();
+      weightController.text = userInfo[UserInfoField.weight].toString();
+      print(weightController.text);
       setState(() {
         genderValid = true;
         ageValid = true;
+        weightValid = true;
       });
 
       /// 유저 성별 파악
@@ -82,9 +86,11 @@ class _AgeInputState extends State<AgeInput> {
       children: InputField.mainInput(
         context: context,
         backTo: const NameInput(),
-        title: "나이와 성별도 알고싶어요!",
+        title: "조금 더 세부적인 정보도 알고 싶어요!",
+        subtitle: "몸무게 단위는 kg이에요.",
         childrenWidth: 300,
         children: [
+          /// 나이 입력란
           Expanded(
             child: CustomTextField(
               formKey: ageKey,
@@ -140,18 +146,13 @@ class _AgeInputState extends State<AgeInput> {
               onFocusout: () {
                 CustomTextField.submit(ageKey);
               },
-              onSaved: (String? newValue) {
-                if (int.tryParse(newValue!) != null) {
-                  setState(() {
-                    userAge = int.parse(newValue);
-                  });
-                }
-              },
               onFieldSubmitted: (value) {
                 CustomTextField.submit(ageKey);
               },
             ),
           ),
+
+          /// 성별 입력란
           Expanded(
             child: CustomDropDownButton(
               hint: "성별",
@@ -184,26 +185,97 @@ class _AgeInputState extends State<AgeInput> {
               },
             ),
           ),
+
+          /// 몸무게 입력란
           Expanded(
             child: CustomTextField(
               margin: const EdgeInsets.only(
                 left: 10,
               ),
+              hintText: "체중",
+              textStyle: const TextStyle(
+                color: palette.cardColorWhite,
+              ),
+              textInputType: TextInputType.number,
               isValid: weightValid,
               focusNode: weightFocusNode,
               formKey: weightKey,
+              controller: weightController,
+              validator: (String? value) {
+                /// 값이 null이 아닐 때
+                if (value != null) {
+                  /// 값이 비어있다면
+                  if (value.isEmpty) {
+                    setState(() {
+                      weightValid = false;
+                      weight = null;
+                    });
+                    return "값이 비었어요!";
+                  }
+
+                  /// 값이 숫자가 아니라면
+                  if (double.tryParse(value) == null) {
+                    setState(() {
+                      weightValid = false;
+                      weight = null;
+                    });
+                    return "숫자만 입력해주세요!";
+                  }
+
+                  /// 값이 숫자일 때
+                  if (double.tryParse(value) != null) {
+                    /// 비정상적인 값을 입력했을 경우
+                    if (double.parse(value) >= 635 || double.parse(value) < 0) {
+                      setState(() {
+                        weightValid = false;
+                        weight = null;
+                      });
+                      return "장난금지!";
+                    }
+
+                    /// 값이 0일 경우
+                    if (double.parse(value) == 0) {
+                      setState(() {
+                        weightValid = false;
+                        weight = null;
+                      });
+                      return "0 이상으로 입력해주세요!";
+                    }
+                  }
+                }
+
+                /// 모든 예외를 통과했다면
+                setState(() {
+                  weightValid = true;
+                  weight = double.parse(value!);
+                });
+                print(weight);
+                return null;
+              },
+              onFocusout: () {
+                CustomTextField.submit(weightKey);
+              },
+              onFieldSubmitted: (String value) {
+                CustomTextField.submit(weightKey);
+              },
             ),
           ),
         ],
         onTapUp: () {
           /// 다음페이지로 넘어가기 전 검사
           CustomTextField.submit(ageKey);
+          CustomTextField.submit(weightKey);
 
           ///모든 입력을 완료했을 때
-          if (ageValid && genderValid) {
+          if (ageValid && genderValid && weightValid) {
             setUserInfo(
               userInfoField: UserInfoField.age,
               value: userAge,
+            );
+
+            setUserInfo(
+              userInfoField: UserInfoField.weight,
+              value: weight,
             );
 
             setUserInfo(

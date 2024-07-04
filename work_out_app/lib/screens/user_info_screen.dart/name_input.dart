@@ -30,7 +30,7 @@ class _NameInputState extends State<NameInput> {
   final FocusNode focusNode = FocusNode();
   bool nameValid = false;
 
-  String? _name;
+  String? name;
 
   @override
   void initState() {
@@ -65,11 +65,9 @@ class _NameInputState extends State<NameInput> {
         children: [
           CustomTextField(
             formKey: nameKey,
+            isValid: nameValid,
             controller: controller,
             focusNode: focusNode,
-            onFocusout: () {
-              CustomTextField.submit(nameKey);
-            },
             textInputType: TextInputType.name,
             width: 300,
             hintText: "이름을 입력해주세요",
@@ -77,7 +75,6 @@ class _NameInputState extends State<NameInput> {
               color: palette.cardColorWhite,
               fontSize: 15,
             ),
-            isValid: nameValid,
             validator: (value) {
               /// 정규식
               RegExp regex = RegExp(r'^[ㄱ-ㅎ가-힣a-zA-Z0-9]+$');
@@ -116,16 +113,14 @@ class _NameInputState extends State<NameInput> {
 
               /// 모든 예외를 통과했다면
               setState(() {
-                _name = value;
+                name = value;
                 nameValid = true;
               });
-              
+
               return null;
             },
-            onSaved: (String? newValue) {
-              setState(() {
-                _name = newValue;
-              });
+            onFocusout: () {
+              CustomTextField.submit(nameKey);
             },
             onFieldSubmitted: (String? value) {
               CustomTextField.submit(nameKey);
@@ -140,7 +135,7 @@ class _NameInputState extends State<NameInput> {
           if (nameValid) {
             setUserInfo(
               userInfoField: UserInfoField.userName,
-              value: _name,
+              value: name,
             );
 
             SlidePage.goto(
