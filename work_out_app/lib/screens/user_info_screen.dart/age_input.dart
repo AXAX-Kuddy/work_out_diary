@@ -85,6 +85,7 @@ class _AgeInputState extends State<AgeInput> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: InputField.mainInput(
         context: context,
+        
         backTo: const NameInput(),
         title: "조금 더 세부적인 정보도 알고 싶어요!",
         subtitle: "몸무게 단위는 kg이에요.",

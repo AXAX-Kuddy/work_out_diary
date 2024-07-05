@@ -23,6 +23,7 @@ class InputField {
     required VoidCallback onTapUp,
     bool backButton = true,
     bool endButton = false,
+    bool showDots = false,
     Widget? backTo,
   }) {
     return [
@@ -52,7 +53,7 @@ class InputField {
           ],
         ),
       const SizedBox(
-        height: 20,
+        height: 10,
       ),
       SizedBox(
         width: childrenWidth,
@@ -62,6 +63,16 @@ class InputField {
           children: children,
         ),
       ),
+      const SizedBox(
+        height: 10,
+      ),
+      if (showDots)
+        Text(
+          " 당신의 DOTS 포인트는 : ${Provider.of<provider.MainStoreProvider>(context, listen: false).getUserInfo()[UserInfoField.dotsPoint].toString()}",
+          style: TextStyle(
+            color: palette.cardColorWhite.withOpacity(0.7),
+          ),
+        ),
       const SizedBox(
         height: 10,
       ),

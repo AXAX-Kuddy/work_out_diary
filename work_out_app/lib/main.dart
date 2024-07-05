@@ -1,8 +1,11 @@
 //기본
+// ignore_for_file: unused_import
+
 import 'dart:io';
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:work_out_app/screens/debug/debug_screen.dart';
 import 'package:work_out_app/screens/user_info_screen.dart/user_info_screen.dart';
 
@@ -30,6 +33,7 @@ import 'package:line_icons/line_icon.dart';
 //데이터 베이스
 import 'package:drift/drift.dart';
 import 'package:work_out_app/database/database.dart';
+import 'package:work_out_app/widgets/grid_loading_circle/loading_circle.dart';
 import 'package:work_out_app/widgets/work_out_library/work_out_library.dart';
 
 void main() async {
@@ -54,6 +58,9 @@ void main() async {
         ),
         ChangeNotifierProvider(
           create: (context) => provider.RoutineProvider(provider.Routine()),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => provider.PageNumber(),
         ),
       ],
       child: MaterialApp(
@@ -94,15 +101,18 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   late provider.MainStoreProvider mainStoreProvider;
+  late provider.PageNumber pageNumber;
 
   @override
   void initState() {
     super.initState();
     mainStoreProvider = context.read<provider.MainStoreProvider>();
-    mainStoreProvider.resetPreferences();
+    pageNumber = context.read<provider.PageNumber>();
+    mainStoreProvider.loadPreferences();
+    // mainStoreProvider.resetPreferences();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      bool isEdit = mainStoreProvider.getUserInfo()[UserInfoField.isEdit];
+      bool isEdit = mainStoreProvider.userInfo[UserInfoField.isEdit];
       if (!isEdit) {
         Navigator.push(
           context,
@@ -118,51 +128,74 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: [
-        const HomeScreen(),
-        const DiaryScreen(),
-        const WorkoutLibrary(
-          showAppbarCloseButton: false,
-          showAddPlanningScreen: false,
-        ),
-        const DotsPointScreen(),
-        const DebugScreen(),
-      ][PageNumber.pageNum],
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: PageNumber.pageNum,
-        onTap: (pageIndex) {
-          setState(() {
-            PageNumber.changePage(pageIndex);
-          });
-        },
-        backgroundColor: palette.bgFadeColor,
-        selectedItemColor: Colors.white,
-        unselectedItemColor: Colors.grey,
-        type: BottomNavigationBarType.fixed,
-        items: const [
-          BottomNavigationBarItem(
-            icon: LineIcon.home(),
-            label: "홈",
+    return Consumer<provider.PageNumber>(
+      builder:
+          (BuildContext context, provider.PageNumber pageNum, Widget? child) {
+        return Scaffold(
+          body: FutureBuilder(
+              future: mainStoreProvider.loadPreferences(),
+              builder: (BuildContext context, AsyncSnapshot snapshot) {
+                if (!snapshot.hasData) {
+                  return const Center(
+                    child: LoadingCircle(),
+                  );
+                } else if (snapshot.hasError) {
+                  return Container(
+                    color: palette.bgColor,
+                    child: const Center(
+                      child: Text("사용자 데이터를 불러오지 못했습니다."),
+                    ),
+                  );
+                } else {
+                  return [
+                    /// 전체 페이지
+                    const HomeScreen(),
+                    const DiaryScreen(),
+                    const WorkoutLibrary(
+                      showAppbarCloseButton: false,
+                      showAddPlanningScreen: false,
+                    ),
+                    const DotsPointScreen(),
+                    const DebugScreen(),
+                  ][pageNumber.pageNum];
+                }
+              }),
+          bottomNavigationBar: BottomNavigationBar(
+            currentIndex: pageNumber.pageNum,
+            onTap: (pageIndex) {
+              setState(() {
+                pageNumber.changePage(pageIndex);
+              });
+            },
+            backgroundColor: palette.bgFadeColor,
+            selectedItemColor: Colors.white,
+            unselectedItemColor: Colors.grey,
+            type: BottomNavigationBarType.fixed,
+            items: const [
+              BottomNavigationBarItem(
+                icon: LineIcon.home(),
+                label: "홈",
+              ),
+              BottomNavigationBarItem(
+                icon: LineIcon.calendar(),
+                label: "일지",
+              ),
+              BottomNavigationBarItem(
+                icon: LineIcon.dumbbell(),
+                label: "라이브러리",
+              ),
+              BottomNavigationBarItem(
+                icon: LineIcon.raisedFist(),
+                label: "DOTS 포인트",
+              ),
+              BottomNavigationBarItem(
+                icon: LineIcon.bug(),
+                label: "디버그",
+              ),
+            ],
           ),
-          BottomNavigationBarItem(
-            icon: LineIcon.calendar(),
-            label: "일지",
-          ),
-          BottomNavigationBarItem(
-            icon: LineIcon.dumbbell(),
-            label: "라이브러리",
-          ),
-          BottomNavigationBarItem(
-            icon: LineIcon.raisedFist(),
-            label: "DOTS 포인트",
-          ),
-          BottomNavigationBarItem(
-            icon: LineIcon.bug(),
-            label: "디버그",
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 }

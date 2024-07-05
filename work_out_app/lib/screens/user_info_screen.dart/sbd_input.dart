@@ -24,7 +24,7 @@ class _SBDInputState extends State<SBDInput> {
   late Function({required UserInfoField userInfoField, required dynamic value})
       setUserInfo;
   late Function({required SBDkeys key, required double value}) setSBD;
-  late VoidCallback setDots;
+  late Function(num? userSBD) setDots;
   late Future<void> Function() savePreferences;
 
   final FocusNode squatFocusNode = FocusNode();
@@ -39,15 +39,15 @@ class _SBDInputState extends State<SBDInput> {
   bool benchValid = false;
   bool deadValid = false;
 
-  double? squatWeight;
-  double? benchWeight;
-  double? deadWeight;
+  double squatWeight = 0;
+  double benchWeight = 0;
+  double deadWeight = 0;
 
   double? dotsPoint;
 
   /// valid를 매개변수로 받은 값으로 변경합니다.
   /// 하위 클래스에서 valid를 변경할 수 없는 경우에 사용합니다.
-  void squatValidChanger({required bool newValue, required double? weight}) {
+  void squatValidChanger({required bool newValue, required double weight}) {
     setState(() {
       squatValid = newValue;
     });
@@ -62,7 +62,7 @@ class _SBDInputState extends State<SBDInput> {
 
   /// valid를 매개변수로 받은 값으로 변경합니다.
   /// 하위 클래스에서 valid를 변경할 수 없는 경우에 사용합니다.
-  void benchValidChanger({required bool newValue, required double? weight}) {
+  void benchValidChanger({required bool newValue, required double weight}) {
     setState(() {
       benchValid = newValue;
     });
@@ -78,7 +78,7 @@ class _SBDInputState extends State<SBDInput> {
   /// valid를 매개변수로 받은 값으로 변경합니다.
   /// 하위 클래스에서 valid를 변경할 수 없는 경우에 사용합니다.
 
-  void deadValidChanger({required bool newValue, required double? weight}) {
+  void deadValidChanger({required bool newValue, required double weight}) {
     setState(() {
       deadValid = newValue;
     });
@@ -92,10 +92,12 @@ class _SBDInputState extends State<SBDInput> {
   }
 
   void updateDots() {
-    setDots();
+    final userSBD = squatWeight + benchWeight + deadWeight;
+
+    setDots(userSBD);
     setState(() {
       dotsPoint = userInfo[UserInfoField.dotsPoint];
-      debugPrint(dotsPoint.toString());
+      debugPrint(" 닷츠 포인트 : ${dotsPoint.toString()}");
     });
   }
 
@@ -108,10 +110,6 @@ class _SBDInputState extends State<SBDInput> {
         context.read<provider.MainStoreProvider>().savePreferences;
     setDots = context.read<provider.MainStoreProvider>().setDots;
 
-
-
-    
-
     super.initState();
   }
 
@@ -122,6 +120,7 @@ class _SBDInputState extends State<SBDInput> {
       children: InputField.mainInput(
         context: context,
         endButton: true,
+        showDots: true,
         backTo: const AgeInput(),
         title: "마지막으로, 당신의 SBD 기록을 입력해주세요!",
         subtitle: "단위는 kg입니다. lb는 절대 사양",
@@ -172,15 +171,15 @@ class _SBDInputState extends State<SBDInput> {
             /// sbd 중량 설정
             setSBD(
               key: SBDkeys.squat,
-              value: squatWeight!,
+              value: squatWeight,
             );
             setSBD(
               key: SBDkeys.benchPress,
-              value: benchWeight!,
+              value: benchWeight,
             );
             setSBD(
               key: SBDkeys.deadLift,
-              value: deadWeight!,
+              value: deadWeight,
             );
 
             /// 유저 정보 설정 여부
@@ -201,7 +200,7 @@ class _SBDInputState extends State<SBDInput> {
 
 abstract class SBDField extends StatefulWidget {
   bool valid;
-  final void Function({required bool newValue, required double? weight})
+  final void Function({required bool newValue, required double weight})
       validChanger;
 
   final String hintText;
@@ -246,7 +245,7 @@ class _SBDFieldState extends State<SBDField> {
           if (value.isEmpty) {
             setState(() {
               widget.validChanger(
-                weight: null,
+                weight: 0.0,
                 newValue: false,
               );
               widget.valid = false;
@@ -258,7 +257,7 @@ class _SBDFieldState extends State<SBDField> {
           if (double.tryParse(value) == null) {
             setState(() {
               widget.validChanger(
-                weight: null,
+                weight: 0.0,
                 newValue: false,
               );
               widget.valid = false;
@@ -272,7 +271,7 @@ class _SBDFieldState extends State<SBDField> {
             if (double.parse(value) >= 1999 || double.parse(value) < 0) {
               setState(() {
                 widget.validChanger(
-                  weight: null,
+                  weight: 0.0,
                   newValue: false,
                 );
                 widget.valid = false;
@@ -284,7 +283,7 @@ class _SBDFieldState extends State<SBDField> {
             if (double.parse(value) == 0) {
               setState(() {
                 widget.validChanger(
-                  weight: null,
+                  weight: 0.0,
                   newValue: false,
                 );
                 widget.valid = false;

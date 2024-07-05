@@ -239,7 +239,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
       children: [
-        ProfileCard(),
+        const ProfileCard(),
         const SizedBox(
           height: 15,
         ),

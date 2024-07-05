@@ -10,6 +10,17 @@ import 'package:work_out_app/database/database.dart';
 
 typedef UserInfo = Map<UserInfoField, dynamic>;
 
+class PageNumber extends ChangeNotifier {
+  int _pageNum = 0;
+
+  int get pageNum => _pageNum;
+
+  changePage(int selectPage) {
+    _pageNum = selectPage;
+    notifyListeners();
+  }
+}
+
 class MainStore {
   static UserInfo userInfo = {
     UserInfoField.userName: DevelopName.devName.key,
@@ -147,8 +158,8 @@ class MainStoreProvider extends ChangeNotifier {
     return double.parse(score);
   }
 
-  void setDots() {
-    num weightLifted = squatWeight + benchWeight + deadWeight;
+  void setDots(num? userSBD) {
+    num weightLifted = userSBD ?? squatWeight + benchWeight + deadWeight;
 
     double result = dotsCal(
         bodyWeight: userInfo[UserInfoField.weight],
@@ -214,7 +225,7 @@ class MainStoreProvider extends ChangeNotifier {
   }
 
   /// 기기에 저장된 userInfo 불러오기
-  Future<void> loadPreferences() async {
+  Future<int> loadPreferences() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
 
     /// 유저 이름
@@ -247,6 +258,8 @@ class MainStoreProvider extends ChangeNotifier {
     /// userInfo 수정 여부
     userInfo[UserInfoField.isEdit] =
         prefs.getBool(UserInfoField.isEdit.key) ?? false;
+
+    return 0;
   }
 
   /// 기기에 저장된 userInfo 불러오기

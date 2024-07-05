@@ -12,7 +12,7 @@ class WideButton extends StatefulWidget {
   final void Function()? onTapDownFunction;
   final void Function()? onTapUpFunction;
 
-  final double height;
+  final double? height;
   final double? width;
   final EdgeInsetsGeometry? margin;
 
