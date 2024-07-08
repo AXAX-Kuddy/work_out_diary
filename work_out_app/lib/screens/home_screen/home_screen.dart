@@ -18,6 +18,7 @@ import 'package:work_out_app/widgets/base_screen/base_page.dart';
 import 'package:work_out_app/widgets/box_widget/widget_box.dart';
 import 'package:work_out_app/widgets/buttons/wide_button.dart';
 import 'package:work_out_app/widgets/router/plan_screen_router.dart';
+import 'package:work_out_app/widgets/router/sliding_builder.dart';
 import 'package:work_out_app/widgets/sliding_up_panel/sliding_up_panel.dart';
 import 'package:work_out_app/provider/make_program.dart' as maked;
 import 'package:work_out_app/provider/store.dart' as provider;
@@ -210,15 +211,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 ...panelItems,
                 WideButton(
                   onTapUpFunction: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (BuildContext context) {
-                          return PlanningScreen(
-                            onPageLoaded: () {
-                              addWorkoutToPlanningScreen();
-                            },
-                          );
+                    SlidePage.goto(
+                      context: context,
+                      page: PlanningScreen(
+                        onPageLoaded: () {
+                          addWorkoutToPlanningScreen();
                         },
                       ),
                     );

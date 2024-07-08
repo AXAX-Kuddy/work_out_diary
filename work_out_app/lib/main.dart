@@ -36,6 +36,14 @@ import 'package:work_out_app/database/database.dart';
 import 'package:work_out_app/widgets/grid_loading_circle/loading_circle.dart';
 import 'package:work_out_app/widgets/work_out_library/work_out_library.dart';
 
+class CustomScrollBehavior extends MaterialScrollBehavior {
+  @override
+  Set<PointerDeviceKind> get dragDevices => {
+        PointerDeviceKind.touch,
+        PointerDeviceKind.mouse,
+      };
+}
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   AppDatabase database = AppDatabase();
@@ -82,14 +90,6 @@ void main() async {
       ),
     ),
   );
-}
-
-class CustomScrollBehavior extends MaterialScrollBehavior {
-  @override
-  Set<PointerDeviceKind> get dragDevices => {
-        PointerDeviceKind.touch,
-        PointerDeviceKind.mouse,
-      };
 }
 
 class MyApp extends StatefulWidget {

@@ -1,10 +1,14 @@
 // ignore_for_file: unused_field
 
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:work_out_app/database/database.dart';
+import 'package:work_out_app/provider/make_program.dart' as maked;
 import 'package:work_out_app/screens/diary_screen/diary_screen_widgets/calendar_custom/calendar_builders.dart';
 import 'package:work_out_app/screens/diary_screen/diary_screen_widgets/calendar_custom/calendar_style.dart';
+import 'package:work_out_app/screens/home_screen/home_screen.dart';
 import 'package:work_out_app/util/keys.dart';
 import 'package:work_out_app/widgets/base_screen/base_page.dart';
 import 'package:work_out_app/util/palette.dart' as palette;
@@ -100,30 +104,66 @@ class _DiaryScreenState extends State<DiaryScreen> {
               itemBuilder: (BuildContext context, int index) {
                 final routine = _selectedDayRoutines[index];
 
-                return Text(
-                  routine.routineName,
-                  style: const TextStyle(
-                    color: palette.cardColorWhite,
-                  ),
+                return Column(
+                  children: [
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    Text(
+                      routine.routineName,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 17,
+                        color: palette.cardColorWhite,
+                      ),
+                    ),
+                  ],
                 );
               },
             ),
           )
         else
-          Expanded(
-            child: ListView.builder(
-              itemCount: 1,
-              itemBuilder: (BuildContext context, int index) {
-                return const Text(
-                  "운동 기록이 없습니다.",
-                  style: TextStyle(
-                    color: palette.cardColorWhite,
-                  ),
-                );
-              },
+          const Expanded(
+            child: Center(
+              child: Text(
+                "운동 기록이 없어요😢",
+                style: TextStyle(
+                  color: palette.cardColorWhite,
+                ),
+              ),
             ),
           )
       ],
     );
+  }
+}
+
+class RoutineDetail {
+  List<maked.Workout> workoutList = [];
+
+  void routineChildrenDecode(String children) {
+    dynamic decodeJson = jsonDecode(children);
+    debugPrint("$decodeJson");
+
+    try {
+      if (decodeJson is List<dynamic>) {
+        for (var workout in decodeJson) {
+          maked.Workout instance =
+              maked.Workout.toJsonDecode(jsonDecode(workout));
+          workoutList.add(instance);
+        }
+      } else if (decodeJson is Map<String, dynamic>) {
+        final maked.Workout instance = maked.Workout.toJsonDecode(decodeJson);
+        workoutList.add(instance);
+      } else {
+        throw TypeError();
+      }
+    } catch (event) {
+      print(event);
+    }
+  }
+
+  List<Widget> builder() {
+    return const [Text("")];
   }
 }
