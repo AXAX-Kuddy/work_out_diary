@@ -163,7 +163,7 @@ class RoutineDetail {
     }
   }
 
-  List<Widget> builder() {
-    return const [Text("")];
+  List<Widget> get generateItems {
+    return [const Text("")];
   }
 }
