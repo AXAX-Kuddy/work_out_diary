@@ -397,6 +397,7 @@ class SetsDetail extends StatefulWidget {
 
 class _SetsDetailState extends State<SetsDetail> {
   late provider.RoutineProvider routineProvider;
+  late String? nowValue;
 
   String handleWeightSubmitted(String value) {
     //숫자 이외의 다른 값이 있을 경우
@@ -477,6 +478,12 @@ class _SetsDetailState extends State<SetsDetail> {
   void initState() {
     super.initState();
     widget.setInstance.onUpdate = () => widget.findE1rm();
+
+    if (widget.setInstance.rpe < 5.0) {
+      nowValue = null;
+    } else {
+      nowValue = widget.setInstance.rpe.toString();
+    }
   }
 
   @override
@@ -536,7 +543,7 @@ class _SetsDetailState extends State<SetsDetail> {
             height: 40,
             hint: "@",
             textStyle: const TextStyle(color: palette.cardColorWhite),
-            nowValue: widget.setInstance.rpe.toString(),
+            nowValue: nowValue,
             itemList: widget.rpeList!,
             itemTextStyle: const TextStyle(
               color: palette.cardColorWhite,

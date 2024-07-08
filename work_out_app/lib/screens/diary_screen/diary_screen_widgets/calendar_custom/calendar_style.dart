@@ -35,4 +35,10 @@ class CustomCalendarStyle extends CalendarStyle {
         ),
         color: palette.bgColor,
       );
+
+  @override
+  Decoration get markerDecoration => const BoxDecoration(
+        shape: BoxShape.circle,
+        color: palette.cardColorYelGreen,
+      );
 }

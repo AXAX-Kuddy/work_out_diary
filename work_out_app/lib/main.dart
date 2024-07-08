@@ -108,7 +108,7 @@ class _MyAppState extends State<MyApp> {
     super.initState();
     mainStoreProvider = context.read<provider.MainStoreProvider>();
     pageNumber = context.read<provider.PageNumber>();
-    mainStoreProvider.loadPreferences();
+    // mainStoreProvider.loadPreferences();
     // mainStoreProvider.resetPreferences();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -136,8 +136,11 @@ class _MyAppState extends State<MyApp> {
               future: mainStoreProvider.loadPreferences(),
               builder: (BuildContext context, AsyncSnapshot snapshot) {
                 if (!snapshot.hasData) {
-                  return const Center(
-                    child: LoadingCircle(),
+                  return Container(
+                    color: palette.bgColor,
+                    child: const Center(
+                      child: LoadingCircle(),
+                    ),
                   );
                 } else if (snapshot.hasError) {
                   return Container(
