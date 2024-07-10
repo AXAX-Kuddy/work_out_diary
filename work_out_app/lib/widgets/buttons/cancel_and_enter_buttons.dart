@@ -3,6 +3,7 @@ import 'package:work_out_app/util/palette.dart' as palette;
 
 abstract class BaseCancelAndEnterButton extends StatelessWidget {
   final MainAxisAlignment mainAxisAlignment;
+  final bool buttonSwap;
   final double? spaceWidth;
 
   final VoidCallback? onCancelTap;
@@ -14,6 +15,7 @@ abstract class BaseCancelAndEnterButton extends StatelessWidget {
   const BaseCancelAndEnterButton({
     super.key,
     this.mainAxisAlignment = MainAxisAlignment.spaceEvenly,
+    this.buttonSwap = false,
     this.spaceWidth,
     required this.onCancelTap,
     this.cancelLabel = const Text(
@@ -33,22 +35,41 @@ abstract class BaseCancelAndEnterButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: mainAxisAlignment,
-      children: [
-        TextButton(
-          onPressed: onEnterTap,
-          child: enterLabel,
-        ),
-        SizedBox(
-          width: spaceWidth,
-        ),
-        TextButton(
-          onPressed: onCancelTap,
-          child: cancelLabel,
-        ),
-      ],
-    );
+    if (buttonSwap) {
+      return Row(
+        mainAxisAlignment: mainAxisAlignment,
+        children: [
+          TextButton(
+            onPressed: onCancelTap,
+            child: cancelLabel,
+          ),
+          SizedBox(
+            width: spaceWidth,
+          ),
+          TextButton(
+            onPressed: onEnterTap,
+            child: enterLabel,
+          ),
+        ],
+      );
+    } else {
+      return Row(
+        mainAxisAlignment: mainAxisAlignment,
+        children: [
+          TextButton(
+            onPressed: onEnterTap,
+            child: enterLabel,
+          ),
+          SizedBox(
+            width: spaceWidth,
+          ),
+          TextButton(
+            onPressed: onCancelTap,
+            child: cancelLabel,
+          ),
+        ],
+      );
+    }
   }
 }
 
@@ -59,6 +80,7 @@ class CancelAndEnterButtonWithIcon extends BaseCancelAndEnterButton {
   const CancelAndEnterButtonWithIcon({
     super.key,
     super.mainAxisAlignment,
+    super.buttonSwap,
     super.spaceWidth,
     required super.onCancelTap,
     required this.cancelIcon,
@@ -70,72 +92,96 @@ class CancelAndEnterButtonWithIcon extends BaseCancelAndEnterButton {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: mainAxisAlignment,
-      children: [
-        TextButton.icon(
-          onPressed: onEnterTap,
-          icon: enterIcon,
-          label: enterLabel,
-        ),
-        SizedBox(
-          width: spaceWidth,
-        ),
-        TextButton.icon(
-          onPressed: onCancelTap,
-          icon: cancelIcon,
-          label: cancelLabel,
-        ),
-      ],
-    );
+    if (super.buttonSwap) {
+      return Row(
+        mainAxisAlignment: mainAxisAlignment,
+        children: [
+          TextButton.icon(
+            onPressed: onCancelTap,
+            icon: cancelIcon,
+            label: cancelLabel,
+          ),
+          SizedBox(
+            width: spaceWidth,
+          ),
+          TextButton.icon(
+            onPressed: onEnterTap,
+            icon: enterIcon,
+            label: enterLabel,
+          ),
+        ],
+      );
+    } else {
+      return Row(
+        mainAxisAlignment: mainAxisAlignment,
+        children: [
+          TextButton.icon(
+            onPressed: onEnterTap,
+            icon: enterIcon,
+            label: enterLabel,
+          ),
+          SizedBox(
+            width: spaceWidth,
+          ),
+          TextButton.icon(
+            onPressed: onCancelTap,
+            icon: cancelIcon,
+            label: cancelLabel,
+          ),
+        ],
+      );
+    }
   }
 }
 
 class CancelAndEnterButton extends BaseCancelAndEnterButton {
   const CancelAndEnterButton({
     super.key,
-    mainAxisAlignment = MainAxisAlignment.spaceEvenly,
-    double? spaceWidth,
-    required onCancelTap,
-    cancelLabel = const Text(
-      "취소",
-      style: TextStyle(
-        color: palette.colorRed,
-      ),
-    ),
-    required onEnterTap,
-    enterLabel = const Text(
-      "확인",
-      style: TextStyle(
-        color: palette.cardColorWhite,
-      ),
-    ),
-  }) : super(
-          mainAxisAlignment: mainAxisAlignment,
-          spaceWidth: spaceWidth,
-          onCancelTap: onCancelTap,
-          cancelLabel: cancelLabel,
-          onEnterTap: onEnterTap,
-          enterLabel: enterLabel,
-        );
+    super.mainAxisAlignment,
+    super.buttonSwap,
+    super.spaceWidth,
+    super.onCancelTap,
+    super.cancelLabel,
+    super.onEnterTap,
+    super.enterLabel,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: mainAxisAlignment,
-      children: [
-        TextButton(
-          onPressed: onEnterTap,
-          child: enterLabel,
-        ),
-        SizedBox(
-          width: spaceWidth,
-        ),
-        TextButton(
-          onPressed: onCancelTap,
-          child: cancelLabel,
-        ),
-      ],
-    );
+    if (super.buttonSwap) {
+      return Row(
+        mainAxisAlignment: mainAxisAlignment,
+        children: [
+          TextButton(
+            onPressed: onCancelTap,
+            child: cancelLabel,
+          ),
+          SizedBox(
+            width: spaceWidth,
+          ),
+          TextButton(
+            onPressed: onEnterTap,
+            child: enterLabel,
+          ),
+        ],
+      );
+    } else {
+      return Row(
+        mainAxisAlignment: mainAxisAlignment,
+        children: [
+          TextButton(
+            onPressed: onEnterTap,
+            child: enterLabel,
+          ),
+          SizedBox(
+            width: spaceWidth,
+          ),
+          TextButton(
+            onPressed: onCancelTap,
+            child: cancelLabel,
+          ),
+        ],
+      );
+    }
   }
 }

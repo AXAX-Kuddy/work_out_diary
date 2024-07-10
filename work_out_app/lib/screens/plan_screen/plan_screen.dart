@@ -42,6 +42,7 @@ class _PlanningScreenState extends State<PlanningScreen> {
   final SlidingUpPanelController panelController = SlidingUpPanelController();
   maked.Workout panelCallingInstance = maked.Workout(
     name: "placeHold",
+    
   );
   int? panelCallingInstanceIndex;
   String routineTitle = "";

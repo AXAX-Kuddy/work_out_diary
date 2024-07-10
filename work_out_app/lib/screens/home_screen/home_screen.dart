@@ -293,6 +293,7 @@ class PanelItem extends StatelessWidget {
               const SizedBox(
                 width: 5,
               ),
+              if(workoutInstance.targetRpe >= 5.0)
               Text(
                 "@${workoutInstance.targetRpe.toString()}",
                 style: const TextStyle(

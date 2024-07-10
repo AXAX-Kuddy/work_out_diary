@@ -3,18 +3,23 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:line_icons/line_icon.dart';
+import 'package:line_icons/line_icons.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:work_out_app/database/database.dart';
 import 'package:work_out_app/provider/make_program.dart' as maked;
 import 'package:work_out_app/screens/diary_screen/diary_screen_widgets/calendar_custom/calendar_builders.dart';
 import 'package:work_out_app/screens/diary_screen/diary_screen_widgets/calendar_custom/calendar_style.dart';
-import 'package:work_out_app/screens/home_screen/home_screen.dart';
 import 'package:work_out_app/util/keys.dart';
 import 'package:work_out_app/widgets/base_screen/base_page.dart';
 import 'package:work_out_app/util/palette.dart' as palette;
 import 'package:work_out_app/screens/diary_screen/diary_screen_widgets/header_style.dart';
 import 'package:provider/provider.dart';
 import 'package:work_out_app/provider/store.dart' as provider;
+import 'package:work_out_app/widgets/buttons/cancel_and_enter_buttons.dart';
+import 'package:work_out_app/widgets/buttons/trash_can_button.dart';
+import 'package:work_out_app/widgets/dialog/custom_dialog.dart';
+import 'package:work_out_app/widgets/grid_loading_circle/loading_circle.dart';
 
 class DiaryScreen extends StatefulWidget {
   const DiaryScreen({super.key});
@@ -97,48 +102,147 @@ class _DiaryScreenState extends State<DiaryScreen> {
           firstDay: DateTime.utc(2010, 10, 16),
           lastDay: DateTime.utc(2030, 3, 14),
         ),
-        if (_selectedDayRoutines.isNotEmpty)
-          Expanded(
-            child: ListView.builder(
-              itemCount: _selectedDayRoutines.length,
-              itemBuilder: (BuildContext context, int index) {
-                final routine = _selectedDayRoutines[index];
-
-                return Column(
-                  children: [
-                    const SizedBox(
-                      height: 20,
+        FutureBuilder(
+          future: routineList,
+          builder: (BuildContext context, AsyncSnapshot snapshot) {
+            if (!snapshot.hasData) {
+              return const Expanded(
+                child: Center(
+                  child: LoadingCircle(),
+                ),
+              );
+            } else if (snapshot.hasError) {
+              return Expanded(
+                child: Center(
+                  child: Container(
+                    color: palette.bgColor,
+                    child: const Text(
+                      "루틴 데이터를 불러오지 못했어요.",
+                      style: TextStyle(
+                        color: palette.cardColorWhite,
+                      ),
                     ),
-                    Text(
-                      routine.routineName,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
+                  ),
+                ),
+              );
+            } else {
+              if (_selectedDayRoutines.isNotEmpty) {
+                return Expanded(
+                  child: ListView.builder(
+                    itemCount: _selectedDayRoutines.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      final routine = _selectedDayRoutines[index];
+
+                      return Column(
+                        children: [
+                          const SizedBox(
+                            height: 20,
+                          ),
+                          Text(
+                            routine.routineName,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 17,
+                              color: palette.cardColorWhite,
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 20,
+                          ),
+                          ...RoutineDetail(routine.children).generateItems,
+                          CancelAndEnterButtonWithIcon(
+                            buttonSwap: true,
+                            onCancelTap: () {
+                              showDialog(
+                                  barrierDismissible: false,
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return CustomDialog(
+                                      children: [
+                                        const Text(
+                                          "해당 운동 기록을 삭제하시겠어요?😭",
+                                          style: TextStyle(
+                                            color: palette.cardColorWhite,
+                                          ),
+                                        ),
+                                        const SizedBox(
+                                          height: 20,
+                                        ),
+                                        CancelAndEnterButtonWithIcon(
+                                          onCancelTap: () {
+                                            Navigator.pop(context);
+                                          },
+                                          cancelIcon: const Icon(null),
+                                          cancelLabel: const Text(
+                                            "아니요",
+                                            style: TextStyle(
+                                              color: palette.cardColorWhite,
+                                            ),
+                                          ),
+                                          onEnterTap: () {},
+                                          enterIcon: const TrashCanIcon(),
+                                          enterLabel: const Text(
+                                            "삭제",
+                                            style: TextStyle(
+                                              color: palette.colorRed,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    );
+                                  });
+                            },
+                            cancelIcon: const TrashCanIcon(),
+                            cancelLabel: const Text(
+                              "루틴 삭제",
+                              style: TextStyle(
+                                color: palette.cardColorWhite,
+                              ),
+                            ),
+                            onEnterTap: () {},
+                            enterIcon: const LineIcon(
+                              LineIcons.pen,
+                              color: palette.cardColorYelGreen,
+                            ),
+                            enterLabel: const Text(
+                              "루틴 수정",
+                              style: TextStyle(
+                                color: palette.cardColorWhite,
+                              ),
+                            ),
+                          )
+                        ],
+                      );
+                    },
+                  ),
+                );
+              } else {
+                return const Expanded(
+                  child: Center(
+                    child: Text(
+                      "운동 기록이 없어요🤔",
+                      style: TextStyle(
                         fontSize: 17,
                         color: palette.cardColorWhite,
                       ),
                     ),
-                  ],
+                  ),
                 );
-              },
-            ),
-          )
-        else
-          const Expanded(
-            child: Center(
-              child: Text(
-                "운동 기록이 없어요😢",
-                style: TextStyle(
-                  color: palette.cardColorWhite,
-                ),
-              ),
-            ),
-          )
+              }
+            }
+          },
+        ),
       ],
     );
   }
 }
 
 class RoutineDetail {
+  String routineChildren;
+  RoutineDetail(
+    this.routineChildren,
+  );
+
   List<maked.Workout> workoutList = [];
 
   void routineChildrenDecode(String children) {
@@ -164,6 +268,106 @@ class RoutineDetail {
   }
 
   List<Widget> get generateItems {
-    return [const Text("")];
+    routineChildrenDecode(routineChildren);
+
+    return List.generate(workoutList.length, (index) {
+      final workout = workoutList[index];
+
+      return Container(
+        margin: const EdgeInsets.only(
+          bottom: 8,
+        ),
+        child: Column(
+          children: [
+            Row(
+              children: [
+                Text(
+                  "${index + 1}",
+                  style: const TextStyle(
+                    color: palette.cardColorYelGreen,
+                  ),
+                ),
+                const SizedBox(
+                  width: 5,
+                ),
+                Text(
+                  workout.name!,
+                  style: const TextStyle(
+                    color: palette.cardColorWhite,
+                  ),
+                ),
+                const SizedBox(
+                  width: 5,
+                ),
+                if (workout.targetRpe >= 5.0)
+                  Text(
+                    "@${workout.targetRpe.toString()}",
+                    style: const TextStyle(
+                      fontSize: 11,
+                      color: palette.cardColorWhite,
+                    ),
+                  ),
+              ],
+            ),
+            if (workout.sets!.isNotEmpty)
+              Column(
+                children: [
+                  ...List.generate(workout.sets!.length, (index) {
+                    final maked.Set set = workout.sets![index];
+
+                    return Row(
+                      children: [
+                        Text(
+                          "${set.setIndex! + 1}.",
+                          style: const TextStyle(
+                            color: palette.cardColorWhite,
+                          ),
+                        ),
+                        const SizedBox(
+                          width: 8,
+                        ),
+                        Text(
+                          "${set.weight}kg",
+                          style: const TextStyle(
+                            color: palette.cardColorWhite,
+                          ),
+                        ),
+                        const SizedBox(
+                          width: 5,
+                        ),
+                        const Text(
+                          "X",
+                          style: TextStyle(
+                            color: palette.cardColorWhite,
+                          ),
+                        ),
+                        const SizedBox(
+                          width: 5,
+                        ),
+                        Text(
+                          set.reps.toString(),
+                          style: const TextStyle(
+                            color: palette.cardColorWhite,
+                          ),
+                        ),
+                        const SizedBox(
+                          width: 7,
+                        ),
+                        Text(
+                          "@${set.rpe.toString()}",
+                          style: const TextStyle(
+                            fontSize: 11,
+                            color: palette.cardColorWhite,
+                          ),
+                        ),
+                      ],
+                    );
+                  }),
+                ],
+              ),
+          ],
+        ),
+      );
+    });
   }
 }
