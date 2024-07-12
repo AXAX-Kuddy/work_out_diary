@@ -140,9 +140,9 @@ class CancelAndEnterButton extends BaseCancelAndEnterButton {
     super.mainAxisAlignment,
     super.buttonSwap,
     super.spaceWidth,
-    super.onCancelTap,
+    required super.onCancelTap,
     super.cancelLabel,
-    super.onEnterTap,
+    required super.onEnterTap,
     super.enterLabel,
   });
 

@@ -214,9 +214,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     SlidePage.goto(
                       context: context,
                       page: PlanningScreen(
-                        onPageLoaded: () {
-                          addWorkoutToPlanningScreen();
-                        },
+                        onPageLoaded: addWorkoutToPlanningScreen,
                       ),
                     );
                   },
@@ -293,13 +291,13 @@ class PanelItem extends StatelessWidget {
               const SizedBox(
                 width: 5,
               ),
-              if(workoutInstance.targetRpe >= 5.0)
-              Text(
-                "@${workoutInstance.targetRpe.toString()}",
-                style: const TextStyle(
-                  color: palette.cardColorWhite,
+              if (workoutInstance.targetRpe >= 5.0)
+                Text(
+                  "@${workoutInstance.targetRpe.toString()}",
+                  style: const TextStyle(
+                    color: palette.cardColorWhite,
+                  ),
                 ),
-              ),
             ],
           ),
           const SizedBox(

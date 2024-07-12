@@ -2,6 +2,7 @@
 
 import 'dart:convert';
 
+import 'package:drift/drift.dart' as drift;
 import 'package:flutter/material.dart';
 import 'package:line_icons/line_icon.dart';
 import 'package:line_icons/line_icons.dart';
@@ -10,6 +11,7 @@ import 'package:work_out_app/database/database.dart';
 import 'package:work_out_app/provider/make_program.dart' as maked;
 import 'package:work_out_app/screens/diary_screen/diary_screen_widgets/calendar_custom/calendar_builders.dart';
 import 'package:work_out_app/screens/diary_screen/diary_screen_widgets/calendar_custom/calendar_style.dart';
+import 'package:work_out_app/screens/plan_screen/plan_screen.dart';
 import 'package:work_out_app/util/keys.dart';
 import 'package:work_out_app/widgets/base_screen/base_page.dart';
 import 'package:work_out_app/util/palette.dart' as palette;
@@ -20,6 +22,8 @@ import 'package:work_out_app/widgets/buttons/cancel_and_enter_buttons.dart';
 import 'package:work_out_app/widgets/buttons/trash_can_button.dart';
 import 'package:work_out_app/widgets/dialog/custom_dialog.dart';
 import 'package:work_out_app/widgets/grid_loading_circle/loading_circle.dart';
+import 'package:work_out_app/widgets/router/plan_screen_router.dart';
+import 'package:work_out_app/widgets/router/sliding_builder.dart';
 
 class DiaryScreen extends StatefulWidget {
   const DiaryScreen({super.key});
@@ -32,6 +36,7 @@ class _DiaryScreenState extends State<DiaryScreen> {
   final AppDatabase database = AppDatabase();
   late Future<List<Routine>> routineList;
   late provider.UserInfo userInfo;
+  late provider.RoutineProvider routineProvider;
 
   DateTime _focusedDay = DateTime.now();
   DateTime _selectedDay = DateTime.now();
@@ -66,6 +71,7 @@ class _DiaryScreenState extends State<DiaryScreen> {
   void initState() {
     super.initState();
     userInfo = context.read<provider.MainStoreProvider>().getUserInfo();
+    routineProvider = context.read<provider.RoutineProvider>();
     routineList = database.getRoutines();
     _loadEvents();
   }
@@ -179,7 +185,12 @@ class _DiaryScreenState extends State<DiaryScreen> {
                                               color: palette.cardColorWhite,
                                             ),
                                           ),
-                                          onEnterTap: () {},
+                                          onEnterTap: () {
+                                            setState(() {
+                                              database.removeRoutine(routine);
+                                            });
+                                            Navigator.pop(context);
+                                          },
                                           enterIcon: const TrashCanIcon(),
                                           enterLabel: const Text(
                                             "삭제",
@@ -199,7 +210,71 @@ class _DiaryScreenState extends State<DiaryScreen> {
                                 color: palette.cardColorWhite,
                               ),
                             ),
-                            onEnterTap: () {},
+                            onEnterTap: () {
+                              showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return CustomDialog(
+                                      children: [
+                                        const Text(
+                                          "해당 루틴의 내용을 수정하시겠습니까?",
+                                          style: TextStyle(
+                                            color: palette.cardColorWhite,
+                                          ),
+                                        ),
+                                        const SizedBox(
+                                          height: 20,
+                                        ),
+                                        CancelAndEnterButton(
+                                          onCancelTap: () {
+                                            Navigator.pop(context);
+                                          },
+                                          onEnterTap: () {
+                                            Navigator.pop(context);
+
+                                            SlidePage.goto(
+                                                context: context,
+                                                page: PlanningScreen(
+                                                  updateRoutine: (String children ) async {
+                                                    await database
+                                                        .updateRoutine(
+                                                      selectRoutine: routine,
+                                                      companion:
+                                                          RoutinesCompanion(
+                                                        id: drift.Value(
+                                                            routine.id),
+                                                        routineName:drift. Value(
+                                                            routine
+                                                                .routineName),
+                                                        date:drift. Value(
+                                                            routine.date),
+                                                        isFavor:drift. Value(
+                                                            routine
+                                                                .isFavor),
+                                                        children:drift. Value(
+                                                            children),
+                                                      ),
+                                                    );
+                                                  },
+                                                  onPageLoaded: () {
+                                                    routineProvider
+                                                        .clearUserSelectWorkout();
+                                                    for (maked.Workout workout
+                                                        in RoutineDetail(routine
+                                                                .children)
+                                                            .getWorkoutList) {
+                                                      routineProvider
+                                                          .addUserSelectWorkout(
+                                                              workout);
+                                                    }
+                                                  },
+                                                ));
+                                          },
+                                        ),
+                                      ],
+                                    );
+                                  });
+                            },
                             enterIcon: const LineIcon(
                               LineIcons.pen,
                               color: palette.cardColorYelGreen,
@@ -243,7 +318,7 @@ class RoutineDetail {
     this.routineChildren,
   );
 
-  List<maked.Workout> workoutList = [];
+  final List<maked.Workout> _workoutList = [];
 
   void routineChildrenDecode(String children) {
     dynamic decodeJson = jsonDecode(children);
@@ -254,11 +329,11 @@ class RoutineDetail {
         for (var workout in decodeJson) {
           maked.Workout instance =
               maked.Workout.toJsonDecode(jsonDecode(workout));
-          workoutList.add(instance);
+          _workoutList.add(instance);
         }
       } else if (decodeJson is Map<String, dynamic>) {
         final maked.Workout instance = maked.Workout.toJsonDecode(decodeJson);
-        workoutList.add(instance);
+        _workoutList.add(instance);
       } else {
         throw TypeError();
       }
@@ -267,11 +342,17 @@ class RoutineDetail {
     }
   }
 
+  List<maked.Workout> get getWorkoutList {
+    routineChildrenDecode(routineChildren);
+
+    return _workoutList;
+  }
+
   List<Widget> get generateItems {
     routineChildrenDecode(routineChildren);
 
-    return List.generate(workoutList.length, (index) {
-      final workout = workoutList[index];
+    return List.generate(_workoutList.length, (index) {
+      final workout = _workoutList[index];
 
       return Container(
         margin: const EdgeInsets.only(

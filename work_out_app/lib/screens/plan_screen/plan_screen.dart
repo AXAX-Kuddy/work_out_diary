@@ -2,15 +2,21 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:animated_snack_bar/animated_snack_bar.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_sliding_up_panel/flutter_sliding_up_panel.dart';
 import 'package:line_icons/line_icon.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:work_out_app/database/database.dart';
+import 'package:work_out_app/main.dart';
+import 'package:work_out_app/screens/diary_screen/diary_screen.dart';
 import 'package:work_out_app/util/keys.dart';
 import 'package:work_out_app/widgets/buttons/cancel_and_enter_buttons.dart';
 import 'package:work_out_app/widgets/buttons/trash_can_button.dart';
+import 'package:work_out_app/widgets/buttons/wide_button.dart';
 import 'package:work_out_app/widgets/dialog/custom_dialog.dart';
+import 'package:work_out_app/widgets/router/sliding_builder.dart';
 import 'package:work_out_app/widgets/sliding_up_panel/panel_button.dart';
 import 'package:work_out_app/util/palette.dart' as palette;
 import 'package:work_out_app/screens/plan_screen/plan_screen_widgets/select_work_out_screen.dart';
@@ -27,10 +33,12 @@ import 'package:work_out_app/widgets/work_out_library/work_out_library.dart';
 
 class PlanningScreen extends StatefulWidget {
   final VoidCallback? onPageLoaded;
+  final void Function(String children)? updateRoutine;
 
   const PlanningScreen({
     super.key,
     this.onPageLoaded,
+    this.updateRoutine,
   });
 
   @override
@@ -42,7 +50,6 @@ class _PlanningScreenState extends State<PlanningScreen> {
   final SlidingUpPanelController panelController = SlidingUpPanelController();
   maked.Workout panelCallingInstance = maked.Workout(
     name: "placeHold",
-    
   );
   int? panelCallingInstanceIndex;
   String routineTitle = "";
@@ -721,28 +728,94 @@ class _PlanningScreenState extends State<PlanningScreen> {
             ],
           ),
         ),
-        Visibility(
-          visible: routineProvider.todayWorkouts.isNotEmpty,
-          child: Container(
-            height: 70,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              color: palette.bgFadeColor,
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                restTimerButton,
-                WorkoutTimeWidget(
-                  routineProvider: routineProvider,
-                  workoutTimerButton: workoutTimerButton,
-                ),
-              ],
-            ),
-          ),
-        ),
+        if (widget.updateRoutine != null)
+          BottomBar(
+              updateRoutine: widget.updateRoutine,
+              routineProvider: routineProvider,
+              restTimerButton: restTimerButton,
+              workoutTimerButton: workoutTimerButton)
+        else
+          BottomBar(
+              routineProvider: routineProvider,
+              restTimerButton: restTimerButton,
+              workoutTimerButton: workoutTimerButton),
       ],
+    );
+  }
+}
+
+class BottomBar extends StatelessWidget {
+  final void Function(String children)? updateRoutine;
+
+  final provider.RoutineProvider routineProvider;
+  final Widget restTimerButton;
+  final TextButton workoutTimerButton;
+
+  const BottomBar({
+    super.key,
+    this.updateRoutine,
+    required this.routineProvider,
+    required this.restTimerButton,
+    required this.workoutTimerButton,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Visibility(
+      visible: routineProvider.todayWorkouts.isNotEmpty,
+      child: Container(
+        height: 70,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          color: palette.bgFadeColor,
+        ),
+        child: updateRoutine != null
+            ? Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      child: WideButtonBlack(
+                        onTapUpFunction: () async {
+                          List<String> jsonData = [];
+
+                          for (var workout in routineProvider.todayWorkouts) {
+                            jsonData.add(json.encode(workout.toJsonEncode()));
+                          }
+
+                          updateRoutine!.call(json.encode(jsonData));
+                          SlidePage.goto(
+                            context: context,
+                            page: const MyApp(),
+                          );
+                        },
+                        child: const Center(
+                          child: Text(
+                            "루틴 업데이트",
+                            style: TextStyle(
+                              fontSize: 17,
+                              color: palette.cardColorWhite,
+                            ),
+                          ),
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+              )
+            : Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  restTimerButton,
+                  WorkoutTimeWidget(
+                    routineProvider: routineProvider,
+                    workoutTimerButton: workoutTimerButton,
+                  ),
+                ],
+              ),
+      ),
     );
   }
 }

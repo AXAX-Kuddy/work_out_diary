@@ -8,6 +8,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:sqlite3/sqlite3.dart';
 import 'package:sqlite3_flutter_libs/sqlite3_flutter_libs.dart';
 import 'package:work_out_app/util/keys.dart';
+import 'package:work_out_app/util/palette.dart';
 
 part 'database.g.dart';
 
@@ -31,6 +32,16 @@ class AppDatabase extends _$AppDatabase {
   Future<int> removeRoutine(Routine selectRoutine) async {
     /// 매개변수로 받은 루틴 삭제
     return await delete(routines).delete(selectRoutine);
+  }
+
+  Future<int> updateRoutine({required Routine selectRoutine, required  RoutinesCompanion companion}) async {
+    return (update(routines)
+          ..where(
+            (tbl) => tbl.id.equals(selectRoutine.id),
+          ))
+        .write(
+      companion
+    );
   }
 
   /// 모든 루틴들(운동종목, 세트 포함) 삭제
@@ -135,8 +146,6 @@ class AppDatabase extends _$AppDatabase {
       }
     }
   }
-
-
 }
 
 LazyDatabase _openConnection() {

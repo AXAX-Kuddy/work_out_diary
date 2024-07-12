@@ -146,7 +146,7 @@ class Set {
       "weight": weight,
       "rpe": rpe,
       "e1rm": e1rm,
-      "setComplete": false,
+      "setComplete": setComplete,
     };
   }
 
@@ -157,6 +157,7 @@ class Set {
       reps: json["reps"],
       rpe: json["rpe"],
       e1rm: json["e1rm"],
+      setComplete: json["setComplete"],
     );
   }
 
