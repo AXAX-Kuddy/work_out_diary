@@ -30,8 +30,9 @@ class MainStore {
       SBDkeys.deadLift: 0.0,
     },
     UserInfoField.dotsPoint: 0.0,
-    UserInfoField.age: 999,
-    UserInfoField.weight: 999.0,
+    UserInfoField.age: null,
+    UserInfoField.height: null,
+    UserInfoField.weight: null,
     UserInfoField.isFemale: false,
     UserInfoField.isEdit: false,
   };
@@ -44,6 +45,11 @@ class MainStoreProvider extends ChangeNotifier {
   double get squatWeight => userInfo[UserInfoField.userSBD][SBDkeys.squat];
   double get benchWeight => userInfo[UserInfoField.userSBD][SBDkeys.benchPress];
   double get deadWeight => userInfo[UserInfoField.userSBD][SBDkeys.deadLift];
+  double get sbdTotal {
+    double total = squatWeight + benchWeight + deadWeight;
+
+    return total;
+  }
 
   void setUserInfo({
     required UserInfoField userInfoField,

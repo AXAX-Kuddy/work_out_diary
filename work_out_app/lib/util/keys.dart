@@ -5,6 +5,7 @@ enum UserInfoField {
   userSBD,
   dotsPoint,
   age,
+  height,
   weight,
   isFemale,
   isEdit,
@@ -21,6 +22,8 @@ extension UserInfoFieldExtention on UserInfoField {
         return 'dotsPoint';
       case UserInfoField.age:
         return 'age';
+        case UserInfoField.height:
+        return 'height';
       case UserInfoField.weight:
         return 'weight';
       case UserInfoField.isFemale:
