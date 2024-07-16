@@ -13,6 +13,27 @@ class BasePage extends StatelessWidget {
   final MainAxisAlignment mainAxisAlignment;
   final CrossAxisAlignment crossAxisAlignment;
 
+  Widget buildBody() {
+    return Container(
+      decoration: BoxDecoration(
+        color: backgroundColor,
+      ),
+      child: Padding(
+        padding: padding,
+        child: Column(
+          mainAxisAlignment: mainAxisAlignment,
+          crossAxisAlignment: crossAxisAlignment,
+          children: [
+            const SizedBox(
+              height: 30,
+            ),
+            ...children
+          ],
+        ),
+      ),
+    );
+  }
+
   const BasePage({
     super.key,
     required this.children,
@@ -32,30 +53,34 @@ class BasePage extends StatelessWidget {
       children: [
         Scaffold(
           appBar: appBar,
-          body: Container(
-            decoration: BoxDecoration(
-              color: backgroundColor,
-            ),
-            // ignore: prefer_const_constructors
-            child: Padding(
-              padding: padding,
-              child: Column(
-                mainAxisAlignment: mainAxisAlignment,
-                crossAxisAlignment: crossAxisAlignment,
-                children: [
-                  const SizedBox(
-                    height: 30,
-                  ),
-                  ...children
-                ],
-              ),
-            ),
-          ),
+          body: buildBody(),
           floatingActionButton: floatingActionButton,
           floatingActionButtonLocation: floatingActionButtonLocation,
         ),
         slidingUpPanelWidget,
       ],
+    );
+  }
+}
+
+class BasePageWithScroll extends BasePage {
+  const BasePageWithScroll({
+    super.key,
+    required super.children,
+    super.slidingUpPanelWidget,
+    super.appBar,
+    super.floatingActionButton,
+    super.floatingActionButtonLocation,
+    super.padding,
+    super.backgroundColor,
+    super.mainAxisAlignment,
+    super.crossAxisAlignment,
+  });
+
+  @override
+  Widget buildBody() {
+    return SingleChildScrollView(
+      child: super.buildBody(),
     );
   }
 }
