@@ -26,40 +26,6 @@ class _ProfileCardState extends State<ProfileCard> {
 
   final double dots = provider.MainStore.userInfo[UserInfoField.dotsPoint];
 
-  final List<String> tierList = [
-    "비기너",
-    "주니어",
-    "아마추어",
-    "시니어",
-    "어드밴스드 리프터",
-    "프로 리프터",
-  ];
-
-  final List<Color> colorList = [
-    palette.tierLow,
-    palette.tierMiddleLow,
-    palette.tierMiddle,
-    palette.tierMiddleHigh,
-    palette.tierHigh,
-    palette.tierVeryHigh,
-  ];
-
-  int userTier(double dotsPoint) {
-    if (dotsPoint > 450) {
-      return 5;
-    } else if (dotsPoint >= 400) {
-      return 4;
-    } else if (dotsPoint >= 350) {
-      return 3;
-    } else if (dotsPoint >= 300) {
-      return 2;
-    } else if (dotsPoint >= 200) {
-      return 1;
-    } else {
-      return 0;
-    }
-  }
-
   @override
   void initState() {
     pageNum = context.read<provider.PageNumber>();
@@ -146,7 +112,7 @@ class _ProfileCardState extends State<ProfileCard> {
               Row(
                 children: [
                   Text(
-                    tierList[userTier(dots)],
+                    Tier.selectTierName(dots),
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -159,7 +125,7 @@ class _ProfileCardState extends State<ProfileCard> {
                     width: 15,
                     height: 15,
                     decoration: BoxDecoration(
-                      color: colorList[userTier(dots)],
+                      color: Tier.selectTierColor(dots),
                       borderRadius: BorderRadius.circular(50),
                     ),
                   ),
