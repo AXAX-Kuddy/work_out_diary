@@ -22,6 +22,7 @@ class InputField {
     double? childrenHeight,
     required VoidCallback onTapUp,
     bool backButton = true,
+    bool escapeButton = true,
     bool endButton = false,
     bool showDots = false,
     Widget? backTo,
@@ -180,90 +181,92 @@ class InputField {
               const SizedBox(
                 height: 15,
               ),
-              Row(
-                children: [
-                  TextButton(
-                    onPressed: () {
-                      showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return CustomDialog(
-                              children: [
-                                const Text(
-                                  "해당 입력 정보까지만 입력하고 마칠까요?",
-                                  style: TextStyle(
-                                    color: palette.cardColorWhite,
-                                  ),
-                                ),
-                                const SizedBox(
-                                  height: 20,
-                                ),
-                                CancelAndEnterButtonWithIcon(
-                                  onCancelTap: () {
-                                    Navigator.pop(context);
-                                  },
-                                  cancelIcon: const Icon(
-                                    Icons.close,
-                                    color: palette.colorRed,
-                                  ),
-                                  cancelLabel: const Text(
-                                    "취소",
+              if (escapeButton)
+                Row(
+                  children: [
+                    TextButton(
+                      onPressed: () {
+                        showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return CustomDialog(
+                                children: [
+                                  const Text(
+                                    "해당 입력 정보까지만 입력하고 마칠까요?",
                                     style: TextStyle(
+                                      color: palette.cardColorWhite,
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                    height: 20,
+                                  ),
+                                  CancelAndEnterButtonWithIcon(
+                                    onCancelTap: () {
+                                      Navigator.pop(context);
+                                    },
+                                    cancelIcon: const Icon(
+                                      Icons.close,
                                       color: palette.colorRed,
                                     ),
-                                  ),
-                                  onEnterTap: () async {
-                                    Provider.of<provider.MainStoreProvider>(
-                                            context,
-                                            listen: false)
-                                        .setUserInfo(
-                                      userInfoField: UserInfoField.isEdit,
-                                      value: true,
-                                    );
-                                    await Provider.of<
-                                                provider.MainStoreProvider>(
-                                            context,
-                                            listen: false)
-                                        .savePreferences();
+                                    cancelLabel: const Text(
+                                      "취소",
+                                      style: TextStyle(
+                                        color: palette.colorRed,
+                                      ),
+                                    ),
+                                    onEnterTap: () async {
+                                      Provider.of<provider.MainStoreProvider>(
+                                              context,
+                                              listen: false)
+                                          .setUserInfo(
+                                        userInfoField: UserInfoField.isEdit,
+                                        value: true,
+                                      );
+                                      await Provider.of<
+                                                  provider.MainStoreProvider>(
+                                              context,
+                                              listen: false)
+                                          .savePreferences();
 
-                                    MainScreenRouter.removeUntilAndGo(context);
-                                  },
-                                  enterIcon: const LineIcon(
-                                    LineIcons.check,
-                                    color: palette.cardColorYelGreen,
-                                  ),
-                                  enterLabel: const Text(
-                                    "확인",
-                                    style: TextStyle(
+                                      MainScreenRouter.removeUntilAndGo(
+                                          context);
+                                    },
+                                    enterIcon: const LineIcon(
+                                      LineIcons.check,
                                       color: palette.cardColorYelGreen,
                                     ),
-                                  ),
-                                )
-                              ],
-                            );
-                          });
-                    },
-                    child: Row(
-                      children: [
-                        Text(
-                          "정보입력을 생략하고 바로 시작하기",
-                          style: TextStyle(
+                                    enterLabel: const Text(
+                                      "확인",
+                                      style: TextStyle(
+                                        color: palette.cardColorYelGreen,
+                                      ),
+                                    ),
+                                  )
+                                ],
+                              );
+                            });
+                      },
+                      child: Row(
+                        children: [
+                          Text(
+                            "정보입력을 생략하고 바로 시작하기",
+                            style: TextStyle(
+                              color: palette.cardColorWhite.withOpacity(0.7),
+                            ),
+                          ),
+                          const SizedBox(
+                            width: 5,
+                          ),
+                          LineIcon(
+                            LineIcons.dumbbell,
+                            size: 18,
                             color: palette.cardColorWhite.withOpacity(0.7),
                           ),
-                        ),
-                        const SizedBox(
-                          width: 5,
-                        ),
-                        LineIcon(
-                          LineIcons.dumbbell,
-                          size: 18,
-                          color: palette.cardColorWhite.withOpacity(0.7),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                ],
-              ),
+                  ],
+                ),
             ],
           ),
         );

@@ -178,6 +178,15 @@ class _DotsGaugeState extends State<DotsGauge> with TickerProviderStateMixin {
   }
 
   @override
+  void dispose() {
+    _heightAnimationController.dispose();
+    _nextTierAnimationController.dispose();
+    _gaugeTierNameAnimationController.dispose();
+
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.end,

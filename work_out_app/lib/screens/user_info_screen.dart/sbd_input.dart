@@ -13,7 +13,12 @@ import 'package:work_out_app/provider/store.dart' as provider;
 import 'package:work_out_app/util/keys.dart';
 
 class SBDInput extends StatefulWidget {
-  const SBDInput({super.key});
+  final bool fromDotsScreen;
+
+  const SBDInput({
+    super.key,
+    this.fromDotsScreen = false,
+  });
 
   @override
   State<SBDInput> createState() => _SBDInputState();
@@ -116,13 +121,30 @@ class _SBDInputState extends State<SBDInput> {
   @override
   Widget build(BuildContext context) {
     return BasePage(
+      appBar: widget.fromDotsScreen
+          ? AppBar(
+              leading: IconButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                icon: const Icon(
+                  Icons.close,
+                ),
+                color: palette.cardColorWhite,
+              ),
+            )
+          : null,
       mainAxisAlignment: MainAxisAlignment.center,
       children: InputField.mainInput(
         context: context,
         endButton: true,
+        escapeButton: !widget.fromDotsScreen,
         showDots: true,
+        backButton: !widget.fromDotsScreen,
         backTo: const AgeInput(),
-        title: "마지막으로, 당신의 SBD 기록을 입력해주세요!",
+        title: widget.fromDotsScreen
+            ? "당신의 SBD 기록을 입력해주세요!"
+            : "마지막으로, 당신의 SBD 기록을 입력해주세요!",
         subtitle: "단위는 kg입니다. lb는 절대 사양",
         children: [
           Expanded(

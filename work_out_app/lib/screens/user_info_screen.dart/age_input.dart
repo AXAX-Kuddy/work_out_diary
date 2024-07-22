@@ -14,13 +14,19 @@ import 'package:work_out_app/util/palette.dart' as palette;
 import 'package:work_out_app/provider/store.dart' as provider;
 
 class AgeInput extends StatefulWidget {
-  const AgeInput({super.key});
+  final bool fromDotsScreen;
+
+  const AgeInput({
+    super.key,
+    this.fromDotsScreen = false,
+  });
 
   @override
   State<AgeInput> createState() => _AgeInputState();
 }
 
 class _AgeInputState extends State<AgeInput> {
+  late provider.MainStoreProvider mainStoreProvider;
   late provider.UserInfo userInfo;
   late Function({required UserInfoField userInfoField, required dynamic value})
       setUserInfo;
@@ -33,6 +39,10 @@ class _AgeInputState extends State<AgeInput> {
   final GlobalKey<FormState> weightKey = GlobalKey<FormState>();
   final FocusNode weightFocusNode = FocusNode();
 
+  final TextEditingController heightController = TextEditingController();
+  final GlobalKey<FormState> heightKey = GlobalKey<FormState>();
+  final FocusNode heightFocusNode = FocusNode();
+
   ///현재 선택된 드롭다운 아이템 변수
   ///페이지를 불러올 때 값이 있다면
   String? nowDropDownValue;
@@ -40,10 +50,12 @@ class _AgeInputState extends State<AgeInput> {
   bool isFemale = false;
   int? userAge;
   double? weight;
+  double? height;
 
   bool ageValid = false;
   bool genderValid = false;
   bool weightValid = false;
+  bool heightValid = false;
 
   @override
   void initState() {
@@ -51,29 +63,38 @@ class _AgeInputState extends State<AgeInput> {
     setUserInfo = context.read<provider.MainStoreProvider>().setUserInfo;
 
     /// 사용자가 나이 및 성별을 기입했는지 여부
-    if (userInfo[UserInfoField.age] != 999 &&
-        userInfo[UserInfoField.weight] != 999.0) {
+    if (userInfo[UserInfoField.age] != null) {
       ageController.text = userInfo[UserInfoField.age].toString();
-      weightController.text = userInfo[UserInfoField.weight].toString();
-      print(weightController.text);
       setState(() {
-        genderValid = true;
         ageValid = true;
+      });
+    }
+
+    if (userInfo[UserInfoField.weight] != null) {
+      weightController.text = userInfo[UserInfoField.weight].toString();
+      setState(() {
         weightValid = true;
       });
+    }
 
-      /// 유저 성별 파악
-      if (userInfo[UserInfoField.isFemale]) {
-        setState(() {
-          isFemale = true;
-          nowDropDownValue = "여자";
-        });
-      } else {
-        setState(() {
-          isFemale = false;
-          nowDropDownValue = "남자";
-        });
-      }
+    if (userInfo[UserInfoField.height] != null) {
+      heightController.text = userInfo[UserInfoField.height].toString();
+      setState(() {
+        heightValid = true;
+      });
+    }
+
+    /// 유저 성별 파악
+    if (userInfo[UserInfoField.isFemale]) {
+      setState(() {
+        isFemale = true;
+        nowDropDownValue = "여자";
+      });
+    } else {
+      setState(() {
+        isFemale = false;
+        nowDropDownValue = "남자";
+      });
     }
 
     super.initState();
@@ -82,193 +103,307 @@ class _AgeInputState extends State<AgeInput> {
   @override
   Widget build(BuildContext context) {
     return BasePage(
+      appBar: widget.fromDotsScreen
+          ? AppBar(
+              leading: IconButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                icon: const Icon(
+                  Icons.close,
+                ),
+                color: palette.cardColorWhite,
+              ),
+            )
+          : null,
       mainAxisAlignment: MainAxisAlignment.center,
       children: InputField.mainInput(
         context: context,
-        
+        backButton: !widget.fromDotsScreen,
+        escapeButton: !widget.fromDotsScreen,
+        endButton: widget.fromDotsScreen,
         backTo: const NameInput(),
-        title: "조금 더 세부적인 정보도 알고 싶어요!",
-        subtitle: "몸무게 단위는 kg이에요.",
+        title: widget.fromDotsScreen
+            ? "세부적인 정보도 알고 싶어요!"
+            : "조금 더 세부적인 정보도 알고 싶어요!",
+        subtitle: "신장 단위는 cm, 체중 단위는 kg이에요.",
         childrenWidth: 300,
         children: [
-          /// 나이 입력란
-          Expanded(
-            child: CustomTextField(
-              formKey: ageKey,
-              focusNode: ageFocusNode,
-              controller: ageController,
-              margin: const EdgeInsets.only(
-                right: 10,
+          Column(
+            children: [
+              SizedBox(
+                width: 300,
+                child: Row(
+                  children: [
+                    /// 나이 입력란
+                    Expanded(
+                      child: CustomTextField(
+                        formKey: ageKey,
+                        focusNode: ageFocusNode,
+                        controller: ageController,
+                        hintText: "나이",
+                        textStyle: const TextStyle(
+                          color: palette.cardColorWhite,
+                        ),
+                        textInputType: TextInputType.number,
+                        isValid: ageValid,
+                        validator: (value) {
+                          /// 값이 null이 아닐 때
+                          if (value != null) {
+                            /// 값이 비어있다면
+                            if (value.isEmpty) {
+                              setState(() {
+                                ageValid = false;
+                              });
+                              return "값을 입력해주세요!";
+                            }
+
+                            /// 값이 숫자가 아니라면
+                            if (int.tryParse(value) == null) {
+                              setState(() {
+                                ageValid = false;
+                              });
+                              return "숫자만 입력해주세요!";
+                            }
+
+                            /// 값이 숫자일 때
+                            if (int.tryParse(value) != null) {
+                              // 비정상적인 값을 입력했을 경우
+                              if (int.parse(value) > 118 ||
+                                  int.parse(value) <= 0) {
+                                setState(() {
+                                  ageValid = false;
+                                });
+                                return "장난금지!";
+                              }
+                            }
+                          }
+
+                          /// 모든 예외를 통과했다면
+                          setState(() {
+                            ageValid = true;
+                            userAge = int.parse(value!);
+                          });
+                          return null;
+                        },
+                        onFocusout: () {
+                          CustomTextField.submit(ageKey);
+                        },
+                        onFieldSubmitted: (value) {
+                          CustomTextField.submit(ageKey);
+                        },
+                      ),
+                    ),
+
+                    const SizedBox(
+                      width: 10,
+                    ),
+
+                    /// 성별 입력란
+                    Expanded(
+                      child: CustomDropDownButton(
+                        hint: "성별",
+                        textStyle: const TextStyle(
+                          color: palette.cardColorWhite,
+                        ),
+                        itemTextStyle: const TextStyle(
+                          color: palette.cardColorWhite,
+                        ),
+                        width: null,
+                        height: 55,
+                        itemList: const [
+                          "남자",
+                          "여자",
+                        ],
+                        nowValue: nowDropDownValue,
+                        enabledValid: genderValid,
+                        onChanged: (value) {
+                          if (value == "남자") {
+                            setState(() {
+                              genderValid = true;
+                              isFemale = false;
+                            });
+                          } else {
+                            setState(() {
+                              genderValid = true;
+                              isFemale = true;
+                            });
+                          }
+                        },
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              hintText: "나이",
-              textStyle: const TextStyle(
-                color: palette.cardColorWhite,
+              const SizedBox(
+                height: 10,
               ),
-              textInputType: TextInputType.number,
-              isValid: ageValid,
-              validator: (value) {
-                /// 값이 null이 아닐 때
-                if (value != null) {
-                  /// 값이 비어있다면
-                  if (value.isEmpty) {
-                    setState(() {
-                      ageValid = false;
-                    });
-                    return "값을 입력해주세요!";
-                  }
+              SizedBox(
+                width: 300,
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: CustomTextField(
+                        hintText: "신장cm",
+                        textStyle: const TextStyle(
+                          color: palette.cardColorWhite,
+                        ),
+                        textInputType: TextInputType.number,
+                        isValid: heightValid,
+                        focusNode: heightFocusNode,
+                        formKey: heightKey,
+                        controller: heightController,
+                        validator: (String? value) {
+                          /// 값이 null이 아닐 때
+                          if (value != null) {
+                            /// 값이 비어있다면
+                            if (value.isEmpty) {
+                              setState(() {
+                                heightValid = false;
+                                height = null;
+                              });
+                              return "값이 비었어요!";
+                            }
 
-                  /// 값이 숫자가 아니라면
-                  if (int.tryParse(value) == null) {
-                    setState(() {
-                      ageValid = false;
-                    });
-                    return "숫자만 입력해주세요!";
-                  }
+                            /// 값이 숫자가 아니라면
+                            if (double.tryParse(value) == null) {
+                              setState(() {
+                                heightValid = false;
+                                height = null;
+                              });
+                              return "숫자만 입력해주세요!";
+                            }
 
-                  /// 값이 숫자일 때
-                  if (int.tryParse(value) != null) {
-                    // 비정상적인 값을 입력했을 경우
-                    if (int.parse(value) > 118 || int.parse(value) <= 0) {
-                      setState(() {
-                        ageValid = false;
-                      });
-                      return "장난금지!";
-                    }
-                  }
-                }
+                            /// 값이 숫자일 때
+                            if (double.tryParse(value) != null) {
+                              /// 비정상적인 값을 입력했을 경우
+                              if (double.parse(value) >= 300 ||
+                                  double.parse(value) < 0) {
+                                setState(() {
+                                  heightValid = false;
+                                  height = null;
+                                });
+                                return "장난금지!";
+                              }
 
-                /// 모든 예외를 통과했다면
-                setState(() {
-                  ageValid = true;
-                  userAge = int.parse(value!);
-                });
-                return null;
-              },
-              onFocusout: () {
-                CustomTextField.submit(ageKey);
-              },
-              onFieldSubmitted: (value) {
-                CustomTextField.submit(ageKey);
-              },
-            ),
-          ),
+                              /// 값이 0일 경우
+                              if (double.parse(value) == 0) {
+                                setState(() {
+                                  heightValid = false;
+                                  height = null;
+                                });
+                                return "0 이상으로 입력해주세요!";
+                              }
+                            }
+                          }
 
-          /// 성별 입력란
-          Expanded(
-            child: CustomDropDownButton(
-              hint: "성별",
-              textStyle: const TextStyle(
-                color: palette.cardColorWhite,
+                          /// 모든 예외를 통과했다면
+                          setState(() {
+                            heightValid = true;
+                            height = double.parse(value!);
+                          });
+                          print(height);
+                          return null;
+                        },
+                        onFocusout: () {
+                          CustomTextField.submit(heightKey);
+                        },
+                        onFieldSubmitted: (String value) {
+                          CustomTextField.submit(heightKey);
+                        },
+                      ),
+                    ),
+
+                    const SizedBox(
+                      width: 10,
+                    ),
+
+                    /// 몸무게 입력란
+                    Expanded(
+                      child: CustomTextField(
+                        hintText: "체중kg",
+                        textStyle: const TextStyle(
+                          color: palette.cardColorWhite,
+                        ),
+                        textInputType: TextInputType.number,
+                        isValid: weightValid,
+                        focusNode: weightFocusNode,
+                        formKey: weightKey,
+                        controller: weightController,
+                        validator: (String? value) {
+                          /// 값이 null이 아닐 때
+                          if (value != null) {
+                            /// 값이 비어있다면
+                            if (value.isEmpty) {
+                              setState(() {
+                                weightValid = false;
+                                weight = null;
+                              });
+                              return "값이 비었어요!";
+                            }
+
+                            /// 값이 숫자가 아니라면
+                            if (double.tryParse(value) == null) {
+                              setState(() {
+                                weightValid = false;
+                                weight = null;
+                              });
+                              return "숫자만 입력해주세요!";
+                            }
+
+                            /// 값이 숫자일 때
+                            if (double.tryParse(value) != null) {
+                              /// 비정상적인 값을 입력했을 경우
+                              if (double.parse(value) >= 635 ||
+                                  double.parse(value) < 0) {
+                                setState(() {
+                                  weightValid = false;
+                                  weight = null;
+                                });
+                                return "장난금지!";
+                              }
+
+                              /// 값이 0일 경우
+                              if (double.parse(value) == 0) {
+                                setState(() {
+                                  weightValid = false;
+                                  weight = null;
+                                });
+                                return "0 이상으로 입력해주세요!";
+                              }
+                            }
+                          }
+
+                          /// 모든 예외를 통과했다면
+                          setState(() {
+                            weightValid = true;
+                            weight = double.parse(value!);
+                          });
+                          print(weight);
+                          return null;
+                        },
+                        onFocusout: () {
+                          CustomTextField.submit(weightKey);
+                        },
+                        onFieldSubmitted: (String value) {
+                          CustomTextField.submit(weightKey);
+                        },
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              itemTextStyle: const TextStyle(
-                color: palette.cardColorWhite,
-              ),
-              width: null,
-              height: 55,
-              itemList: const [
-                "남자",
-                "여자",
-              ],
-              nowValue: nowDropDownValue,
-              enabledValid: genderValid,
-              onChanged: (value) {
-                if (value == "남자") {
-                  setState(() {
-                    genderValid = true;
-                    isFemale = false;
-                  });
-                } else {
-                  setState(() {
-                    genderValid = true;
-                    isFemale = true;
-                  });
-                }
-              },
-            ),
-          ),
-
-          /// 몸무게 입력란
-          Expanded(
-            child: CustomTextField(
-              margin: const EdgeInsets.only(
-                left: 10,
-              ),
-              hintText: "체중",
-              textStyle: const TextStyle(
-                color: palette.cardColorWhite,
-              ),
-              textInputType: TextInputType.number,
-              isValid: weightValid,
-              focusNode: weightFocusNode,
-              formKey: weightKey,
-              controller: weightController,
-              validator: (String? value) {
-                /// 값이 null이 아닐 때
-                if (value != null) {
-                  /// 값이 비어있다면
-                  if (value.isEmpty) {
-                    setState(() {
-                      weightValid = false;
-                      weight = null;
-                    });
-                    return "값이 비었어요!";
-                  }
-
-                  /// 값이 숫자가 아니라면
-                  if (double.tryParse(value) == null) {
-                    setState(() {
-                      weightValid = false;
-                      weight = null;
-                    });
-                    return "숫자만 입력해주세요!";
-                  }
-
-                  /// 값이 숫자일 때
-                  if (double.tryParse(value) != null) {
-                    /// 비정상적인 값을 입력했을 경우
-                    if (double.parse(value) >= 635 || double.parse(value) < 0) {
-                      setState(() {
-                        weightValid = false;
-                        weight = null;
-                      });
-                      return "장난금지!";
-                    }
-
-                    /// 값이 0일 경우
-                    if (double.parse(value) == 0) {
-                      setState(() {
-                        weightValid = false;
-                        weight = null;
-                      });
-                      return "0 이상으로 입력해주세요!";
-                    }
-                  }
-                }
-
-                /// 모든 예외를 통과했다면
-                setState(() {
-                  weightValid = true;
-                  weight = double.parse(value!);
-                });
-                print(weight);
-                return null;
-              },
-              onFocusout: () {
-                CustomTextField.submit(weightKey);
-              },
-              onFieldSubmitted: (String value) {
-                CustomTextField.submit(weightKey);
-              },
-            ),
+            ],
           ),
         ],
         onTapUp: () {
           /// 다음페이지로 넘어가기 전 검사
           CustomTextField.submit(ageKey);
           CustomTextField.submit(weightKey);
+          CustomTextField.submit(heightKey);
 
           ///모든 입력을 완료했을 때
-          if (ageValid && genderValid && weightValid) {
+          if (ageValid && genderValid && weightValid && heightValid) {
             setUserInfo(
               userInfoField: UserInfoField.age,
               value: userAge,
@@ -280,14 +415,23 @@ class _AgeInputState extends State<AgeInput> {
             );
 
             setUserInfo(
+              userInfoField: UserInfoField.height,
+              value: height,
+            );
+
+            setUserInfo(
               userInfoField: UserInfoField.isFemale,
               value: isFemale,
             );
 
-            SlidePage.goto(
-              context: context,
-              page: const SBDInput(),
-            );
+            if (widget.fromDotsScreen) {
+              Navigator.pop(context);
+            } else {
+              SlidePage.goto(
+                context: context,
+                page: const SBDInput(),
+              );
+            }
           }
         },
       ),

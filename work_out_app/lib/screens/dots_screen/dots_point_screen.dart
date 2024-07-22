@@ -11,6 +11,8 @@ import 'package:work_out_app/provider/store.dart' as provider;
 import 'package:work_out_app/widgets/base_screen/base_page.dart';
 
 class DotsPointScreen extends StatefulWidget {
+
+
   const DotsPointScreen({
     super.key,
   });
@@ -51,7 +53,6 @@ class _DotsPointScreenState extends State<DotsPointScreen> {
         DotsGauge(
           userInfo: userInfo,
         ),
-        
       ],
     );
   }

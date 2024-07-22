@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:work_out_app/screens/user_info_screen.dart/age_input.dart';
 import 'package:work_out_app/util/keys.dart';
 import 'package:work_out_app/util/palette.dart' as palette;
 import 'package:work_out_app/provider/store.dart' as provider;
 import 'package:work_out_app/screens/dots_screen/dots_screen_widgets/null_check_text.dart';
 import 'package:work_out_app/widgets/box_widget/widget_box.dart';
+import 'package:work_out_app/widgets/router/sliding_builder.dart';
+import 'package:line_icons/line_icons.dart';
+import 'package:line_icons/line_icon.dart';
 
 class BodyData extends StatelessWidget {
   final provider.UserInfo userInfo;
@@ -28,6 +32,27 @@ class BodyData extends StatelessWidget {
                   color: palette.cardColorWhite,
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(
+                width: 7,
+              ),
+              IconButton(
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(),
+                onPressed: () {
+                  SlidePage.goto(
+                    animationDirection: AnimationDirection.bottomToTop,
+                    context: context,
+                    page: const AgeInput(
+                      fromDotsScreen: true,
+                    ),
+                  );
+                },
+                icon: const LineIcon(
+                  LineIcons.pen,
+                  size: 20,
+                  color: palette.cardColorWhite,
                 ),
               ),
             ],

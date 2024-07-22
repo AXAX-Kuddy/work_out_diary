@@ -93,6 +93,26 @@ class MainStoreProvider extends ChangeNotifier {
       }
     }
 
+    /// 유저 신장 타입 불일치 검사
+    if (userInfoField == UserInfoField.height) {
+      if (value is! double) {
+        throw ArgumentError(
+          "userInfoField가 UserInfoField.height일 경우, 반드시 value는 double타입이여야 함.",
+          "타입 불일치",
+        );
+      }
+    }
+
+    /// 유저 몸무게 타입 불일치 검사
+    if (userInfoField == UserInfoField.weight) {
+      if (value is! double) {
+        throw ArgumentError(
+          "userInfoField가 UserInfoField.weight일 경우, 반드시 value는 double타입이여야 함.",
+          "타입 불일치",
+        );
+      }
+    }
+
     /// 유저 성별 타입 불일치 검사
     if (userInfoField == UserInfoField.isFemale) {
       if (value is! bool) {
@@ -114,6 +134,7 @@ class MainStoreProvider extends ChangeNotifier {
     }
 
     MainStore.userInfo[userInfoField] = value;
+    savePreferences();
     debugPrint(MainStore.userInfo[userInfoField].toString());
   }
 
