@@ -9,13 +9,25 @@ import 'package:work_out_app/widgets/router/sliding_builder.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:line_icons/line_icon.dart';
 
-class BodyData extends StatelessWidget {
+class BodyData extends StatefulWidget {
   final provider.UserInfo userInfo;
 
   const BodyData({
     super.key,
     required this.userInfo,
   });
+
+  @override
+  State<BodyData> createState() => _BodyDataState();
+}
+
+class _BodyDataState extends State<BodyData> {
+
+  @override
+  void initState() {
+
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +39,7 @@ class BodyData extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Text(
-                "${userInfo[UserInfoField.userName]}님의 신체 데이터",
+                "${widget.userInfo[UserInfoField.userName]}님의 신체 데이터",
                 style: const TextStyle(
                   color: palette.cardColorWhite,
                   fontSize: 20,
@@ -70,8 +82,8 @@ class BodyData extends StatelessWidget {
                 ),
               ),
               NullCheckText(
-                data: userInfo[UserInfoField.isFemale] ? "여성" : "남성",
-                nullCheck: userInfo[UserInfoField.isFemale],
+                data: widget.userInfo[UserInfoField.sex],
+                nullCheck: widget.userInfo[UserInfoField.sex],
                 textStyle: const TextStyle(
                   color: palette.cardColorWhite,
                   fontSize: 16,
@@ -92,8 +104,8 @@ class BodyData extends StatelessWidget {
                 ),
               ),
               NullCheckText(
-                data: "${userInfo[UserInfoField.height]} Cm",
-                nullCheck: userInfo[UserInfoField.height],
+                data: "${widget.userInfo[UserInfoField.height]} Cm",
+                nullCheck: widget.userInfo[UserInfoField.height],
                 textStyle: const TextStyle(
                   color: palette.cardColorWhite,
                   fontSize: 16,
@@ -114,8 +126,8 @@ class BodyData extends StatelessWidget {
                 ),
               ),
               NullCheckText(
-                data: "${userInfo[UserInfoField.weight]} Kg",
-                nullCheck: userInfo[UserInfoField.weight],
+                data: "${widget.userInfo[UserInfoField.weight]} Kg",
+                nullCheck: widget.userInfo[UserInfoField.weight],
                 textStyle: const TextStyle(
                   color: palette.cardColorWhite,
                   fontSize: 16,

@@ -8,7 +8,7 @@ enum UserInfoField {
   age,
   height,
   weight,
-  isFemale,
+  sex,
   isEdit,
 }
 
@@ -16,25 +16,31 @@ extension UserInfoFieldExtention on UserInfoField {
   String get key {
     switch (this) {
       case UserInfoField.userName:
-        return 'userName';
+        return "userName";
       case UserInfoField.userSBD:
-        return 'userSBD';
+        return "userSBD";
       case UserInfoField.dotsPoint:
-        return 'dotsPoint';
+        return "dotsPoint";
       case UserInfoField.age:
-        return 'age';
+        return "age";
       case UserInfoField.height:
-        return 'height';
+        return "height";
       case UserInfoField.weight:
-        return 'weight';
-      case UserInfoField.isFemale:
-        return 'isFemale';
+        return "weight";
+      case UserInfoField.sex:
+        return "sex";
       case UserInfoField.isEdit:
-        return 'isEdit';
+        return "isEdit";
       default:
         return '';
     }
   }
+}
+
+class SexType {
+  static String get male => "남자";
+  static String get female => "여자";
+  static String get nonSelect => "미선택";
 }
 
 enum SBDkeys {

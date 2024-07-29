@@ -33,7 +33,7 @@ class MainStore {
     UserInfoField.age: null,
     UserInfoField.height: null,
     UserInfoField.weight: null,
-    UserInfoField.isFemale: false,
+    UserInfoField.sex: SexType.nonSelect,
     UserInfoField.isEdit: false,
   };
 }
@@ -114,10 +114,10 @@ class MainStoreProvider extends ChangeNotifier {
     }
 
     /// 유저 성별 타입 불일치 검사
-    if (userInfoField == UserInfoField.isFemale) {
-      if (value is! bool) {
+    if (userInfoField == UserInfoField.sex) {
+      if (value is! String) {
         throw ArgumentError(
-          "userInfoField가 UserInfoField.isFemale일 경우, 반드시 value는 bool타입이여야 함.",
+          "userInfoField가 UserInfoField.gender일 경우, 반드시 value는 SexType.[value].value이여야 함.",
           "타입 불일치",
         );
       }
@@ -134,7 +134,6 @@ class MainStoreProvider extends ChangeNotifier {
     }
 
     MainStore.userInfo[userInfoField] = value;
-    savePreferences();
     debugPrint(MainStore.userInfo[userInfoField].toString());
   }
 
@@ -153,8 +152,16 @@ class MainStoreProvider extends ChangeNotifier {
   static double dotsCal({
     required num bodyWeight,
     required num weightLifted,
-    required bool isFemale,
+    required String sex,
   }) {
+    bool isFemale = false;
+
+    if (sex == SexType.male) {
+      isFemale = false;
+    } else {
+      isFemale = true;
+    }
+
     var maleCoefficient = [
       -307.75076,
       24.0900756,
@@ -185,15 +192,102 @@ class MainStoreProvider extends ChangeNotifier {
     return double.parse(score);
   }
 
+  Future<bool> _saveBodyInfo(SharedPreferences prefs, double weight) async {
+    await prefs.setDouble(
+      UserInfoField.weight.key,
+      weight,
+    );
+
+    setDots(null);
+
+    await prefs.setDouble(
+      UserInfoField.dotsPoint.key,
+      userInfo[UserInfoField.dotsPoint],
+    );
+
+    return Future.value(true);
+  }
+
   void setDots(num? userSBD) {
     num weightLifted = userSBD ?? squatWeight + benchWeight + deadWeight;
 
     double result = dotsCal(
         bodyWeight: userInfo[UserInfoField.weight],
         weightLifted: weightLifted,
-        isFemale: userInfo[UserInfoField.isFemale]);
+        sex: userInfo[UserInfoField.sex]);
 
     userInfo[UserInfoField.dotsPoint] = result;
+  }
+
+  Future<bool> savePreferencesOnly(dynamic key, dynamic value) async {
+    if (key is! UserInfoField && key is! SBDkeys) {
+      throw ArgumentError("key의 타입은 반드시 UserInfoField나 SBDKeys여야 합니다.");
+    } else {
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+
+      switch (key) {
+        case UserInfoField.userName:
+          return await prefs.setString(
+            UserInfoField.userName.key,
+            value,
+          );
+
+        case SBDkeys.squat:
+          return await prefs.setDouble(
+            SBDkeys.squat.key,
+            value,
+          );
+        case SBDkeys.benchPress:
+          return await prefs.setDouble(
+            SBDkeys.benchPress.key,
+            value,
+          );
+        case SBDkeys.deadLift:
+          return await prefs.setDouble(
+            SBDkeys.deadLift.key,
+            value,
+          );
+
+        case UserInfoField.dotsPoint:
+          return await prefs.setDouble(
+            UserInfoField.dotsPoint.key,
+            value,
+          );
+
+        case UserInfoField.age:
+          return await prefs.setInt(
+            UserInfoField.age.key,
+            value,
+          );
+
+        case UserInfoField.height:
+          return await prefs.setDouble(
+            UserInfoField.height.key,
+            value,
+          );
+
+        case UserInfoField.weight:
+          return _saveBodyInfo(
+            prefs,
+            value,
+          );
+
+        case UserInfoField.sex:
+          return await prefs.setString(
+            UserInfoField.sex.key,
+            value,
+          );
+
+        case UserInfoField.isEdit:
+          return await prefs.setBool(
+            UserInfoField.isEdit.key,
+            value,
+          );
+
+        default:
+          return await Future.value(false);
+      }
+    }
   }
 
   /// 기기에 userInfo 저장
@@ -201,51 +295,57 @@ class MainStoreProvider extends ChangeNotifier {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
 
     /// 유저 이름
-    prefs.setString(
+    await prefs.setString(
       UserInfoField.userName.key,
       userInfo[UserInfoField.userName],
     );
 
     /// 유저 SBD 기록
-    prefs.setDouble(
+    await prefs.setDouble(
       SBDkeys.squat.key,
       squatWeight,
     );
-    prefs.setDouble(
+    await prefs.setDouble(
       SBDkeys.benchPress.key,
       benchWeight,
     );
-    prefs.setDouble(
+    await prefs.setDouble(
       SBDkeys.deadLift.key,
       deadWeight,
     );
 
     /// 닷츠 포인트
-    prefs.setDouble(
+    await prefs.setDouble(
       UserInfoField.dotsPoint.key,
       userInfo[UserInfoField.dotsPoint],
     );
 
     /// 유저 나이
-    prefs.setInt(
+    await prefs.setInt(
       UserInfoField.age.key,
       userInfo[UserInfoField.age],
     );
 
+    /// 키
+    await prefs.setDouble(
+      UserInfoField.height.key,
+      userInfo[UserInfoField.height],
+    );
+
     /// 몸무게
-    prefs.setDouble(
+    await prefs.setDouble(
       UserInfoField.weight.key,
       userInfo[UserInfoField.weight],
     );
 
     /// 성별
-    prefs.setBool(
-      UserInfoField.isFemale.key,
-      userInfo[UserInfoField.isFemale],
+    await prefs.setString(
+      UserInfoField.sex.key,
+      userInfo[UserInfoField.sex],
     );
 
     /// 유저 정보 수정 여부
-    prefs.setBool(
+    await prefs.setBool(
       UserInfoField.isEdit.key,
       userInfo[UserInfoField.isEdit],
     );
@@ -272,15 +372,17 @@ class MainStoreProvider extends ChangeNotifier {
         prefs.getDouble(UserInfoField.dotsPoint.key) ?? 0.0;
 
     /// 나이
-    userInfo[UserInfoField.age] = prefs.getInt(UserInfoField.age.key) ?? 0;
+    userInfo[UserInfoField.age] = prefs.getInt(UserInfoField.age.key);
 
     /// 몸무게
-    userInfo[UserInfoField.weight] =
-        prefs.getDouble(UserInfoField.weight.key) ?? 0.0;
+    userInfo[UserInfoField.weight] = prefs.getDouble(UserInfoField.weight.key);
+
+    /// 몸무게
+    userInfo[UserInfoField.height] = prefs.getDouble(UserInfoField.height.key);
 
     /// 성별
-    userInfo[UserInfoField.isFemale] =
-        prefs.getBool(UserInfoField.isFemale.key) ?? false;
+    userInfo[UserInfoField.sex] =
+        prefs.getString(UserInfoField.sex.key) ?? SexType.nonSelect;
 
     /// userInfo 수정 여부
     userInfo[UserInfoField.isEdit] =
@@ -289,56 +391,53 @@ class MainStoreProvider extends ChangeNotifier {
     return 0;
   }
 
-  /// 기기에 저장된 userInfo 불러오기
+  /// 기기에 저장된 userInfo 모두 초기화
   Future<void> resetPreferences() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
 
     /// 유저 이름
-    prefs.setString(
+    await prefs.setString(
       UserInfoField.userName.key,
       DevelopName.devName.key,
     );
 
     /// 유저 SBD 기록
-    prefs.setDouble(
+    await prefs.setDouble(
       SBDkeys.squat.key,
       0.0,
     );
-    prefs.setDouble(
+    await prefs.setDouble(
       SBDkeys.benchPress.key,
       0.0,
     );
-    prefs.setDouble(
+    await prefs.setDouble(
       SBDkeys.deadLift.key,
       0.0,
     );
 
     /// 닷츠 포인트
-    prefs.setDouble(
+    await prefs.setDouble(
       UserInfoField.dotsPoint.key,
       0.0,
     );
 
     /// 유저 나이
-    prefs.setInt(
-      UserInfoField.age.key,
-      0,
-    );
+    await prefs.remove(UserInfoField.age.key);
+
+    /// 키
+    await prefs.remove(UserInfoField.height.key);
 
     /// 몸무게
-    prefs.setDouble(
-      UserInfoField.weight.key,
-      0.0,
-    );
+    await prefs.remove(UserInfoField.weight.key);
 
     /// 성별
-    prefs.setBool(
-      UserInfoField.isFemale.key,
-      false,
+    await prefs.setString(
+      UserInfoField.sex.key,
+      SexType.nonSelect,
     );
 
     /// 유저 정보 수정 여부
-    prefs.setBool(
+    await prefs.setBool(
       UserInfoField.isEdit.key,
       false,
     );

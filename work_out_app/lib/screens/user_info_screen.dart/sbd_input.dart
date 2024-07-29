@@ -25,12 +25,17 @@ class SBDInput extends StatefulWidget {
 }
 
 class _SBDInputState extends State<SBDInput> {
+  late provider.MainStoreProvider mainStoreProvider;
   late provider.UserInfo userInfo;
   late Function({required UserInfoField userInfoField, required dynamic value})
       setUserInfo;
   late Function({required SBDkeys key, required double value}) setSBD;
   late Function(num? userSBD) setDots;
   late Future<void> Function() savePreferences;
+
+  final TextEditingController squatController = TextEditingController();
+  final TextEditingController benchController = TextEditingController();
+  final TextEditingController deadController = TextEditingController();
 
   final FocusNode squatFocusNode = FocusNode();
   final FocusNode benchFocusNode = FocusNode();
@@ -108,12 +113,46 @@ class _SBDInputState extends State<SBDInput> {
 
   @override
   void initState() {
+    mainStoreProvider = context.read<provider.MainStoreProvider>();
     userInfo = context.read<provider.MainStoreProvider>().userInfo;
     setUserInfo = context.read<provider.MainStoreProvider>().setUserInfo;
     setSBD = context.read<provider.MainStoreProvider>().setSBD;
     savePreferences =
         context.read<provider.MainStoreProvider>().savePreferences;
     setDots = context.read<provider.MainStoreProvider>().setDots;
+
+    if (mainStoreProvider.squatWeight > 0.0) {
+      squatController.text = mainStoreProvider.squatWeight.toString();
+
+      setState(() {
+        squatValidChanger(
+          newValue: true,
+          weight: mainStoreProvider.squatWeight,
+        );
+      });
+    }
+
+    if (mainStoreProvider.benchWeight > 0.0) {
+      benchController.text = mainStoreProvider.benchWeight.toString();
+
+      setState(() {
+        benchValidChanger(
+          newValue: true,
+          weight: mainStoreProvider.benchWeight,
+        );
+      });
+    }
+
+    if (mainStoreProvider.deadWeight > 0.0) {
+      deadController.text = mainStoreProvider.deadWeight.toString();
+
+      setState(() {
+        deadValidChanger(
+          newValue: true,
+          weight: mainStoreProvider.deadWeight,
+        );
+      });
+    }
 
     super.initState();
   }
@@ -150,6 +189,7 @@ class _SBDInputState extends State<SBDInput> {
           Expanded(
             child: SquatField(
               hintText: "스쿼트",
+              controller: squatController,
               validChanger: squatValidChanger,
               margin: const EdgeInsets.symmetric(
                 horizontal: 10,
@@ -162,6 +202,7 @@ class _SBDInputState extends State<SBDInput> {
           Expanded(
             child: BenchField(
               hintText: "벤치프레스",
+              controller: benchController,
               validChanger: benchValidChanger,
               margin: const EdgeInsets.symmetric(
                 horizontal: 10,
@@ -174,6 +215,7 @@ class _SBDInputState extends State<SBDInput> {
           Expanded(
             child: DeadField(
               hintText: "데드리프트",
+              controller: deadController,
               validChanger: deadValidChanger,
               margin: const EdgeInsets.symmetric(
                 horizontal: 10,
@@ -227,6 +269,7 @@ abstract class SBDField extends StatefulWidget {
 
   final String hintText;
   final TextStyle? hintStyle;
+  final TextEditingController? controller;
   final FocusNode focusNode;
   final GlobalKey<FormState> formKey;
   final EdgeInsets? margin;
@@ -237,6 +280,7 @@ abstract class SBDField extends StatefulWidget {
     required this.hintText,
     this.hintStyle,
     required this.valid,
+    this.controller,
     required this.focusNode,
     required this.formKey,
     this.margin,
@@ -252,6 +296,7 @@ class _SBDFieldState extends State<SBDField> {
     return CustomTextField(
       margin: widget.margin,
       isValid: widget.valid,
+      controller: widget.controller,
       focusNode: widget.focusNode,
       formKey: widget.formKey,
       textInputType: TextInputType.number,
@@ -342,6 +387,7 @@ class SquatField extends SBDField {
     super.hintStyle,
     required super.valid,
     required super.validChanger,
+    super.controller,
     required super.focusNode,
     required super.formKey,
     super.margin,
@@ -355,6 +401,7 @@ class BenchField extends SBDField {
     super.hintStyle,
     required super.valid,
     required super.validChanger,
+    super.controller,
     required super.focusNode,
     required super.formKey,
     super.margin,
@@ -368,6 +415,7 @@ class DeadField extends SBDField {
     super.hintStyle,
     required super.valid,
     required super.validChanger,
+    super.controller,
     required super.focusNode,
     required super.formKey,
     super.margin,

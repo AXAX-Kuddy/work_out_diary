@@ -1,8 +1,6 @@
-
 // ignore_for_file: unused_import
 
 import 'dart:io';
-
 
 //기본
 import 'package:flutter/gestures.dart';
@@ -111,6 +109,8 @@ class _MyAppState extends State<MyApp> {
     super.initState();
     mainStoreProvider = context.read<provider.MainStoreProvider>();
     pageNumber = context.read<provider.PageNumber>();
+
+    // mainStoreProvider.resetPreferences();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       bool isEdit = mainStoreProvider.userInfo[UserInfoField.isEdit];

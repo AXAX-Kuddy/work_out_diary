@@ -47,24 +47,26 @@ class _AgeInputState extends State<AgeInput> {
   ///페이지를 불러올 때 값이 있다면
   String? nowDropDownValue;
 
-  bool isFemale = false;
   int? userAge;
+  String? sex;
   double? weight;
   double? height;
 
   bool ageValid = false;
-  bool genderValid = false;
+  bool sexValid = false;
   bool weightValid = false;
   bool heightValid = false;
 
   @override
   void initState() {
+    mainStoreProvider = context.read<provider.MainStoreProvider>();
     userInfo = context.read<provider.MainStoreProvider>().userInfo;
     setUserInfo = context.read<provider.MainStoreProvider>().setUserInfo;
 
     /// 사용자가 나이 및 성별을 기입했는지 여부
     if (userInfo[UserInfoField.age] != null) {
       ageController.text = userInfo[UserInfoField.age].toString();
+
       setState(() {
         ageValid = true;
       });
@@ -85,15 +87,25 @@ class _AgeInputState extends State<AgeInput> {
     }
 
     /// 유저 성별 파악
-    if (userInfo[UserInfoField.isFemale]) {
-      setState(() {
-        isFemale = true;
-        nowDropDownValue = "여자";
-      });
+    if (userInfo[UserInfoField.sex] != SexType.nonSelect) {
+      if (userInfo[UserInfoField.sex] == SexType.male) {
+        setState(() {
+          sexValid = true;
+          sex = userInfo[UserInfoField.sex];
+          nowDropDownValue = userInfo[UserInfoField.sex];
+        });
+      } else if (userInfo[UserInfoField.sex] == SexType.female) {
+        setState(() {
+          sexValid = true;
+          sex = userInfo[UserInfoField.sex];
+          nowDropDownValue = userInfo[UserInfoField.sex];
+        });
+      }
     } else {
       setState(() {
-        isFemale = false;
-        nowDropDownValue = "남자";
+        sexValid = false;
+        sex = null;
+        nowDropDownValue = null;
       });
     }
 
@@ -211,22 +223,22 @@ class _AgeInputState extends State<AgeInput> {
                         ),
                         width: null,
                         height: 55,
-                        itemList: const [
-                          "남자",
-                          "여자",
+                        itemList: [
+                          SexType.male,
+                          SexType.female,
                         ],
                         nowValue: nowDropDownValue,
-                        enabledValid: genderValid,
+                        enabledValid: sexValid,
                         onChanged: (value) {
-                          if (value == "남자") {
+                          if (value == SexType.male) {
                             setState(() {
-                              genderValid = true;
-                              isFemale = false;
+                              sexValid = true;
+                              sex = SexType.male;
                             });
                           } else {
                             setState(() {
-                              genderValid = true;
-                              isFemale = true;
+                              sexValid = true;
+                              sex = SexType.female;
                             });
                           }
                         },
@@ -302,7 +314,7 @@ class _AgeInputState extends State<AgeInput> {
                             heightValid = true;
                             height = double.parse(value!);
                           });
-                          print(height);
+
                           return null;
                         },
                         onFocusout: () {
@@ -379,7 +391,7 @@ class _AgeInputState extends State<AgeInput> {
                             weightValid = true;
                             weight = double.parse(value!);
                           });
-                          print(weight);
+
                           return null;
                         },
                         onFocusout: () {
@@ -403,7 +415,7 @@ class _AgeInputState extends State<AgeInput> {
           CustomTextField.submit(heightKey);
 
           ///모든 입력을 완료했을 때
-          if (ageValid && genderValid && weightValid && heightValid) {
+          if (ageValid && sexValid && weightValid && heightValid) {
             setUserInfo(
               userInfoField: UserInfoField.age,
               value: userAge,
@@ -420,11 +432,27 @@ class _AgeInputState extends State<AgeInput> {
             );
 
             setUserInfo(
-              userInfoField: UserInfoField.isFemale,
-              value: isFemale,
+              userInfoField: UserInfoField.sex,
+              value: sex,
             );
 
             if (widget.fromDotsScreen) {
+              mainStoreProvider.savePreferencesOnly(
+                UserInfoField.age,
+                userAge,
+              );
+              mainStoreProvider.savePreferencesOnly(
+                UserInfoField.weight,
+                weight,
+              );
+              mainStoreProvider.savePreferencesOnly(
+                UserInfoField.height,
+                height,
+              );
+              mainStoreProvider.savePreferencesOnly(
+                UserInfoField.sex,
+                sex,
+              );
               Navigator.pop(context);
             } else {
               SlidePage.goto(
