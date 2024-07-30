@@ -1,17 +1,14 @@
 // ignore_for_file: unused_field
 
-import 'dart:convert';
-
-import 'package:drift/drift.dart' as drift;
 import 'package:flutter/material.dart';
 import 'package:line_icons/line_icon.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:work_out_app/database/database.dart';
-import 'package:work_out_app/provider/make_program.dart' as maked;
+
 import 'package:work_out_app/screens/diary_screen/diary_screen_widgets/calendar_custom/calendar_builders.dart';
 import 'package:work_out_app/screens/diary_screen/diary_screen_widgets/calendar_custom/calendar_style.dart';
-import 'package:work_out_app/screens/plan_screen/plan_screen.dart';
+
 import 'package:work_out_app/util/keys.dart';
 import 'package:work_out_app/widgets/base_screen/base_page.dart';
 import 'package:work_out_app/util/palette.dart' as palette;
@@ -22,8 +19,8 @@ import 'package:work_out_app/widgets/buttons/cancel_and_enter_buttons.dart';
 import 'package:work_out_app/widgets/buttons/trash_can_button.dart';
 import 'package:work_out_app/widgets/dialog/custom_dialog.dart';
 import 'package:work_out_app/widgets/grid_loading_circle/loading_circle.dart';
-import 'package:work_out_app/widgets/router/plan_screen_router.dart';
-import 'package:work_out_app/widgets/router/sliding_builder.dart';
+
+import '../../util/util.dart';
 
 class DiaryScreen extends StatefulWidget {
   const DiaryScreen({super.key});
@@ -230,45 +227,15 @@ class _DiaryScreenState extends State<DiaryScreen> {
                                             Navigator.pop(context);
                                           },
                                           onEnterTap: () {
-                                            Navigator.pop(context);
-
-                                            SlidePage.goto(
+                                            updateRoutine(
                                                 context: context,
-                                                page: PlanningScreen(
-                                                  updateRoutine: (String children ) async {
-                                                    await database
-                                                        .updateRoutine(
-                                                      selectRoutine: routine,
-                                                      companion:
-                                                          RoutinesCompanion(
-                                                        id: drift.Value(
-                                                            routine.id),
-                                                        routineName:drift. Value(
-                                                            routine
-                                                                .routineName),
-                                                        date:drift. Value(
-                                                            routine.date),
-                                                        isFavor:drift. Value(
-                                                            routine
-                                                                .isFavor),
-                                                        children:drift. Value(
-                                                            children),
-                                                      ),
-                                                    );
-                                                  },
-                                                  onPageLoaded: () {
-                                                    routineProvider
-                                                        .clearUserSelectWorkout();
-                                                    for (maked.Workout workout
-                                                        in RoutineDetail(routine
-                                                                .children)
-                                                            .getWorkoutList) {
-                                                      routineProvider
-                                                          .addUserSelectWorkout(
-                                                              workout);
-                                                    }
-                                                  },
-                                                ));
+                                                database: database,
+                                                routine: routine,
+                                                routineProvider:
+                                                    routineProvider,
+                                                workoutList: RoutineDetail(
+                                                        routine.children)
+                                                    .getWorkoutList);
                                           },
                                         ),
                                       ],
@@ -309,146 +276,5 @@ class _DiaryScreenState extends State<DiaryScreen> {
         ),
       ],
     );
-  }
-}
-
-class RoutineDetail {
-  String routineChildren;
-  RoutineDetail(
-    this.routineChildren,
-  );
-
-  final List<maked.Workout> _workoutList = [];
-
-  void routineChildrenDecode(String children) {
-    dynamic decodeJson = jsonDecode(children);
-    debugPrint("$decodeJson");
-
-    try {
-      if (decodeJson is List<dynamic>) {
-        for (var workout in decodeJson) {
-          maked.Workout instance =
-              maked.Workout.toJsonDecode(jsonDecode(workout));
-          _workoutList.add(instance);
-        }
-      } else if (decodeJson is Map<String, dynamic>) {
-        final maked.Workout instance = maked.Workout.toJsonDecode(decodeJson);
-        _workoutList.add(instance);
-      } else {
-        throw TypeError();
-      }
-    } catch (event) {
-      print(event);
-    }
-  }
-
-  List<maked.Workout> get getWorkoutList {
-    routineChildrenDecode(routineChildren);
-
-    return _workoutList;
-  }
-
-  List<Widget> get generateItems {
-    routineChildrenDecode(routineChildren);
-
-    return List.generate(_workoutList.length, (index) {
-      final workout = _workoutList[index];
-
-      return Container(
-        margin: const EdgeInsets.only(
-          bottom: 8,
-        ),
-        child: Column(
-          children: [
-            Row(
-              children: [
-                Text(
-                  "${index + 1}",
-                  style: const TextStyle(
-                    color: palette.cardColorYelGreen,
-                  ),
-                ),
-                const SizedBox(
-                  width: 5,
-                ),
-                Text(
-                  workout.name!,
-                  style: const TextStyle(
-                    color: palette.cardColorWhite,
-                  ),
-                ),
-                const SizedBox(
-                  width: 5,
-                ),
-                if (workout.targetRpe >= 5.0)
-                  Text(
-                    "@${workout.targetRpe.toString()}",
-                    style: const TextStyle(
-                      fontSize: 11,
-                      color: palette.cardColorWhite,
-                    ),
-                  ),
-              ],
-            ),
-            if (workout.sets!.isNotEmpty)
-              Column(
-                children: [
-                  ...List.generate(workout.sets!.length, (index) {
-                    final maked.Set set = workout.sets![index];
-
-                    return Row(
-                      children: [
-                        Text(
-                          "${set.setIndex! + 1}.",
-                          style: const TextStyle(
-                            color: palette.cardColorWhite,
-                          ),
-                        ),
-                        const SizedBox(
-                          width: 8,
-                        ),
-                        Text(
-                          "${set.weight}kg",
-                          style: const TextStyle(
-                            color: palette.cardColorWhite,
-                          ),
-                        ),
-                        const SizedBox(
-                          width: 5,
-                        ),
-                        const Text(
-                          "X",
-                          style: TextStyle(
-                            color: palette.cardColorWhite,
-                          ),
-                        ),
-                        const SizedBox(
-                          width: 5,
-                        ),
-                        Text(
-                          set.reps.toString(),
-                          style: const TextStyle(
-                            color: palette.cardColorWhite,
-                          ),
-                        ),
-                        const SizedBox(
-                          width: 7,
-                        ),
-                        Text(
-                          "@${set.rpe.toString()}",
-                          style: const TextStyle(
-                            fontSize: 11,
-                            color: palette.cardColorWhite,
-                          ),
-                        ),
-                      ],
-                    );
-                  }),
-                ],
-              ),
-          ],
-        ),
-      );
-    });
   }
 }

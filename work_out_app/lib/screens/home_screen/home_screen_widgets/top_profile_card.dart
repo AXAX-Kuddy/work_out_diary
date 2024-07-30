@@ -5,6 +5,8 @@ import 'package:work_out_app/provider/store.dart' as provider;
 import 'package:work_out_app/util/keys.dart';
 import 'package:work_out_app/widgets/buttons/wide_button.dart';
 
+import '../../../util/util.dart';
+
 class ProfileCard extends StatefulWidget {
   const ProfileCard({super.key});
 

@@ -562,7 +562,7 @@ class RoutineProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void clearUserSelectWorkout() {
+ void clearUserSelectWorkout() {
     todayWorkouts.clear();
     notifyListeners();
   }

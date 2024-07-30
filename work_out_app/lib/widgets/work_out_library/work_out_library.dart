@@ -1,7 +1,8 @@
+// ignore_for_file: unused_import
+
 import 'package:flutter/material.dart';
 import 'package:line_icons/line_icon.dart';
 import 'package:line_icons/line_icons.dart';
-import 'package:sqlite3/sqlite3.dart' as sql;
 import 'package:work_out_app/database/database.dart' as db;
 import 'package:work_out_app/util/keys.dart';
 import 'package:work_out_app/widgets/buttons/wide_button.dart';

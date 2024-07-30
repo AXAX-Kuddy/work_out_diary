@@ -110,7 +110,6 @@ class _MyAppState extends State<MyApp> {
     mainStoreProvider = context.read<provider.MainStoreProvider>();
     pageNumber = context.read<provider.PageNumber>();
 
-    // mainStoreProvider.resetPreferences();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       bool isEdit = mainStoreProvider.userInfo[UserInfoField.isEdit];

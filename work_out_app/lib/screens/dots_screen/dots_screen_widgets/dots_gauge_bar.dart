@@ -3,6 +3,8 @@ import 'package:work_out_app/util/keys.dart';
 import 'package:work_out_app/util/palette.dart' as palette;
 import 'package:work_out_app/provider/store.dart' as provider;
 
+import '../../../util/util.dart';
+
 class DotsGauge extends StatefulWidget {
   final provider.UserInfo userInfo;
 
