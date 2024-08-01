@@ -11,6 +11,7 @@ import 'package:line_icons/line_icons.dart';
 import 'package:work_out_app/database/database.dart';
 import 'package:work_out_app/main.dart';
 import 'package:work_out_app/screens/diary_screen/diary_screen.dart';
+import 'package:work_out_app/screens/plan_screen/plan_screen_widgets/plate_calc.dart';
 import 'package:work_out_app/util/keys.dart';
 import 'package:work_out_app/widgets/buttons/cancel_and_enter_buttons.dart';
 import 'package:work_out_app/widgets/buttons/trash_can_button.dart';
@@ -30,6 +31,19 @@ import 'package:stop_watch_timer/stop_watch_timer.dart';
 import 'package:work_out_app/provider/make_program.dart' as maked;
 import 'package:work_out_app/widgets/sliding_up_panel/sliding_up_panel.dart';
 import 'package:work_out_app/widgets/work_out_library/work_out_library.dart';
+
+typedef DetailPanelController = void Function({
+  required PanelControllerCommand command,
+  CallPanelFrom? isCallLocation,
+  maked.Workout? workoutInstance,
+  int? workoutInstanceIndex,
+  double? workoutInstanceWeight,
+});
+
+enum CallPanelFrom {
+  detail,
+  sets,
+}
 
 class PlanningScreen extends StatefulWidget {
   final VoidCallback? onPageLoaded;
@@ -52,6 +66,9 @@ class _PlanningScreenState extends State<PlanningScreen> {
     name: "placeHold",
   );
   int? panelCallingInstanceIndex;
+  double? panelCallingInstanceWeight;
+  CallPanelFrom callLocation = CallPanelFrom.detail;
+
   String routineTitle = "";
   late provider.RoutineProvider routineProvider;
 
@@ -138,18 +155,45 @@ class _PlanningScreenState extends State<PlanningScreen> {
 
   void workoutDetailPanelController({
     required PanelControllerCommand command,
+    CallPanelFrom? isCallLocation,
     maked.Workout? workoutInstance,
     int? workoutInstanceIndex,
+    double? workoutInstanceWeight,
   }) {
     switch (command) {
       case PanelControllerCommand.spread:
-        if (workoutInstance != null && workoutInstanceIndex != null) {
+        if (isCallLocation != null) {
+          callLocation = isCallLocation;
+        }
+
+        if (workoutInstance != null) {
           setState(() {
             panelCallingInstance = workoutInstance;
+          });
+        }
+
+        if (workoutInstanceIndex != null) {
+          setState(() {
             panelCallingInstanceIndex = workoutInstanceIndex;
+          });
+        }
+
+        if (workoutInstanceWeight != null) {
+          setState(() {
+            panelCallingInstanceWeight = workoutInstanceWeight;
+          });
+        }
+
+        if (isCallLocation == CallPanelFrom.sets) {
+          setState(() {
+            panelController.expand();
+          });
+        } else {
+          setState(() {
             panelController.anchor();
           });
         }
+
       case PanelControllerCommand.anchor:
         setState(() {
           panelController.anchor();
@@ -160,6 +204,111 @@ class _PlanningScreenState extends State<PlanningScreen> {
         });
       default:
         null;
+    }
+  }
+
+  List<PanelItemBuilder> panelItems(CallPanelFrom callPanelFrom) {
+    switch (callPanelFrom) {
+      case CallPanelFrom.sets:
+        return [
+          PanelItemBuilder(
+              builder: (BuildContext context, BoxConstraints constraints) {
+            return PlateCalculator(
+              weight: panelCallingInstanceWeight!,
+              constraints: constraints,
+            );
+          }),
+        ];
+
+      default:
+        return [
+          PanelItemBuilder(
+              builder: (BuildContext context, BoxConstraints constraints) {
+            return InnerPanelButton(
+              constraints: constraints,
+              contentText: "교체",
+              icon: LineIcons.alternateExchange,
+              iconColor: palette.cardColorWhite,
+              onTap: () {
+                workoutDetailPanelController(
+                    command: PanelControllerCommand.hide);
+
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) {
+                      return WorkoutLibrary(
+                        showAppbarCloseButton: true,
+                        showAddPlanningScreen: false,
+                        exchangedWorkoutIndex: panelCallingInstanceIndex,
+                      );
+                    },
+                  ),
+                );
+              },
+            );
+          }),
+          PanelItemBuilder(
+              builder: (BuildContext context, BoxConstraints constraints) {
+            return InnerPanelButton(
+              constraints: constraints,
+              contentText: "삭제",
+              contentTextStyle: const TextStyle(
+                fontSize: 18,
+                color: Colors.red,
+              ),
+              icon: LineIcons.trash,
+              iconColor: Colors.red,
+              showAngle: false,
+              onTap: () {
+                showDialog(
+                  context: context,
+                  builder: (context) {
+                    return AlertDialog(
+                      contentPadding: const EdgeInsets.all(25),
+                      backgroundColor: palette.bgColor,
+                      content: Text(
+                        "${panelCallingInstance.name}를(을) 목록에서 삭제 하시겠습니까?",
+                        style: const TextStyle(
+                          fontSize: 16,
+                          color: palette.cardColorWhite,
+                        ),
+                      ),
+                      actions: [
+                        CancelAndEnterButton(
+                          cancelLabel: const Text(
+                            "취소",
+                            style: TextStyle(
+                              color: palette.cardColorWhite,
+                            ),
+                          ),
+                          onCancelTap: () {
+                            Navigator.pop(context);
+                          },
+                          enterLabel: const Text(
+                            "확인",
+                            style: TextStyle(
+                              color: palette.cardColorYelGreen,
+                            ),
+                          ),
+                          onEnterTap: () {
+                            setState(() {
+                              workoutDetailPanelController(
+                                  command: PanelControllerCommand.hide);
+                              routineProvider.removeUserSelectWorkout(
+                                  panelCallingInstance);
+                            });
+                            Navigator.pop(context);
+                          },
+                        ),
+                      ],
+                    );
+                  },
+                );
+              },
+            );
+          }),
+        ];
     }
   }
 
@@ -475,6 +624,7 @@ class _PlanningScreenState extends State<PlanningScreen> {
       ),
       slidingUpPanelWidget: CustomSlidingUpPanelWidget(
         controller: panelController,
+        onlyAnchor: callLocation != CallPanelFrom.sets,
         children: <PanelItemBuilder>[
           PanelItemBuilder(
             builder: (BuildContext context, BoxConstraints constraints) {
@@ -504,92 +654,7 @@ class _PlanningScreenState extends State<PlanningScreen> {
               );
             },
           ),
-          PanelItemBuilder(
-              builder: (BuildContext context, BoxConstraints constraints) {
-            return InnerPanelButton(
-              constraints: constraints,
-              contentText: "교체",
-              icon: LineIcons.alternateExchange,
-              iconColor: palette.cardColorWhite,
-              onTap: () {
-                workoutDetailPanelController(
-                    command: PanelControllerCommand.hide);
-
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) {
-                      return WorkoutLibrary(
-                        showAppbarCloseButton: true,
-                        showAddPlanningScreen: false,
-                        exchangedWorkoutIndex: panelCallingInstanceIndex,
-                      );
-                    },
-                  ),
-                );
-              },
-            );
-          }),
-          PanelItemBuilder(
-              builder: (BuildContext context, BoxConstraints constraints) {
-            return InnerPanelButton(
-              constraints: constraints,
-              contentText: "삭제",
-              contentTextStyle: const TextStyle(
-                fontSize: 18,
-                color: Colors.red,
-              ),
-              icon: LineIcons.trash,
-              iconColor: Colors.red,
-              showAngle: false,
-              onTap: () {
-                showDialog(
-                  context: context,
-                  builder: (context) {
-                    return AlertDialog(
-                      contentPadding: const EdgeInsets.all(25),
-                      backgroundColor: palette.bgColor,
-                      content: Text(
-                        "${panelCallingInstance.name}를(을) 목록에서 삭제 하시겠습니까?",
-                        style: const TextStyle(
-                          fontSize: 16,
-                          color: palette.cardColorWhite,
-                        ),
-                      ),
-                      actions: [
-                        CancelAndEnterButton(
-                          cancelLabel: const Text(
-                            "취소",
-                            style: TextStyle(
-                              color: palette.cardColorWhite,
-                            ),
-                          ),
-                          onCancelTap: () {
-                            Navigator.pop(context);
-                          },
-                          enterLabel: const Text(
-                            "확인",
-                            style: TextStyle(
-                              color: palette.cardColorYelGreen,
-                            ),
-                          ),
-                          onEnterTap: () {
-                            setState(() {
-                              workoutDetailPanelController(
-                                  command: PanelControllerCommand.hide);
-                              routineProvider.removeUserSelectWorkout(
-                                  panelCallingInstance);
-                            });
-                            Navigator.pop(context);
-                          },
-                        ),
-                      ],
-                    );
-                  },
-                );
-              },
-            );
-          }),
+          ...panelItems(callLocation),
         ],
       ),
       children: [

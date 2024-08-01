@@ -17,11 +17,7 @@ class WorkoutDetail extends StatefulWidget {
   final int index;
   final void Function(maked.Workout) removeWorkout;
   final maked.Workout workoutInstance;
-  final void Function({
-    required PanelControllerCommand command,
-    maked.Workout? workoutInstance,
-    int? workoutInstanceIndex,
-  }) workoutDetailPanelController;
+  final DetailPanelController workoutDetailPanelController;
 
   const WorkoutDetail({
     super.key,
@@ -232,6 +228,7 @@ class _WorkoutDetailState extends State<WorkoutDetail> {
               onPressed: () {
                 widget.workoutDetailPanelController(
                   command: PanelControllerCommand.spread,
+                  isCallLocation: CallPanelFrom.detail,
                   workoutInstance: widget.workoutInstance,
                   workoutInstanceIndex: widget.index,
                 );
@@ -259,9 +256,11 @@ class _WorkoutDetailState extends State<WorkoutDetail> {
                 children: [
                   SetsDetail(
                     index: index,
+                    workoutInstance: widget.workoutInstance,
                     setInstance: widget.workoutInstance.sets![index],
                     rpeList: rpeList,
                     findE1rm: findE1rm,
+                    panelController: widget.workoutDetailPanelController,
                   ),
                   const SizedBox(
                     height: 15,
@@ -379,14 +378,19 @@ class _WorkoutDetailState extends State<WorkoutDetail> {
 
 class SetsDetail extends StatefulWidget {
   final int index;
+  final maked.Workout workoutInstance;
   final maked.Set setInstance;
   final List<String>? rpeList;
   final Function findE1rm;
 
+  final DetailPanelController panelController;
+
   const SetsDetail({
     super.key,
+    required this.panelController,
     required this.index,
     required this.setInstance,
+    required this.workoutInstance,
     this.rpeList,
     required this.findE1rm,
   });
@@ -499,12 +503,22 @@ class _SetsDetailState extends State<SetsDetail> {
       children: [
         Expanded(
           flex: 1,
-          child: Text(
-            "${widget.index + 1}",
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              fontSize: 17,
-              color: palette.cardColorWhite,
+          child: TextButton(
+            onPressed: () {
+              widget.panelController(
+                command: PanelControllerCommand.spread,
+                isCallLocation: CallPanelFrom.sets,
+                workoutInstance: widget.workoutInstance,
+                workoutInstanceWeight: widget.setInstance.weight,
+              );
+            },
+            child: Text(
+              "${widget.index + 1}",
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontSize: 17,
+                color: palette.cardColorWhite,
+              ),
             ),
           ),
         ),

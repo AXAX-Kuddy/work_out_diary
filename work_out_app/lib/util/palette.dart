@@ -23,3 +23,14 @@ const Color tierVeryHigh = Color.fromRGBO(255, 222, 1, 1);
 const Color colorRed = Color.fromARGB(255, 255, 0, 0);
 const Color colorBlue = Color.fromARGB(255, 0, 174, 255);
 const Color colorWhite = Color.fromARGB(242, 255, 255, 255);
+
+// 플레이트 색
+const Color plate25kg = Colors.red;
+const Color plate20kg = Color.fromRGBO(11, 36, 251, 1);
+const Color plate15kg = Colors.yellow;
+const Color plate10kg = Color.fromRGBO(14, 127, 16, 1);
+const Color plate5kg = Colors.white;
+const Color plate2n5kg = Colors.red;
+const Color plate1n25kg = Color.fromRGBO(11, 36, 251, 1);
+const Color plate0n5kg = Colors.yellow;
+const Color plate0n25kg = Color.fromRGBO(14, 127, 16, 1);
