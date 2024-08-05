@@ -42,18 +42,20 @@ class _DiaryScreenState extends State<DiaryScreen> {
 
   void _loadEvents() async {
     final routines = await routineList;
-    setState(() {
-      _events = {};
-      for (var routine in routines) {
-        final eventDate =
-            DateTime(routine.date.year, routine.date.month, routine.date.day);
-        if (_events[eventDate] == null) {
-          _events[eventDate] = [];
+    if (mounted) {
+      setState(() {
+        _events = {};
+        for (var routine in routines) {
+          final eventDate =
+              DateTime(routine.date.year, routine.date.month, routine.date.day);
+          if (_events[eventDate] == null) {
+            _events[eventDate] = [];
+          }
+          _events[eventDate]!.add(routine);
         }
-        _events[eventDate]!.add(routine);
-      }
-      _updateSelectedDayRoutines();
-    });
+        _updateSelectedDayRoutines();
+      });
+    }
   }
 
   void _updateSelectedDayRoutines() {

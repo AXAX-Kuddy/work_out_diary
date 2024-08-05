@@ -313,6 +313,14 @@ class $WorkoutMenuTable extends WorkoutMenu
   late final GeneratedColumn<String> name = GeneratedColumn<String>(
       'name', aliasedName, false,
       type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _exerciseTypeMeta =
+      const VerificationMeta('exerciseType');
+  @override
+  late final GeneratedColumn<String> exerciseType = GeneratedColumn<String>(
+      'exercise_type', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      defaultValue: Constant(ExerciseType.barbell));
   static const VerificationMeta _memoMeta = const VerificationMeta('memo');
   @override
   late final GeneratedColumn<String> memo = GeneratedColumn<String>(
@@ -335,7 +343,8 @@ class $WorkoutMenuTable extends WorkoutMenu
               type: DriftSqlType.string, requiredDuringInsert: true)
           .withConverter<WorkoutListKeys>($WorkoutMenuTable.$converterpart);
   @override
-  List<GeneratedColumn> get $columns => [id, name, memo, showE1rm, part];
+  List<GeneratedColumn> get $columns =>
+      [id, name, exerciseType, memo, showE1rm, part];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -354,6 +363,12 @@ class $WorkoutMenuTable extends WorkoutMenu
           _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
     } else if (isInserting) {
       context.missing(_nameMeta);
+    }
+    if (data.containsKey('exercise_type')) {
+      context.handle(
+          _exerciseTypeMeta,
+          exerciseType.isAcceptableOrUnknown(
+              data['exercise_type']!, _exerciseTypeMeta));
     }
     if (data.containsKey('memo')) {
       context.handle(
@@ -377,6 +392,8 @@ class $WorkoutMenuTable extends WorkoutMenu
           .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
       name: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
+      exerciseType: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}exercise_type'])!,
       memo: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}memo']),
       showE1rm: attachedDatabase.typeMapping
@@ -399,12 +416,14 @@ class $WorkoutMenuTable extends WorkoutMenu
 class WorkoutMenuData extends DataClass implements Insertable<WorkoutMenuData> {
   final int id;
   final String name;
+  final String exerciseType;
   final String? memo;
   final bool showE1rm;
   final WorkoutListKeys part;
   const WorkoutMenuData(
       {required this.id,
       required this.name,
+      required this.exerciseType,
       this.memo,
       required this.showE1rm,
       required this.part});
@@ -413,6 +432,7 @@ class WorkoutMenuData extends DataClass implements Insertable<WorkoutMenuData> {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
     map['name'] = Variable<String>(name);
+    map['exercise_type'] = Variable<String>(exerciseType);
     if (!nullToAbsent || memo != null) {
       map['memo'] = Variable<String>(memo);
     }
@@ -428,6 +448,7 @@ class WorkoutMenuData extends DataClass implements Insertable<WorkoutMenuData> {
     return WorkoutMenuCompanion(
       id: Value(id),
       name: Value(name),
+      exerciseType: Value(exerciseType),
       memo: memo == null && nullToAbsent ? const Value.absent() : Value(memo),
       showE1rm: Value(showE1rm),
       part: Value(part),
@@ -440,6 +461,7 @@ class WorkoutMenuData extends DataClass implements Insertable<WorkoutMenuData> {
     return WorkoutMenuData(
       id: serializer.fromJson<int>(json['id']),
       name: serializer.fromJson<String>(json['name']),
+      exerciseType: serializer.fromJson<String>(json['exerciseType']),
       memo: serializer.fromJson<String?>(json['memo']),
       showE1rm: serializer.fromJson<bool>(json['showE1rm']),
       part: serializer.fromJson<WorkoutListKeys>(json['part']),
@@ -451,6 +473,7 @@ class WorkoutMenuData extends DataClass implements Insertable<WorkoutMenuData> {
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
       'name': serializer.toJson<String>(name),
+      'exerciseType': serializer.toJson<String>(exerciseType),
       'memo': serializer.toJson<String?>(memo),
       'showE1rm': serializer.toJson<bool>(showE1rm),
       'part': serializer.toJson<WorkoutListKeys>(part),
@@ -460,12 +483,14 @@ class WorkoutMenuData extends DataClass implements Insertable<WorkoutMenuData> {
   WorkoutMenuData copyWith(
           {int? id,
           String? name,
+          String? exerciseType,
           Value<String?> memo = const Value.absent(),
           bool? showE1rm,
           WorkoutListKeys? part}) =>
       WorkoutMenuData(
         id: id ?? this.id,
         name: name ?? this.name,
+        exerciseType: exerciseType ?? this.exerciseType,
         memo: memo.present ? memo.value : this.memo,
         showE1rm: showE1rm ?? this.showE1rm,
         part: part ?? this.part,
@@ -475,6 +500,7 @@ class WorkoutMenuData extends DataClass implements Insertable<WorkoutMenuData> {
     return (StringBuffer('WorkoutMenuData(')
           ..write('id: $id, ')
           ..write('name: $name, ')
+          ..write('exerciseType: $exerciseType, ')
           ..write('memo: $memo, ')
           ..write('showE1rm: $showE1rm, ')
           ..write('part: $part')
@@ -483,13 +509,14 @@ class WorkoutMenuData extends DataClass implements Insertable<WorkoutMenuData> {
   }
 
   @override
-  int get hashCode => Object.hash(id, name, memo, showE1rm, part);
+  int get hashCode => Object.hash(id, name, exerciseType, memo, showE1rm, part);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is WorkoutMenuData &&
           other.id == this.id &&
           other.name == this.name &&
+          other.exerciseType == this.exerciseType &&
           other.memo == this.memo &&
           other.showE1rm == this.showE1rm &&
           other.part == this.part);
@@ -498,12 +525,14 @@ class WorkoutMenuData extends DataClass implements Insertable<WorkoutMenuData> {
 class WorkoutMenuCompanion extends UpdateCompanion<WorkoutMenuData> {
   final Value<int> id;
   final Value<String> name;
+  final Value<String> exerciseType;
   final Value<String?> memo;
   final Value<bool> showE1rm;
   final Value<WorkoutListKeys> part;
   const WorkoutMenuCompanion({
     this.id = const Value.absent(),
     this.name = const Value.absent(),
+    this.exerciseType = const Value.absent(),
     this.memo = const Value.absent(),
     this.showE1rm = const Value.absent(),
     this.part = const Value.absent(),
@@ -511,6 +540,7 @@ class WorkoutMenuCompanion extends UpdateCompanion<WorkoutMenuData> {
   WorkoutMenuCompanion.insert({
     this.id = const Value.absent(),
     required String name,
+    this.exerciseType = const Value.absent(),
     this.memo = const Value.absent(),
     this.showE1rm = const Value.absent(),
     required WorkoutListKeys part,
@@ -519,6 +549,7 @@ class WorkoutMenuCompanion extends UpdateCompanion<WorkoutMenuData> {
   static Insertable<WorkoutMenuData> custom({
     Expression<int>? id,
     Expression<String>? name,
+    Expression<String>? exerciseType,
     Expression<String>? memo,
     Expression<bool>? showE1rm,
     Expression<String>? part,
@@ -526,6 +557,7 @@ class WorkoutMenuCompanion extends UpdateCompanion<WorkoutMenuData> {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (name != null) 'name': name,
+      if (exerciseType != null) 'exercise_type': exerciseType,
       if (memo != null) 'memo': memo,
       if (showE1rm != null) 'show_e1rm': showE1rm,
       if (part != null) 'part': part,
@@ -535,12 +567,14 @@ class WorkoutMenuCompanion extends UpdateCompanion<WorkoutMenuData> {
   WorkoutMenuCompanion copyWith(
       {Value<int>? id,
       Value<String>? name,
+      Value<String>? exerciseType,
       Value<String?>? memo,
       Value<bool>? showE1rm,
       Value<WorkoutListKeys>? part}) {
     return WorkoutMenuCompanion(
       id: id ?? this.id,
       name: name ?? this.name,
+      exerciseType: exerciseType ?? this.exerciseType,
       memo: memo ?? this.memo,
       showE1rm: showE1rm ?? this.showE1rm,
       part: part ?? this.part,
@@ -555,6 +589,9 @@ class WorkoutMenuCompanion extends UpdateCompanion<WorkoutMenuData> {
     }
     if (name.present) {
       map['name'] = Variable<String>(name.value);
+    }
+    if (exerciseType.present) {
+      map['exercise_type'] = Variable<String>(exerciseType.value);
     }
     if (memo.present) {
       map['memo'] = Variable<String>(memo.value);
@@ -574,6 +611,7 @@ class WorkoutMenuCompanion extends UpdateCompanion<WorkoutMenuData> {
     return (StringBuffer('WorkoutMenuCompanion(')
           ..write('id: $id, ')
           ..write('name: $name, ')
+          ..write('exerciseType: $exerciseType, ')
           ..write('memo: $memo, ')
           ..write('showE1rm: $showE1rm, ')
           ..write('part: $part')
@@ -733,6 +771,7 @@ typedef $$WorkoutMenuTableInsertCompanionBuilder = WorkoutMenuCompanion
     Function({
   Value<int> id,
   required String name,
+  Value<String> exerciseType,
   Value<String?> memo,
   Value<bool> showE1rm,
   required WorkoutListKeys part,
@@ -741,6 +780,7 @@ typedef $$WorkoutMenuTableUpdateCompanionBuilder = WorkoutMenuCompanion
     Function({
   Value<int> id,
   Value<String> name,
+  Value<String> exerciseType,
   Value<String?> memo,
   Value<bool> showE1rm,
   Value<WorkoutListKeys> part,
@@ -768,6 +808,7 @@ class $$WorkoutMenuTableTableManager extends RootTableManager<
           getUpdateCompanionBuilder: ({
             Value<int> id = const Value.absent(),
             Value<String> name = const Value.absent(),
+            Value<String> exerciseType = const Value.absent(),
             Value<String?> memo = const Value.absent(),
             Value<bool> showE1rm = const Value.absent(),
             Value<WorkoutListKeys> part = const Value.absent(),
@@ -775,6 +816,7 @@ class $$WorkoutMenuTableTableManager extends RootTableManager<
               WorkoutMenuCompanion(
             id: id,
             name: name,
+            exerciseType: exerciseType,
             memo: memo,
             showE1rm: showE1rm,
             part: part,
@@ -782,6 +824,7 @@ class $$WorkoutMenuTableTableManager extends RootTableManager<
           getInsertCompanionBuilder: ({
             Value<int> id = const Value.absent(),
             required String name,
+            Value<String> exerciseType = const Value.absent(),
             Value<String?> memo = const Value.absent(),
             Value<bool> showE1rm = const Value.absent(),
             required WorkoutListKeys part,
@@ -789,6 +832,7 @@ class $$WorkoutMenuTableTableManager extends RootTableManager<
               WorkoutMenuCompanion.insert(
             id: id,
             name: name,
+            exerciseType: exerciseType,
             memo: memo,
             showE1rm: showE1rm,
             part: part,
@@ -821,6 +865,11 @@ class $$WorkoutMenuTableFilterComposer
       builder: (column, joinBuilders) =>
           ColumnFilters(column, joinBuilders: joinBuilders));
 
+  ColumnFilters<String> get exerciseType => $state.composableBuilder(
+      column: $state.table.exerciseType,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
   ColumnFilters<String> get memo => $state.composableBuilder(
       column: $state.table.memo,
       builder: (column, joinBuilders) =>
@@ -849,6 +898,11 @@ class $$WorkoutMenuTableOrderingComposer
 
   ColumnOrderings<String> get name => $state.composableBuilder(
       column: $state.table.name,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get exerciseType => $state.composableBuilder(
+      column: $state.table.exerciseType,
       builder: (column, joinBuilders) =>
           ColumnOrderings(column, joinBuilders: joinBuilders));
 

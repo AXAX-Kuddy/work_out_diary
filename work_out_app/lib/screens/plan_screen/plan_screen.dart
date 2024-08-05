@@ -184,15 +184,9 @@ class _PlanningScreenState extends State<PlanningScreen> {
           });
         }
 
-        if (isCallLocation == CallPanelFrom.sets) {
-          setState(() {
-            panelController.expand();
-          });
-        } else {
-          setState(() {
-            panelController.anchor();
-          });
-        }
+        setState(() {
+          panelController.anchor();
+        });
 
       case PanelControllerCommand.anchor:
         setState(() {

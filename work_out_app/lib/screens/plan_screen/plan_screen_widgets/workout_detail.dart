@@ -32,6 +32,7 @@ class WorkoutDetail extends StatefulWidget {
 }
 
 class _WorkoutDetailState extends State<WorkoutDetail> {
+  late provider.RoutineProvider routineProvider;
   late List<maked.Set> setList;
 
   String e1rm = "";
@@ -83,13 +84,14 @@ class _WorkoutDetailState extends State<WorkoutDetail> {
 
   @override
   void initState() {
-    super.initState();
+    routineProvider = context.read<provider.RoutineProvider>();
     setList = widget.workoutInstance.sets!;
 
     if (widget.workoutInstance.targetRpe != 0) {
       target = widget.workoutInstance.targetRpe.toString();
     }
     findE1rm();
+    super.initState();
   }
 
   @override
@@ -289,19 +291,6 @@ class _WorkoutDetailState extends State<WorkoutDetail> {
             ),
           ],
         ),
-        // Row(
-        //   children: [
-        //     const SizedBox(
-        //       width: 15,
-        //     ),
-        //     Text(
-        //       "현1rm의 200%",
-        //       style: TextStyle(
-        //         color: palette.cardColorWhite.withOpacity(0.5),
-        //       ),
-        //     ),
-        //   ],
-        // ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [

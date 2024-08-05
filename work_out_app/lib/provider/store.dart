@@ -449,6 +449,9 @@ class WorkoutMenu {
   /// 운동 이름
   final String name;
 
+  /// 종목 타입
+  final String exerciseType;
+
   /// 메모
   final String? memo;
 
@@ -457,6 +460,7 @@ class WorkoutMenu {
 
   WorkoutMenu({
     required this.name,
+    this.exerciseType = "barbell",
     this.memo,
     this.showE1rm = false,
   });
@@ -468,11 +472,12 @@ class WorkoutMenu {
     return other is WorkoutMenu &&
         other.name == name &&
         other.memo == memo &&
-        other.showE1rm == showE1rm;
+        other.showE1rm == showE1rm &&
+        other.exerciseType == exerciseType;
   }
 
   @override
-  int get hashCode => name.hashCode ^ memo.hashCode ^ showE1rm.hashCode;
+  int get hashCode => name.hashCode ^ memo.hashCode ^ showE1rm.hashCode ^ exerciseType.hashCode;
 }
 
 class WorkoutListStore extends ChangeNotifier {
@@ -498,6 +503,7 @@ class WorkoutListStore extends ChangeNotifier {
       if (workouts.containsKey(data.part)) {
         WorkoutMenu newMenu = WorkoutMenu(
           name: data.name,
+          
           memo: data.memo,
           showE1rm: data.showE1rm,
         );
@@ -562,7 +568,7 @@ class RoutineProvider extends ChangeNotifier {
     notifyListeners();
   }
 
- void clearUserSelectWorkout() {
+  void clearUserSelectWorkout() {
     todayWorkouts.clear();
     notifyListeners();
   }

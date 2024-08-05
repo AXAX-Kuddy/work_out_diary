@@ -7,6 +7,9 @@ import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:sqlite3/sqlite3.dart';
 import 'package:sqlite3_flutter_libs/sqlite3_flutter_libs.dart';
+import 'package:work_out_app/database/workout_list_data/chest.dart';
+import 'package:work_out_app/database/workout_list_data/leg.dart';
+import 'package:work_out_app/provider/make_program.dart';
 import 'package:work_out_app/util/keys.dart';
 
 part 'database.g.dart';
@@ -33,14 +36,14 @@ class AppDatabase extends _$AppDatabase {
     return await delete(routines).delete(selectRoutine);
   }
 
-  Future<int> updateRoutine({required Routine selectRoutine, required  RoutinesCompanion companion}) async {
+  Future<int> updateRoutine(
+      {required Routine selectRoutine,
+      required RoutinesCompanion companion}) async {
     return (update(routines)
           ..where(
             (tbl) => tbl.id.equals(selectRoutine.id),
           ))
-        .write(
-      companion
-    );
+        .write(companion);
   }
 
   /// 모든 루틴들(운동종목, 세트 포함) 삭제
@@ -75,16 +78,7 @@ class AppDatabase extends _$AppDatabase {
   Future<void> insertInitialData(AppDatabase db) async {
     final initialData = {
       WorkoutListKeys.leg: [
-        WorkoutMenuCompanion.insert(
-          name: '스쿼트',
-          showE1rm: const Value(true),
-          part: WorkoutListKeys.leg,
-        ),
-        WorkoutMenuCompanion.insert(
-          name: '데드리프트',
-          showE1rm: const Value(true),
-          part: WorkoutListKeys.leg,
-        ),
+        ...LegList.get,
       ],
       WorkoutListKeys.back: [
         WorkoutMenuCompanion.insert(
@@ -97,15 +91,7 @@ class AppDatabase extends _$AppDatabase {
         ),
       ],
       WorkoutListKeys.chest: [
-        WorkoutMenuCompanion.insert(
-          name: '바벨 벤치 프레스',
-          showE1rm: const Value(true),
-          part: WorkoutListKeys.chest,
-        ),
-        WorkoutMenuCompanion.insert(
-          name: '인클라인 덤벨 프레스',
-          part: WorkoutListKeys.chest,
-        ),
+       ...ChestList.get,
       ],
       WorkoutListKeys.shoulder: [
         WorkoutMenuCompanion.insert(
@@ -137,6 +123,7 @@ class AppDatabase extends _$AppDatabase {
           part: WorkoutListKeys.triceps,
         ),
       ],
+      WorkoutListKeys.cardio: [],
     };
 
     for (var entry in initialData.entries) {
@@ -195,6 +182,8 @@ class WorkoutListKeysConverter extends TypeConverter<WorkoutListKeys, String> {
 class WorkoutMenu extends Table {
   IntColumn get id => integer().autoIncrement()();
   TextColumn get name => text()();
+  TextColumn get exerciseType =>
+      text().withDefault(Constant(ExerciseType.barbell))();
   TextColumn get memo => text().nullable()();
   BoolColumn get showE1rm => boolean().withDefault(const Constant(false))();
   TextColumn get part => text().map(const WorkoutListKeysConverter())();

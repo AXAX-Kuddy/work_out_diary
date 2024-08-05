@@ -68,14 +68,24 @@ class Day {
   }
 }
 
+class ExerciseType {
+  static String get barbell => "barbell";
+  static String get dumbbell => "dumbbell";
+  static String get machine => "machine";
+  static String get bodyweight => "bodyweight";
+}
+
 class Workout {
   String? name;
+  String? exerciseType;
   double targetRpe;
   bool showE1rm;
+
   List<Set>? sets = [];
 
   Workout({
     this.name,
+    this.exerciseType,
     this.targetRpe = 0,
     this.showE1rm = false,
     List<Set>? sets,
@@ -85,6 +95,7 @@ class Workout {
     return {
       "name": name,
       "targetRpe": targetRpe,
+      "exerciseType": exerciseType,
       "showE1rm": showE1rm,
       "sets": sets?.map((set) => set.toJsonEncode()).toList(),
     };
@@ -93,6 +104,7 @@ class Workout {
   static Workout toJsonDecode(Map<String, dynamic> json) {
     return Workout(
       name: json["name"],
+      exerciseType: json["exerciseType"],
       targetRpe: json["targetRpe"],
       showE1rm: json["showE1rm"],
       sets: (json["sets"] as List).map((set) => Set.toJsonDecode(set)).toList(),

@@ -71,6 +71,7 @@ enum WorkoutListKeys {
   shoulder,
   biceps,
   triceps,
+  cardio,
 }
 
 enum RoutinePreferencesKey {
