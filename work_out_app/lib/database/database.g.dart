@@ -320,7 +320,7 @@ class $WorkoutMenuTable extends WorkoutMenu
       'exercise_type', aliasedName, false,
       type: DriftSqlType.string,
       requiredDuringInsert: false,
-      defaultValue: Constant(ExerciseType.barbell));
+      defaultValue: const Constant("Barbell"));
   static const VerificationMeta _memoMeta = const VerificationMeta('memo');
   @override
   late final GeneratedColumn<String> memo = GeneratedColumn<String>(

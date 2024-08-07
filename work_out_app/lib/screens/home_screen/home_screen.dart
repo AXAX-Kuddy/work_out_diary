@@ -307,7 +307,7 @@ class PanelItem extends StatelessWidget {
             children: List.generate(
               workoutInstance.sets!.length,
               (index) {
-                maked.Set set = workoutInstance.sets![index];
+                maked.WorkoutSet set = workoutInstance.sets![index];
 
                 return Container(
                   margin: const EdgeInsets.only(

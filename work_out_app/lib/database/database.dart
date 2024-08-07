@@ -7,9 +7,14 @@ import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:sqlite3/sqlite3.dart';
 import 'package:sqlite3_flutter_libs/sqlite3_flutter_libs.dart';
+import 'package:work_out_app/database/workout_list_data/back.dart';
+import 'package:work_out_app/database/workout_list_data/biceps.dart';
+import 'package:work_out_app/database/workout_list_data/cardio.dart';
 import 'package:work_out_app/database/workout_list_data/chest.dart';
 import 'package:work_out_app/database/workout_list_data/leg.dart';
-import 'package:work_out_app/provider/make_program.dart';
+import 'package:work_out_app/database/workout_list_data/other.dart';
+import 'package:work_out_app/database/workout_list_data/shoulder.dart';
+import 'package:work_out_app/database/workout_list_data/triceps.dart';
 import 'package:work_out_app/util/keys.dart';
 
 part 'database.g.dart';
@@ -81,49 +86,27 @@ class AppDatabase extends _$AppDatabase {
         ...LegList.get,
       ],
       WorkoutListKeys.back: [
-        WorkoutMenuCompanion.insert(
-          name: '랫 풀 다운',
-          part: WorkoutListKeys.back,
-        ),
-        WorkoutMenuCompanion.insert(
-          name: '바벨 로우',
-          part: WorkoutListKeys.back,
-        ),
+        ...BackList.get,
       ],
       WorkoutListKeys.chest: [
-       ...ChestList.get,
+        ...ChestList.get,
       ],
       WorkoutListKeys.shoulder: [
-        WorkoutMenuCompanion.insert(
-          name: '바벨 밀리터리 프레스',
-          part: WorkoutListKeys.shoulder,
-        ),
-        WorkoutMenuCompanion.insert(
-          name: '사이드 레터럴 레이즈',
-          part: WorkoutListKeys.shoulder,
-        ),
+        ...ShoulderList.get,
       ],
       WorkoutListKeys.biceps: [
-        WorkoutMenuCompanion.insert(
-          name: '바벨 컬',
-          part: WorkoutListKeys.biceps,
-        ),
-        WorkoutMenuCompanion.insert(
-          name: '해머 컬',
-          part: WorkoutListKeys.biceps,
-        ),
+        ...BicepsList.get,
       ],
       WorkoutListKeys.triceps: [
-        WorkoutMenuCompanion.insert(
-          name: '클로즈 그립 벤치프레스',
-          part: WorkoutListKeys.triceps,
-        ),
-        WorkoutMenuCompanion.insert(
-          name: '덤벨 스컬 크러셔',
-          part: WorkoutListKeys.triceps,
-        ),
+        ...TricepsList.get,
       ],
-      WorkoutListKeys.cardio: [],
+      
+      WorkoutListKeys.cardio: [
+        ...CardioList.get,
+      ],
+      WorkoutListKeys.other: [
+        ...OtherList.get,
+      ],
     };
 
     for (var entry in initialData.entries) {
@@ -159,7 +142,6 @@ class Routines extends Table {
   IntColumn get id => integer().autoIncrement()();
   TextColumn get routineName => text()();
   DateTimeColumn get date => dateTime()();
-
   BoolColumn get isFavor => boolean().withDefault(const Constant(false))();
   TextColumn get children => text()();
 }
@@ -183,7 +165,7 @@ class WorkoutMenu extends Table {
   IntColumn get id => integer().autoIncrement()();
   TextColumn get name => text()();
   TextColumn get exerciseType =>
-      text().withDefault(Constant(ExerciseType.barbell))();
+      text().withDefault(const Constant("Barbell"))();
   TextColumn get memo => text().nullable()();
   BoolColumn get showE1rm => boolean().withDefault(const Constant(false))();
   TextColumn get part => text().map(const WorkoutListKeysConverter())();

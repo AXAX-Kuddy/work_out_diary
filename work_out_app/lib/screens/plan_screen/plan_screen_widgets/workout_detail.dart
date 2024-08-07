@@ -33,7 +33,7 @@ class WorkoutDetail extends StatefulWidget {
 
 class _WorkoutDetailState extends State<WorkoutDetail> {
   late provider.RoutineProvider routineProvider;
-  late List<maked.Set> setList;
+  late List<maked.WorkoutSet> setList;
 
   String e1rm = "";
   String e1rmWithSet = "";
@@ -54,8 +54,8 @@ class _WorkoutDetailState extends State<WorkoutDetail> {
 
   void findE1rm() {
     if (setList.isNotEmpty) {
-      maked.Set maxE1rmSet = setList[0];
-      for (maked.Set set in setList) {
+      maked.WorkoutSet maxE1rmSet = setList[0];
+      for (maked.WorkoutSet set in setList) {
         if (set.e1rm > maxE1rmSet.e1rm) {
           maxE1rmSet = set;
         }
@@ -298,7 +298,7 @@ class _WorkoutDetailState extends State<WorkoutDetail> {
               onPressed: () {
                 if (widget.workoutInstance.sets!.isNotEmpty) {
                   setState(() {
-                    maked.Set getSet = widget.workoutInstance.sets!.last;
+                    maked.WorkoutSet getSet = widget.workoutInstance.sets!.last;
                     widget.workoutInstance.removeSet(getSet);
                   });
                 }
@@ -320,7 +320,7 @@ class _WorkoutDetailState extends State<WorkoutDetail> {
             TextButton.icon(
               onPressed: () {
                 if (widget.workoutInstance.sets!.isEmpty) {
-                  maked.Set newSet = maked.Set(
+                  maked.WorkoutSet newSet = maked.WorkoutSet(
                     setIndex: widget.workoutInstance.sets!.length,
                   );
                   setState(() {
@@ -331,7 +331,7 @@ class _WorkoutDetailState extends State<WorkoutDetail> {
                       widget.workoutInstance.sets!.last.weight;
                   int preSetReps = widget.workoutInstance.sets!.last.reps;
 
-                  maked.Set newSet = maked.Set(
+                  maked.WorkoutSet newSet = maked.WorkoutSet(
                     setIndex: widget.workoutInstance.sets!.length,
                     weight: preSetWeight,
                     reps: preSetReps,
@@ -368,7 +368,7 @@ class _WorkoutDetailState extends State<WorkoutDetail> {
 class SetsDetail extends StatefulWidget {
   final int index;
   final maked.Workout workoutInstance;
-  final maked.Set setInstance;
+  final maked.WorkoutSet setInstance;
   final List<String>? rpeList;
   final Function findE1rm;
 
@@ -588,7 +588,7 @@ class _SetsDetailState extends State<SetsDetail> {
 }
 
 class SetInputField extends StatefulWidget {
-  final maked.Set setInstance;
+  final maked.WorkoutSet setInstance;
   final String fieldText;
   final String Function(String)? onSubmitted;
   final void Function()? onTap;

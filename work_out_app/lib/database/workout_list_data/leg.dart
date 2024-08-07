@@ -29,6 +29,22 @@ class LegList {
         part: WorkoutListKeys.leg,
       ),
       WorkoutMenuCompanion.insert(
+        name: '하이핀 스쿼트',
+        part: WorkoutListKeys.leg,
+      ),
+      WorkoutMenuCompanion.insert(
+        name: '로우핀 스쿼트',
+        part: WorkoutListKeys.leg,
+      ),
+      WorkoutMenuCompanion.insert(
+        name: '백 스쿼트 스태틱 홀드',
+        part: WorkoutListKeys.leg,
+      ),
+      WorkoutMenuCompanion.insert(
+        name: '프론트 스쿼트 스태틱 홀드',
+        part: WorkoutListKeys.leg,
+      ),
+      WorkoutMenuCompanion.insert(
         name: '바벨 불가리안 스플릿 스쿼트',
         part: WorkoutListKeys.leg,
       ),
@@ -40,6 +56,7 @@ class LegList {
         name: '바벨 런지',
         part: WorkoutListKeys.leg,
       ),
+      
 
       /// 바벨 데드리프트
       WorkoutMenuCompanion.insert(

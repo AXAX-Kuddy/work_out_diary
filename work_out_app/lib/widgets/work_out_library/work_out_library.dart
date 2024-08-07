@@ -7,12 +7,15 @@ import 'package:work_out_app/database/database.dart' as db;
 import 'package:work_out_app/util/keys.dart';
 import 'package:work_out_app/widgets/buttons/wide_button.dart';
 import 'package:work_out_app/widgets/grid_loading_circle/loading_circle.dart';
+import 'package:work_out_app/widgets/router/sliding_builder.dart';
+import 'package:work_out_app/widgets/work_out_library/widgets/add_custom_workout_screen.dart';
 import 'package:work_out_app/widgets/work_out_library/widgets/listview_of_part.dart';
 import 'package:work_out_app/widgets/work_out_library/widgets/search_of_workout.dart';
 import 'package:work_out_app/widgets/base_screen/base_page.dart';
 import 'package:work_out_app/util/palette.dart' as palette;
 import 'package:provider/provider.dart';
 import 'package:work_out_app/provider/store.dart' as provider;
+import '../../util/util.dart';
 
 import 'package:work_out_app/provider/make_program.dart' as maked;
 import 'package:work_out_app/widgets/work_out_library/widgets/workout_list_viewer.dart';
@@ -32,6 +35,7 @@ class ChangePart {
 class WorkoutLibrary extends StatefulWidget {
   final bool showAddPlanningScreen;
   final bool showAppbarCloseButton;
+  final bool showAddCustomButton;
   final int? exchangedWorkoutIndex;
   final void Function()? changedListner;
 
@@ -39,6 +43,7 @@ class WorkoutLibrary extends StatefulWidget {
     Key? key,
     required this.showAddPlanningScreen,
     required this.showAppbarCloseButton,
+    this.showAddCustomButton = false,
     this.exchangedWorkoutIndex,
     this.changedListner,
   }) : super(key: key);
@@ -61,6 +66,7 @@ class _WorkoutLibraryState extends State<WorkoutLibrary> {
   String searchText = "";
 
   late Widget bottomAddButton = const SizedBox.shrink();
+  late Widget bottomAddCustomWorkoutButton = const SizedBox.shrink();
   late Widget tempoListViewer = const SizedBox.shrink();
 
   ///커맨드 1 = 추가
@@ -154,7 +160,8 @@ class _WorkoutLibraryState extends State<WorkoutLibrary> {
         },
         child: const Text("운동 추가하기"),
       );
-    } else if (widget.exchangedWorkoutIndex != null) {
+    }
+    if (widget.exchangedWorkoutIndex != null) {
       bottomAddButton = WideButton(
         onTapUpFunction: () {
           maked.Workout selectWorkout = maked.Workout(
@@ -167,6 +174,25 @@ class _WorkoutLibraryState extends State<WorkoutLibrary> {
           Navigator.pop(context);
         },
         child: const Text("운동 교체하기"),
+      );
+    }
+    if (widget.showAddCustomButton) {
+      bottomAddCustomWorkoutButton = WideButton(
+        onTapUpFunction: () {
+          SlidePage.goto(
+            context: context,
+            page: const AddCustomWorkoutScreen(),
+          );
+        },
+        child: const Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            LineIcon(LineIcons.plus),
+            Text(
+              "사용자 지정 운동 추가",
+            ),
+          ],
+        ),
       );
     }
   }
@@ -273,6 +299,18 @@ class _WorkoutLibraryState extends State<WorkoutLibrary> {
                       managementTempoList: managementTempoList,
                       exchangedWorkoutIndex: widget.exchangedWorkoutIndex,
                     ),
+                    WorkoutList(
+                      items: workoutList[keys[6]]!,
+                      tempoList: tempoList,
+                      managementTempoList: managementTempoList,
+                      exchangedWorkoutIndex: widget.exchangedWorkoutIndex,
+                    ),
+                    WorkoutList(
+                      items: workoutList[keys[7]]!,
+                      tempoList: tempoList,
+                      managementTempoList: managementTempoList,
+                      exchangedWorkoutIndex: widget.exchangedWorkoutIndex,
+                    ),
                     WorkoutListAll(
                       searchText: searchText,
                       allWorkoutList: allWorkoutList,
@@ -284,11 +322,14 @@ class _WorkoutLibraryState extends State<WorkoutLibrary> {
                 }
               }),
         ),
+
         // tempoListViewer,
         WorkoutListViewer(
           list: tempoList,
           managementTempoList: managementTempoList,
         ),
+
+        bottomAddCustomWorkoutButton,
         bottomAddButton,
       ],
     );

@@ -488,6 +488,8 @@ class WorkoutListStore extends ChangeNotifier {
     WorkoutListKeys.shoulder: [],
     WorkoutListKeys.biceps: [],
     WorkoutListKeys.triceps: [],
+    WorkoutListKeys.cardio: [],
+    WorkoutListKeys.other: [],
   };
 
   /// 운동 목록 초기화
@@ -503,7 +505,7 @@ class WorkoutListStore extends ChangeNotifier {
       if (workouts.containsKey(data.part)) {
         WorkoutMenu newMenu = WorkoutMenu(
           name: data.name,
-          
+          exerciseType: data.exerciseType,
           memo: data.memo,
           showE1rm: data.showE1rm,
         );

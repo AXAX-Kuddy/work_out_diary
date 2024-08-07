@@ -81,14 +81,14 @@ class Workout {
   double targetRpe;
   bool showE1rm;
 
-  List<Set>? sets = [];
+  List<WorkoutSet>? sets = [];
 
   Workout({
     this.name,
     this.exerciseType,
     this.targetRpe = 0,
     this.showE1rm = false,
-    List<Set>? sets,
+    List<WorkoutSet>? sets,
   }) : sets = sets ?? [];
 
   Map<String, dynamic> toJsonEncode() {
@@ -107,15 +107,15 @@ class Workout {
       exerciseType: json["exerciseType"],
       targetRpe: json["targetRpe"],
       showE1rm: json["showE1rm"],
-      sets: (json["sets"] as List).map((set) => Set.toJsonDecode(set)).toList(),
+      sets: (json["sets"] as List).map((set) => WorkoutSet.toJsonDecode(set)).toList(),
     );
   }
 
-  void addSet(Set set) {
+  void addSet(WorkoutSet set) {
     sets?.add(set);
   }
 
-  void removeSet(Set set) {
+  void removeSet(WorkoutSet set) {
     sets?.remove(set);
   }
 
@@ -123,7 +123,7 @@ class Workout {
     sets = [];
   }
 
-  Set getSet(int index) {
+  WorkoutSet getSet(int index) {
     return sets![index];
   }
 
@@ -132,7 +132,7 @@ class Workout {
   }
 }
 
-class Set {
+class WorkoutSet {
   late int? setIndex;
   int reps;
   double weight;
@@ -141,7 +141,7 @@ class Set {
   bool setComplete;
   Function? onUpdate;
 
-  Set({
+  WorkoutSet({
     this.setIndex,
     this.reps = 0,
     this.rpe = 0,
@@ -162,8 +162,8 @@ class Set {
     };
   }
 
-  static Set toJsonDecode(Map<String, dynamic> json) {
-    return Set(
+  static WorkoutSet toJsonDecode(Map<String, dynamic> json) {
+    return WorkoutSet(
       setIndex: json["setIndex"],
       weight: json["weight"],
       reps: json["reps"],

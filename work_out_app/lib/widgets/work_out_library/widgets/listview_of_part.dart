@@ -1,10 +1,4 @@
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/widgets.dart';
-import 'package:flutter_native_splash/cli_commands.dart';
-import 'package:provider/provider.dart';
 import 'package:work_out_app/widgets/work_out_library/work_out_library.dart';
 import 'package:work_out_app/provider/store.dart' as provider;
 import 'package:work_out_app/util/palette.dart' as palette;
@@ -24,7 +18,7 @@ class PartList extends StatefulWidget {
 }
 
 class _PartListState extends State<PartList> {
-  final List<String> list = ["하체", "등", "가슴", "어깨", "이두", "삼두"];
+  final List<String> list = ["하체", "등", "가슴", "어깨", "이두", "삼두", "유산소", "기타"];
 
   Color changeFocusBorderColor({
     required int index,

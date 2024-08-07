@@ -5,9 +5,9 @@ import 'dart:io';
 //기본
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:work_out_app/screens/debug/debug_screen.dart';
 import 'package:work_out_app/screens/user_info_screen.dart/user_info_screen.dart';
+import 'package:work_out_app/util/util.dart';
 
 import 'package:work_out_app/widgets/base_screen/base_page.dart';
 import 'package:work_out_app/provider/make_program.dart' as maked;
@@ -110,7 +110,6 @@ class _MyAppState extends State<MyApp> {
     mainStoreProvider = context.read<provider.MainStoreProvider>();
     pageNumber = context.read<provider.PageNumber>();
 
-
     WidgetsBinding.instance.addPostFrameCallback((_) {
       bool isEdit = mainStoreProvider.userInfo[UserInfoField.isEdit];
       if (!isEdit) {
@@ -155,6 +154,7 @@ class _MyAppState extends State<MyApp> {
                     const HomeScreen(),
                     const DiaryScreen(),
                     const WorkoutLibrary(
+                      showAddCustomButton: true,
                       showAppbarCloseButton: false,
                       showAddPlanningScreen: false,
                     ),

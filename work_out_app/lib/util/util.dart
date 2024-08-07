@@ -8,6 +8,7 @@ import 'package:work_out_app/provider/store.dart' as provider;
 import 'package:work_out_app/screens/plan_screen/plan_screen.dart';
 import 'package:work_out_app/widgets/router/sliding_builder.dart';
 
+
 class Tier {
   static final List<double> _tierPoints = [
     0,
@@ -190,7 +191,7 @@ class RoutineDetail {
               Column(
                 children: [
                   ...List.generate(workout.sets!.length, (index) {
-                    final maked.Set set = workout.sets![index];
+                    final maked.WorkoutSet set = workout.sets![index];
 
                     return Row(
                       children: [

@@ -26,7 +26,7 @@ class _WorkoutListViewerState extends State<WorkoutListViewer> {
   Widget build(BuildContext context) {
     return Container(
       height: 20,
-      margin: const EdgeInsets.only(bottom: 10),
+      margin: const EdgeInsets.symmetric(vertical: 15),
       child: ListView.separated(
         separatorBuilder: (context, index) => const SizedBox(
           width: 8,
