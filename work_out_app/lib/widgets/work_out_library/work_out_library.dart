@@ -36,6 +36,7 @@ class WorkoutLibrary extends StatefulWidget {
   final bool showAddPlanningScreen;
   final bool showAppbarCloseButton;
   final bool showAddCustomButton;
+  final bool exchangedSelectBoxToDetail;
   final int? exchangedWorkoutIndex;
   final void Function()? changedListner;
 
@@ -44,6 +45,7 @@ class WorkoutLibrary extends StatefulWidget {
     required this.showAddPlanningScreen,
     required this.showAppbarCloseButton,
     this.showAddCustomButton = false,
+    this.exchangedSelectBoxToDetail = false,
     this.exchangedWorkoutIndex,
     this.changedListner,
   }) : super(key: key);
@@ -135,6 +137,7 @@ class _WorkoutLibraryState extends State<WorkoutLibrary> {
       allWorkoutList.addAll(workout);
     }
 
+    debugPrint("카테고리 정렬");
     return 0;
   }
 
@@ -181,7 +184,9 @@ class _WorkoutLibraryState extends State<WorkoutLibrary> {
         onTapUpFunction: () {
           SlidePage.goto(
             context: context,
-            page: const AddCustomWorkoutScreen(),
+            page: AddCustomWorkoutScreen(
+              categorize: categorize,
+            ),
           );
         },
         child: const Row(
@@ -268,48 +273,64 @@ class _WorkoutLibraryState extends State<WorkoutLibrary> {
                       tempoList: tempoList,
                       managementTempoList: managementTempoList,
                       exchangedWorkoutIndex: widget.exchangedWorkoutIndex,
+                      exchangedSelectBoxToDetail:
+                          widget.exchangedSelectBoxToDetail,
                     ),
                     WorkoutList(
                       items: workoutList[keys[1]]!,
                       tempoList: tempoList,
                       managementTempoList: managementTempoList,
                       exchangedWorkoutIndex: widget.exchangedWorkoutIndex,
+                      exchangedSelectBoxToDetail:
+                          widget.exchangedSelectBoxToDetail,
                     ),
                     WorkoutList(
                       items: workoutList[keys[2]]!,
                       tempoList: tempoList,
                       managementTempoList: managementTempoList,
                       exchangedWorkoutIndex: widget.exchangedWorkoutIndex,
+                      exchangedSelectBoxToDetail:
+                          widget.exchangedSelectBoxToDetail,
                     ),
                     WorkoutList(
                       items: workoutList[keys[3]]!,
                       tempoList: tempoList,
                       managementTempoList: managementTempoList,
                       exchangedWorkoutIndex: widget.exchangedWorkoutIndex,
+                      exchangedSelectBoxToDetail:
+                          widget.exchangedSelectBoxToDetail,
                     ),
                     WorkoutList(
                       items: workoutList[keys[4]]!,
                       tempoList: tempoList,
                       managementTempoList: managementTempoList,
                       exchangedWorkoutIndex: widget.exchangedWorkoutIndex,
+                      exchangedSelectBoxToDetail:
+                          widget.exchangedSelectBoxToDetail,
                     ),
                     WorkoutList(
                       items: workoutList[keys[5]]!,
                       tempoList: tempoList,
                       managementTempoList: managementTempoList,
                       exchangedWorkoutIndex: widget.exchangedWorkoutIndex,
+                      exchangedSelectBoxToDetail:
+                          widget.exchangedSelectBoxToDetail,
                     ),
                     WorkoutList(
                       items: workoutList[keys[6]]!,
                       tempoList: tempoList,
                       managementTempoList: managementTempoList,
                       exchangedWorkoutIndex: widget.exchangedWorkoutIndex,
+                      exchangedSelectBoxToDetail:
+                          widget.exchangedSelectBoxToDetail,
                     ),
                     WorkoutList(
                       items: workoutList[keys[7]]!,
                       tempoList: tempoList,
                       managementTempoList: managementTempoList,
                       exchangedWorkoutIndex: widget.exchangedWorkoutIndex,
+                      exchangedSelectBoxToDetail:
+                          widget.exchangedSelectBoxToDetail,
                     ),
                     WorkoutListAll(
                       searchText: searchText,
@@ -317,6 +338,8 @@ class _WorkoutLibraryState extends State<WorkoutLibrary> {
                       tempoList: tempoList,
                       managementTempoList: managementTempoList,
                       exchangedWorkoutIndex: widget.exchangedWorkoutIndex,
+                      exchangedSelectBoxToDetail:
+                          widget.exchangedSelectBoxToDetail,
                     ),
                   ][ChangePart.index];
                 }
@@ -343,11 +366,14 @@ abstract class WorkoutListBase extends StatelessWidget {
 
   final int? exchangedWorkoutIndex;
 
+  final bool? exchangedSelectBoxToDetail;
+
   const WorkoutListBase({
     super.key,
     required this.tempoList,
     required this.managementTempoList,
     this.exchangedWorkoutIndex,
+    this.exchangedSelectBoxToDetail,
   });
 }
 
@@ -356,22 +382,16 @@ class WorkoutListAll extends WorkoutListBase {
   final List<provider.WorkoutMenu> allWorkoutList;
 
   const WorkoutListAll({
-    Key? key,
+    super.key,
     required this.searchText,
     required this.allWorkoutList,
-    required List<provider.WorkoutMenu> tempoList,
-    required void Function(
-            {provider.WorkoutMenu? workout, required int command})
-        managementTempoList,
-    int? exchangedWorkoutIndex,
-    void Function({maked.Workout? selectWorkout})? handleSelectExchangeWorkout,
-    maked.Workout? selectExchangeWorkout,
-  }) : super(
-          key: key,
-          tempoList: tempoList,
-          managementTempoList: managementTempoList,
-          exchangedWorkoutIndex: exchangedWorkoutIndex,
-        );
+    required super.tempoList,
+    required super.managementTempoList,
+    super.exchangedWorkoutIndex,
+    super.exchangedSelectBoxToDetail,
+    // void Function({maked.Workout? selectWorkout})? handleSelectExchangeWorkout,
+    // maked.Workout? selectExchangeWorkout,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -389,6 +409,7 @@ class WorkoutListAll extends WorkoutListBase {
             tempoList: tempoList,
             managementTempoList: managementTempoList,
             exchangedWorkoutIndex: exchangedWorkoutIndex,
+            exchangedSelectBoxToDetail: exchangedSelectBoxToDetail,
           );
         }
       },
@@ -400,21 +421,15 @@ class WorkoutList extends WorkoutListBase {
   final List<provider.WorkoutMenu> items;
 
   const WorkoutList({
-    Key? key,
+    super.key,
     required this.items,
-    required List<provider.WorkoutMenu> tempoList,
-    required void Function(
-            {provider.WorkoutMenu? workout, required int command})
-        managementTempoList,
-    int? exchangedWorkoutIndex,
-    void Function({maked.Workout? selectWorkout})? handleSelectExchangeWorkout,
-    maked.Workout? selectExchangeWorkout,
-  }) : super(
-          key: key,
-          tempoList: tempoList,
-          managementTempoList: managementTempoList,
-          exchangedWorkoutIndex: exchangedWorkoutIndex,
-        );
+    required super.tempoList,
+    required super.managementTempoList,
+    super.exchangedWorkoutIndex,
+    super.exchangedSelectBoxToDetail,
+    // void Function({maked.Workout? selectWorkout})? handleSelectExchangeWorkout,
+    // maked.Workout? selectExchangeWorkout,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -427,6 +442,7 @@ class WorkoutList extends WorkoutListBase {
           tempoList: tempoList,
           managementTempoList: managementTempoList,
           exchangedWorkoutIndex: exchangedWorkoutIndex,
+          exchangedSelectBoxToDetail: exchangedSelectBoxToDetail,
         );
       },
     );
@@ -437,6 +453,7 @@ class SelectBox extends StatefulWidget {
   final provider.WorkoutMenu menu;
   final List<provider.WorkoutMenu> tempoList;
   final int? exchangedWorkoutIndex;
+  final bool? exchangedSelectBoxToDetail;
 
   final void Function({
     provider.WorkoutMenu? workout,
@@ -449,6 +466,7 @@ class SelectBox extends StatefulWidget {
     required this.tempoList,
     required this.managementTempoList,
     this.exchangedWorkoutIndex,
+    this.exchangedSelectBoxToDetail,
   });
 
   @override
@@ -457,6 +475,8 @@ class SelectBox extends StatefulWidget {
 
 class _SelectBoxState extends State<SelectBox> {
   bool _checker = false;
+
+  Color nowColor = Colors.transparent;
 
   @override
   void initState() {
@@ -497,6 +517,66 @@ class _SelectBoxState extends State<SelectBox> {
 
   @override
   Widget build(BuildContext context) {
+    if (widget.exchangedSelectBoxToDetail != null) {
+      if (widget.exchangedSelectBoxToDetail!) {
+        return GestureDetector(
+          onTapUp: (details) {
+            setState(() {
+              nowColor = Colors.transparent;
+            });
+          },
+          onTapDown: (details) {
+            setState(() {
+              nowColor = palette.selectColor;
+            });
+          },
+          onTapCancel: () {
+            setState(() {
+              nowColor = Colors.transparent;
+            });
+          },
+          child: Container(
+            height: 65,
+            padding: const EdgeInsets.all(15),
+            decoration: BoxDecoration(
+              color: nowColor,
+              border: const Border(
+                bottom: BorderSide(
+                  color: palette.cardColorWhite,
+                  width: 0.5,
+                ),
+              ),
+            ),
+            child: Row(
+              children: [
+                Text(
+                  widget.menu.name,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    color: palette.cardColorWhite,
+                  ),
+                ),
+                const Spacer(),
+                IconButton(
+                  constraints: const BoxConstraints(),
+                  padding: EdgeInsets.zero,
+                  visualDensity: VisualDensity.compact,
+                  onPressed: () {
+                    /// 유저 커스텀 유무 판단
+                  },
+                  icon: const LineIcon(
+                    LineIcons.verticalEllipsis,
+                    color: palette.cardColorWhite,
+                    size: 30,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      }
+    }
+
     return GestureDetector(
       onTap: () {
         /// 운동 교체 페이지에서 호출할 경우

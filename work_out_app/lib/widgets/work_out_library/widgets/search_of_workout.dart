@@ -53,7 +53,7 @@ class _SearchWorkoutState extends State<SearchWorkout> {
       focusNode: _focusNode,
       onChanged: (value) {
         setState(() {
-          ChangePart.changeIndex(6);
+          ChangePart.changeIndex(8);
           widget.handleChangedPart();
           widget.changedSearchText(value);
         });

@@ -154,6 +154,9 @@ class _AgeInputState extends State<AgeInput> {
                         focusNode: ageFocusNode,
                         controller: ageController,
                         hintText: "나이",
+                        hintStyle: const TextStyle(
+                          color: palette.cardColorWhite,
+                        ),
                         textStyle: const TextStyle(
                           color: palette.cardColorWhite,
                         ),
@@ -257,6 +260,9 @@ class _AgeInputState extends State<AgeInput> {
                     Expanded(
                       child: CustomTextField(
                         hintText: "신장cm",
+                        hintStyle: const TextStyle(
+                          color: palette.cardColorWhite,
+                        ),
                         textStyle: const TextStyle(
                           color: palette.cardColorWhite,
                         ),
@@ -334,6 +340,9 @@ class _AgeInputState extends State<AgeInput> {
                     Expanded(
                       child: CustomTextField(
                         hintText: "체중kg",
+                        hintStyle: const TextStyle(
+                          color: palette.cardColorWhite,
+                        ),
                         textStyle: const TextStyle(
                           color: palette.cardColorWhite,
                         ),

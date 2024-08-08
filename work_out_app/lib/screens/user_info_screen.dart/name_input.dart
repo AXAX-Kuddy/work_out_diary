@@ -71,6 +71,9 @@ class _NameInputState extends State<NameInput> {
             textInputType: TextInputType.name,
             width: 300,
             hintText: "이름을 입력해주세요",
+            hintStyle: const TextStyle(
+                          color: palette.cardColorWhite,
+                        ),
             textStyle: const TextStyle(
               color: palette.cardColorWhite,
               fontSize: 15,

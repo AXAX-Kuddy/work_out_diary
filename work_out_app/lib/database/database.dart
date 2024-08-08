@@ -62,6 +62,7 @@ class AppDatabase extends _$AppDatabase {
     return totalDelete;
   }
 
+
   Future<List<WorkoutMenuData>> getAllWorkoutMenu() async {
     return select(workoutMenu).get();
   }

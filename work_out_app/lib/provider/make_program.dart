@@ -73,6 +73,7 @@ class ExerciseType {
   static String get dumbbell => "dumbbell";
   static String get machine => "machine";
   static String get bodyweight => "bodyweight";
+  static String get other => "other";
 }
 
 class Workout {

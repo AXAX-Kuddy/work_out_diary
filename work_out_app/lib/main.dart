@@ -155,6 +155,7 @@ class _MyAppState extends State<MyApp> {
                     const DiaryScreen(),
                     const WorkoutLibrary(
                       showAddCustomButton: true,
+                      exchangedSelectBoxToDetail: true,
                       showAppbarCloseButton: false,
                       showAddPlanningScreen: false,
                     ),

@@ -122,7 +122,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
               ),
             ),
             hintText: widget.hintText,
-            hintStyle: widget.textStyle,
+            hintStyle: widget.hintStyle,
           ),
         ),
       ),

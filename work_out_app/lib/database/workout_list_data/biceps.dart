@@ -68,9 +68,11 @@ class BicepsList {
         exerciseType: Value(ExerciseType.machine),
         part: WorkoutListKeys.biceps,
       ),
+
+      /// 기타
       WorkoutMenuCompanion.insert(
         name: '추감기',
-        exerciseType: Value(ExerciseType.machine),
+        exerciseType: Value(ExerciseType.other),
         part: WorkoutListKeys.biceps,
       ),
     ];

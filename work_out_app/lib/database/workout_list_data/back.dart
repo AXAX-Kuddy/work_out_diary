@@ -50,16 +50,6 @@ class BackList {
         exerciseType: Value(ExerciseType.dumbbell),
         part: WorkoutListKeys.back,
       ),
-      WorkoutMenuCompanion.insert(
-        name: '중량 풀업',
-        exerciseType: Value(ExerciseType.dumbbell),
-        part: WorkoutListKeys.back,
-      ),
-      WorkoutMenuCompanion.insert(
-        name: '중량 백 익스텐션',
-        exerciseType: Value(ExerciseType.dumbbell),
-        part: WorkoutListKeys.back,
-      ),
 
       /// 머신
       WorkoutMenuCompanion.insert(
@@ -107,6 +97,18 @@ class BackList {
       WorkoutMenuCompanion.insert(
         name: '인버티드 로우',
         exerciseType: Value(ExerciseType.bodyweight),
+        part: WorkoutListKeys.back,
+      ),
+
+      /// 기타
+      WorkoutMenuCompanion.insert(
+        name: '중량 풀업',
+        exerciseType: Value(ExerciseType.other),
+        part: WorkoutListKeys.back,
+      ),
+      WorkoutMenuCompanion.insert(
+        name: '중량 백 익스텐션',
+        exerciseType: Value(ExerciseType.other),
         part: WorkoutListKeys.back,
       ),
     ];

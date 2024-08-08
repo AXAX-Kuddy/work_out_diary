@@ -76,16 +76,8 @@ class ChestList {
         part: WorkoutListKeys.chest,
       ),
 
-      WorkoutMenuCompanion.insert(
-        name: '중량 푸시업',
-        exerciseType: Value(ExerciseType.dumbbell),
-        part: WorkoutListKeys.chest,
-      ),
-      WorkoutMenuCompanion.insert(
-        name: '중량 딥스',
-        exerciseType: Value(ExerciseType.dumbbell),
-        part: WorkoutListKeys.chest,
-      ),
+
+
 
       ///머신
       WorkoutMenuCompanion.insert(
@@ -159,6 +151,18 @@ class ChestList {
       WorkoutMenuCompanion.insert(
         name: '딥스',
         exerciseType: Value(ExerciseType.bodyweight),
+        part: WorkoutListKeys.chest,
+      ),
+
+      /// 기타
+      WorkoutMenuCompanion.insert(
+        name: '중량 푸시업',
+        exerciseType: Value(ExerciseType.other),
+        part: WorkoutListKeys.chest,
+      ),
+      WorkoutMenuCompanion.insert(
+        name: '중량 딥스',
+        exerciseType: Value(ExerciseType.other),
         part: WorkoutListKeys.chest,
       ),
     ];

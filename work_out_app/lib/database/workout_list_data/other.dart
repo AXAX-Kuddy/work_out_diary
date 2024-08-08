@@ -6,9 +6,6 @@ import '../database.dart';
 class OtherList {
   static List<WorkoutMenuCompanion> get get {
     return [
-
-      
-
       WorkoutMenuCompanion.insert(
         name: '싯업',
         exerciseType: Value(ExerciseType.bodyweight),
@@ -54,12 +51,12 @@ class OtherList {
       /// 덤벨
        WorkoutMenuCompanion.insert(
         name: '중량 싯업',
-        exerciseType: Value(ExerciseType.dumbbell),
+        exerciseType: Value(ExerciseType.other),
         part: WorkoutListKeys.other,
       ),
         WorkoutMenuCompanion.insert(
         name: '중량 크런치',
-        exerciseType: Value(ExerciseType.dumbbell),
+        exerciseType: Value(ExerciseType.other),
         part: WorkoutListKeys.other,
       ),
     ];

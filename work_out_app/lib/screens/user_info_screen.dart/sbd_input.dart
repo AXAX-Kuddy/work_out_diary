@@ -301,7 +301,9 @@ class _SBDFieldState extends State<SBDField> {
       formKey: widget.formKey,
       textInputType: TextInputType.number,
       hintText: widget.hintText,
-      hintStyle: widget.hintStyle,
+      hintStyle: const TextStyle(
+        color: palette.cardColorWhite,
+      ),
       textStyle: const TextStyle(
         color: palette.cardColorWhite,
       ),
