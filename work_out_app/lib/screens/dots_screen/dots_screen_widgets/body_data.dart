@@ -22,13 +22,6 @@ class BodyData extends StatefulWidget {
 }
 
 class _BodyDataState extends State<BodyData> {
-
-  @override
-  void initState() {
-
-    super.initState();
-  }
-
   @override
   Widget build(BuildContext context) {
     return WidgetsBox(

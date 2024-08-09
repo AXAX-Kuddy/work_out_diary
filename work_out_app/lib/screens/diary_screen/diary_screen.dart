@@ -30,7 +30,7 @@ class DiaryScreen extends StatefulWidget {
 }
 
 class _DiaryScreenState extends State<DiaryScreen> {
-  final AppDatabase database = AppDatabase();
+  late AppDatabase db;
   late Future<List<Routine>> routineList;
   late provider.UserInfo userInfo;
   late provider.RoutineProvider routineProvider;
@@ -40,22 +40,21 @@ class _DiaryScreenState extends State<DiaryScreen> {
   List<Routine> _selectedDayRoutines = [];
   Map<DateTime, List<Routine>> _events = {};
 
-  void _loadEvents() async {
-    final routines = await routineList;
-    if (mounted) {
-      setState(() {
-        _events = {};
-        for (var routine in routines) {
-          final eventDate =
-              DateTime(routine.date.year, routine.date.month, routine.date.day);
-          if (_events[eventDate] == null) {
-            _events[eventDate] = [];
-          }
-          _events[eventDate]!.add(routine);
+  bool _eventsLoaded = false;
+
+  void _loadEvents(List<Routine> routines) {
+    setState(() {
+      _events = {};
+      for (var routine in routines) {
+        final eventDate =
+            DateTime(routine.date.year, routine.date.month, routine.date.day);
+        if (_events[eventDate] == null) {
+          _events[eventDate] = [];
         }
-        _updateSelectedDayRoutines();
-      });
-    }
+        _events[eventDate]!.add(routine);
+      }
+      _updateSelectedDayRoutines();
+    });
   }
 
   void _updateSelectedDayRoutines() {
@@ -68,11 +67,18 @@ class _DiaryScreenState extends State<DiaryScreen> {
 
   @override
   void initState() {
-    super.initState();
-    userInfo = context.read<provider.MainStoreProvider>().getUserInfo();
     routineProvider = context.read<provider.RoutineProvider>();
-    routineList = database.getRoutines();
-    _loadEvents();
+    userInfo = context.read<provider.MainStoreProvider>().getUserInfo();
+
+    super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    db = Provider.of<AppDatabase>(context);
+    routineList = db.getRoutines();
+
+    super.didChangeDependencies();
   }
 
   @override
@@ -131,6 +137,14 @@ class _DiaryScreenState extends State<DiaryScreen> {
                 ),
               );
             } else {
+              if (!_eventsLoaded) {
+                WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+                  final routines = snapshot.data;
+                  _loadEvents(routines);
+                  _eventsLoaded = true;
+                });
+              }
+
               if (_selectedDayRoutines.isNotEmpty) {
                 return Expanded(
                   child: ListView.builder(
@@ -186,7 +200,7 @@ class _DiaryScreenState extends State<DiaryScreen> {
                                           ),
                                           onEnterTap: () {
                                             setState(() {
-                                              database.removeRoutine(routine);
+                                              db.removeRoutine(routine);
                                             });
                                             Navigator.pop(context);
                                           },
@@ -231,7 +245,7 @@ class _DiaryScreenState extends State<DiaryScreen> {
                                           onEnterTap: () {
                                             updateRoutine(
                                                 context: context,
-                                                database: database,
+                                                database: db,
                                                 routine: routine,
                                                 routineProvider:
                                                     routineProvider,

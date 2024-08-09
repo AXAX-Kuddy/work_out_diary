@@ -2,15 +2,12 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:animated_snack_bar/animated_snack_bar.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_sliding_up_panel/flutter_sliding_up_panel.dart';
 import 'package:line_icons/line_icon.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:work_out_app/database/database.dart';
 import 'package:work_out_app/main.dart';
-import 'package:work_out_app/screens/diary_screen/diary_screen.dart';
 import 'package:work_out_app/screens/plan_screen/plan_screen_widgets/plate_calc.dart';
 import 'package:work_out_app/util/keys.dart';
 import 'package:work_out_app/widgets/buttons/cancel_and_enter_buttons.dart';
@@ -60,7 +57,7 @@ class PlanningScreen extends StatefulWidget {
 }
 
 class _PlanningScreenState extends State<PlanningScreen> {
-  final AppDatabase database = AppDatabase();
+  late AppDatabase db;
   final SlidingUpPanelController panelController = SlidingUpPanelController();
   maked.Workout panelCallingInstance = maked.Workout(
     name: "placeHold",
@@ -94,7 +91,7 @@ class _PlanningScreenState extends State<PlanningScreen> {
       jsonData.add(json.encode(workout.toJsonEncode()));
     }
 
-    await database.into(database.routines).insert(
+    await db.into(db.routines).insert(
           RoutinesCompanion.insert(
             routineName: routineTitle,
             date: DateTime.now(),
@@ -104,7 +101,7 @@ class _PlanningScreenState extends State<PlanningScreen> {
     if (mounted) {
       routineProvider.clearUserSelectWorkout();
       routineProvider.onDisposeWorkoutTimer();
-      routineProvider.onStoppedRestTimer();
+      routineProvider.onDisposeRestTimer();
       Navigator.push(context, MaterialPageRoute(builder: (context) {
         return const WorkoutCompleteScreen();
       }));
@@ -308,7 +305,6 @@ class _PlanningScreenState extends State<PlanningScreen> {
 
   @override
   void initState() {
-    super.initState();
     setRoutineName();
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
@@ -316,11 +312,13 @@ class _PlanningScreenState extends State<PlanningScreen> {
     });
 
     context.read<provider.RoutineProvider>().loadPreferences();
+
+    super.initState();
   }
 
   @override
   void didChangeDependencies() {
-    super.didChangeDependencies();
+    db = Provider.of<AppDatabase>(context);
     routineProvider = context.watch<provider.RoutineProvider>();
 
     switch (routineProvider.workoutStart) {
@@ -328,7 +326,7 @@ class _PlanningScreenState extends State<PlanningScreen> {
         workoutTimerButton = TextButton(
           onPressed: () {
             routineProvider.onWorkoutTimerStopped();
-            routineProvider.setWorkoutFinish();
+
             showDialog(
                 context: context,
                 builder: (context) {
@@ -356,6 +354,7 @@ class _PlanningScreenState extends State<PlanningScreen> {
                             children: [
                               TextButton(
                                 onPressed: () {
+                                  routineProvider.onWorkoutTimerStart();
                                   Navigator.pop(context);
                                 },
                                 child: const Text(
@@ -409,7 +408,6 @@ class _PlanningScreenState extends State<PlanningScreen> {
         workoutTimerButton = TextButton(
           onPressed: () {
             routineProvider.onWorkoutTimerStart();
-            routineProvider.setWorkoutStart();
           },
           child: Container(
             alignment: Alignment.center,
@@ -588,12 +586,10 @@ class _PlanningScreenState extends State<PlanningScreen> {
           ),
         );
     }
+
+    super.didChangeDependencies();
   }
 
-  @override
-  void dispose() {
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {

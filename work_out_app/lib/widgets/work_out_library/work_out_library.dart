@@ -1,11 +1,14 @@
 // ignore_for_file: unused_import
 
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:line_icons/line_icon.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:work_out_app/database/database.dart' as db;
 import 'package:work_out_app/util/keys.dart';
+import 'package:work_out_app/widgets/buttons/cancel_and_enter_buttons.dart';
 import 'package:work_out_app/widgets/buttons/wide_button.dart';
+import 'package:work_out_app/widgets/dialog/custom_dialog.dart';
 import 'package:work_out_app/widgets/grid_loading_circle/loading_circle.dart';
 import 'package:work_out_app/widgets/router/sliding_builder.dart';
 import 'package:work_out_app/widgets/work_out_library/widgets/add_custom_workout_screen.dart';
@@ -55,7 +58,7 @@ class WorkoutLibrary extends StatefulWidget {
 }
 
 class _WorkoutLibraryState extends State<WorkoutLibrary> {
-  db.AppDatabase database = db.AppDatabase();
+  late db.AppDatabase database;
   late provider.RoutineProvider routineProvider;
   late provider.WorkoutListStore workoutListStore;
 
@@ -144,6 +147,7 @@ class _WorkoutLibraryState extends State<WorkoutLibrary> {
   @override
   void initState() {
     super.initState();
+
     workoutListStore = context.read<provider.WorkoutListStore>();
 
     workoutList = workoutListStore.workouts;
@@ -205,14 +209,16 @@ class _WorkoutLibraryState extends State<WorkoutLibrary> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    database = Provider.of<db.AppDatabase>(context);
     routineProvider = context.watch<provider.RoutineProvider>();
   }
 
   @override
   void dispose() {
-    super.dispose();
     ChangePart.dispose();
     disposeTempoList();
+
+    super.dispose();
   }
 
   @override
@@ -562,7 +568,98 @@ class _SelectBoxState extends State<SelectBox> {
                   padding: EdgeInsets.zero,
                   visualDensity: VisualDensity.compact,
                   onPressed: () {
-                    /// 유저 커스텀 유무 판단
+                    showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return CustomDialog(
+                            children: [
+                              Text(
+                                widget.menu.name,
+                                style: const TextStyle(
+                                  fontSize: 17,
+                                  color: palette.cardColorWhite,
+                                ),
+                              ),
+                              const SizedBox(
+                                height: 17.5,
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  const Text(
+                                    "사용 기구 : ",
+                                    style: TextStyle(
+                                      color: palette.cardColorWhite,
+                                    ),
+                                  ),
+                                  Text(
+                                    widget.menu.exerciseType,
+                                    style: const TextStyle(
+                                      color: palette.cardColorYelGreen,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              GestureDetector(
+                                onTap: () {
+                                  showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return CustomDialog(
+                                          children: [
+                                            const Text(
+                                              "e1rm 표시 유무 설정",
+                                              style: TextStyle(
+                                                color: palette.cardColorWhite,
+                                              ),
+                                            ),
+                                            CancelAndEnterButton(
+                                              cancelLabel: const Text(
+                                                "표시하지 않음",
+                                                style: TextStyle(
+                                                  color: palette.colorRed,
+                                                ),
+                                              ),
+                                              enterLabel: const Text(
+                                                "표시 함",
+                                                style: TextStyle(
+                                                  color:
+                                                      palette.cardColorYelGreen,
+                                                ),
+                                              ),
+                                              onCancelTap: () {},
+                                              onEnterTap: () {},
+                                            ),
+                                          ],
+                                        );
+                                      });
+                                },
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    const Text(
+                                      "e1rm 표시 : ",
+                                      style: TextStyle(
+                                        color: palette.cardColorWhite,
+                                      ),
+                                    ),
+                                    Text(
+                                      widget.menu.showE1rm ? "표시 중" : "표시하지 않음",
+                                      style: TextStyle(
+                                        color: widget.menu.showE1rm
+                                            ? palette.cardColorYelGreen
+                                            : palette.colorRed,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          );
+                        });
                   },
                   icon: const LineIcon(
                     LineIcons.verticalEllipsis,

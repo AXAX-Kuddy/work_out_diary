@@ -342,9 +342,18 @@ class $WorkoutMenuTable extends WorkoutMenu
       GeneratedColumn<String>('part', aliasedName, false,
               type: DriftSqlType.string, requiredDuringInsert: true)
           .withConverter<WorkoutListKeys>($WorkoutMenuTable.$converterpart);
+  static const VerificationMeta _customMeta = const VerificationMeta('custom');
+  @override
+  late final GeneratedColumn<bool> custom = GeneratedColumn<bool>(
+      'custom', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('CHECK ("custom" IN (0, 1))'),
+      defaultValue: const Constant(false));
   @override
   List<GeneratedColumn> get $columns =>
-      [id, name, exerciseType, memo, showE1rm, part];
+      [id, name, exerciseType, memo, showE1rm, part, custom];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -379,6 +388,10 @@ class $WorkoutMenuTable extends WorkoutMenu
           showE1rm.isAcceptableOrUnknown(data['show_e1rm']!, _showE1rmMeta));
     }
     context.handle(_partMeta, const VerificationResult.success());
+    if (data.containsKey('custom')) {
+      context.handle(_customMeta,
+          custom.isAcceptableOrUnknown(data['custom']!, _customMeta));
+    }
     return context;
   }
 
@@ -401,6 +414,8 @@ class $WorkoutMenuTable extends WorkoutMenu
       part: $WorkoutMenuTable.$converterpart.fromSql(attachedDatabase
           .typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}part'])!),
+      custom: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}custom'])!,
     );
   }
 
@@ -420,13 +435,15 @@ class WorkoutMenuData extends DataClass implements Insertable<WorkoutMenuData> {
   final String? memo;
   final bool showE1rm;
   final WorkoutListKeys part;
+  final bool custom;
   const WorkoutMenuData(
       {required this.id,
       required this.name,
       required this.exerciseType,
       this.memo,
       required this.showE1rm,
-      required this.part});
+      required this.part,
+      required this.custom});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -441,6 +458,7 @@ class WorkoutMenuData extends DataClass implements Insertable<WorkoutMenuData> {
       map['part'] =
           Variable<String>($WorkoutMenuTable.$converterpart.toSql(part));
     }
+    map['custom'] = Variable<bool>(custom);
     return map;
   }
 
@@ -452,6 +470,7 @@ class WorkoutMenuData extends DataClass implements Insertable<WorkoutMenuData> {
       memo: memo == null && nullToAbsent ? const Value.absent() : Value(memo),
       showE1rm: Value(showE1rm),
       part: Value(part),
+      custom: Value(custom),
     );
   }
 
@@ -465,6 +484,7 @@ class WorkoutMenuData extends DataClass implements Insertable<WorkoutMenuData> {
       memo: serializer.fromJson<String?>(json['memo']),
       showE1rm: serializer.fromJson<bool>(json['showE1rm']),
       part: serializer.fromJson<WorkoutListKeys>(json['part']),
+      custom: serializer.fromJson<bool>(json['custom']),
     );
   }
   @override
@@ -477,6 +497,7 @@ class WorkoutMenuData extends DataClass implements Insertable<WorkoutMenuData> {
       'memo': serializer.toJson<String?>(memo),
       'showE1rm': serializer.toJson<bool>(showE1rm),
       'part': serializer.toJson<WorkoutListKeys>(part),
+      'custom': serializer.toJson<bool>(custom),
     };
   }
 
@@ -486,7 +507,8 @@ class WorkoutMenuData extends DataClass implements Insertable<WorkoutMenuData> {
           String? exerciseType,
           Value<String?> memo = const Value.absent(),
           bool? showE1rm,
-          WorkoutListKeys? part}) =>
+          WorkoutListKeys? part,
+          bool? custom}) =>
       WorkoutMenuData(
         id: id ?? this.id,
         name: name ?? this.name,
@@ -494,6 +516,7 @@ class WorkoutMenuData extends DataClass implements Insertable<WorkoutMenuData> {
         memo: memo.present ? memo.value : this.memo,
         showE1rm: showE1rm ?? this.showE1rm,
         part: part ?? this.part,
+        custom: custom ?? this.custom,
       );
   @override
   String toString() {
@@ -503,13 +526,15 @@ class WorkoutMenuData extends DataClass implements Insertable<WorkoutMenuData> {
           ..write('exerciseType: $exerciseType, ')
           ..write('memo: $memo, ')
           ..write('showE1rm: $showE1rm, ')
-          ..write('part: $part')
+          ..write('part: $part, ')
+          ..write('custom: $custom')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, name, exerciseType, memo, showE1rm, part);
+  int get hashCode =>
+      Object.hash(id, name, exerciseType, memo, showE1rm, part, custom);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -519,7 +544,8 @@ class WorkoutMenuData extends DataClass implements Insertable<WorkoutMenuData> {
           other.exerciseType == this.exerciseType &&
           other.memo == this.memo &&
           other.showE1rm == this.showE1rm &&
-          other.part == this.part);
+          other.part == this.part &&
+          other.custom == this.custom);
 }
 
 class WorkoutMenuCompanion extends UpdateCompanion<WorkoutMenuData> {
@@ -529,6 +555,7 @@ class WorkoutMenuCompanion extends UpdateCompanion<WorkoutMenuData> {
   final Value<String?> memo;
   final Value<bool> showE1rm;
   final Value<WorkoutListKeys> part;
+  final Value<bool> custom;
   const WorkoutMenuCompanion({
     this.id = const Value.absent(),
     this.name = const Value.absent(),
@@ -536,6 +563,7 @@ class WorkoutMenuCompanion extends UpdateCompanion<WorkoutMenuData> {
     this.memo = const Value.absent(),
     this.showE1rm = const Value.absent(),
     this.part = const Value.absent(),
+    this.custom = const Value.absent(),
   });
   WorkoutMenuCompanion.insert({
     this.id = const Value.absent(),
@@ -544,15 +572,17 @@ class WorkoutMenuCompanion extends UpdateCompanion<WorkoutMenuData> {
     this.memo = const Value.absent(),
     this.showE1rm = const Value.absent(),
     required WorkoutListKeys part,
+    this.custom = const Value.absent(),
   })  : name = Value(name),
         part = Value(part);
-  static Insertable<WorkoutMenuData> custom({
+  static Insertable<WorkoutMenuData> createCustom({
     Expression<int>? id,
     Expression<String>? name,
     Expression<String>? exerciseType,
     Expression<String>? memo,
     Expression<bool>? showE1rm,
     Expression<String>? part,
+    Expression<bool>? custom,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -561,6 +591,7 @@ class WorkoutMenuCompanion extends UpdateCompanion<WorkoutMenuData> {
       if (memo != null) 'memo': memo,
       if (showE1rm != null) 'show_e1rm': showE1rm,
       if (part != null) 'part': part,
+      if (custom != null) 'custom': custom,
     });
   }
 
@@ -570,7 +601,8 @@ class WorkoutMenuCompanion extends UpdateCompanion<WorkoutMenuData> {
       Value<String>? exerciseType,
       Value<String?>? memo,
       Value<bool>? showE1rm,
-      Value<WorkoutListKeys>? part}) {
+      Value<WorkoutListKeys>? part,
+      Value<bool>? custom}) {
     return WorkoutMenuCompanion(
       id: id ?? this.id,
       name: name ?? this.name,
@@ -578,6 +610,7 @@ class WorkoutMenuCompanion extends UpdateCompanion<WorkoutMenuData> {
       memo: memo ?? this.memo,
       showE1rm: showE1rm ?? this.showE1rm,
       part: part ?? this.part,
+      custom: custom ?? this.custom,
     );
   }
 
@@ -603,6 +636,9 @@ class WorkoutMenuCompanion extends UpdateCompanion<WorkoutMenuData> {
       map['part'] =
           Variable<String>($WorkoutMenuTable.$converterpart.toSql(part.value));
     }
+    if (custom.present) {
+      map['custom'] = Variable<bool>(custom.value);
+    }
     return map;
   }
 
@@ -614,7 +650,8 @@ class WorkoutMenuCompanion extends UpdateCompanion<WorkoutMenuData> {
           ..write('exerciseType: $exerciseType, ')
           ..write('memo: $memo, ')
           ..write('showE1rm: $showE1rm, ')
-          ..write('part: $part')
+          ..write('part: $part, ')
+          ..write('custom: $custom')
           ..write(')'))
         .toString();
   }
@@ -775,6 +812,7 @@ typedef $$WorkoutMenuTableInsertCompanionBuilder = WorkoutMenuCompanion
   Value<String?> memo,
   Value<bool> showE1rm,
   required WorkoutListKeys part,
+  Value<bool> custom,
 });
 typedef $$WorkoutMenuTableUpdateCompanionBuilder = WorkoutMenuCompanion
     Function({
@@ -784,6 +822,7 @@ typedef $$WorkoutMenuTableUpdateCompanionBuilder = WorkoutMenuCompanion
   Value<String?> memo,
   Value<bool> showE1rm,
   Value<WorkoutListKeys> part,
+  Value<bool> custom,
 });
 
 class $$WorkoutMenuTableTableManager extends RootTableManager<
@@ -812,6 +851,7 @@ class $$WorkoutMenuTableTableManager extends RootTableManager<
             Value<String?> memo = const Value.absent(),
             Value<bool> showE1rm = const Value.absent(),
             Value<WorkoutListKeys> part = const Value.absent(),
+            Value<bool> custom = const Value.absent(),
           }) =>
               WorkoutMenuCompanion(
             id: id,
@@ -820,6 +860,7 @@ class $$WorkoutMenuTableTableManager extends RootTableManager<
             memo: memo,
             showE1rm: showE1rm,
             part: part,
+            custom: custom,
           ),
           getInsertCompanionBuilder: ({
             Value<int> id = const Value.absent(),
@@ -828,6 +869,7 @@ class $$WorkoutMenuTableTableManager extends RootTableManager<
             Value<String?> memo = const Value.absent(),
             Value<bool> showE1rm = const Value.absent(),
             required WorkoutListKeys part,
+            Value<bool> custom = const Value.absent(),
           }) =>
               WorkoutMenuCompanion.insert(
             id: id,
@@ -836,6 +878,7 @@ class $$WorkoutMenuTableTableManager extends RootTableManager<
             memo: memo,
             showE1rm: showE1rm,
             part: part,
+            custom: custom,
           ),
         ));
 }
@@ -886,6 +929,11 @@ class $$WorkoutMenuTableFilterComposer
           builder: (column, joinBuilders) => ColumnWithTypeConverterFilters(
               column,
               joinBuilders: joinBuilders));
+
+  ColumnFilters<bool> get custom => $state.composableBuilder(
+      column: $state.table.custom,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
 }
 
 class $$WorkoutMenuTableOrderingComposer
@@ -918,6 +966,11 @@ class $$WorkoutMenuTableOrderingComposer
 
   ColumnOrderings<String> get part => $state.composableBuilder(
       column: $state.table.part,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<bool> get custom => $state.composableBuilder(
+      column: $state.table.custom,
       builder: (column, joinBuilders) =>
           ColumnOrderings(column, joinBuilders: joinBuilders));
 }

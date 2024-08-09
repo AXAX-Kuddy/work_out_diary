@@ -46,15 +46,6 @@ class CustomScrollBehavior extends MaterialScrollBehavior {
 }
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  AppDatabase database = AppDatabase();
-
-  for (var value in WorkoutListKeys.values) {
-    final workoutData = await database.getWorkoutMenusByPart(value);
-    if (workoutData.isEmpty) {
-      await database.insertInitialData(database);
-    }
-  }
 
   runApp(
     MultiProvider(
@@ -70,6 +61,10 @@ void main() async {
         ),
         ChangeNotifierProvider(
           create: (context) => provider.PageNumber(),
+        ),
+        Provider<AppDatabase>(
+          create: (context) => AppDatabase(),
+          dispose: (context, db) => db.close(),
         ),
       ],
       child: MaterialApp(

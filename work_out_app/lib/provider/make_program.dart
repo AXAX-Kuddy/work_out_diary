@@ -81,6 +81,7 @@ class Workout {
   String? exerciseType;
   double targetRpe;
   bool showE1rm;
+  bool custom;
 
   List<WorkoutSet>? sets = [];
 
@@ -89,6 +90,7 @@ class Workout {
     this.exerciseType,
     this.targetRpe = 0,
     this.showE1rm = false,
+    this.custom = false,
     List<WorkoutSet>? sets,
   }) : sets = sets ?? [];
 
@@ -98,6 +100,7 @@ class Workout {
       "targetRpe": targetRpe,
       "exerciseType": exerciseType,
       "showE1rm": showE1rm,
+      "custom": custom,
       "sets": sets?.map((set) => set.toJsonEncode()).toList(),
     };
   }
@@ -108,7 +111,10 @@ class Workout {
       exerciseType: json["exerciseType"],
       targetRpe: json["targetRpe"],
       showE1rm: json["showE1rm"],
-      sets: (json["sets"] as List).map((set) => WorkoutSet.toJsonDecode(set)).toList(),
+      custom: json["custom"],
+      sets: (json["sets"] as List)
+          .map((set) => WorkoutSet.toJsonDecode(set))
+          .toList(),
     );
   }
 

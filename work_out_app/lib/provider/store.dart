@@ -458,11 +458,15 @@ class WorkoutMenu {
   /// e1rm표시유무
   final bool showE1rm;
 
+  /// 사용자 정의 운동 유무
+  final bool custom;
+
   WorkoutMenu({
     required this.name,
     this.exerciseType = "barbell",
     this.memo,
     this.showE1rm = false,
+    this.custom = false,
   });
 
   @override
@@ -473,11 +477,17 @@ class WorkoutMenu {
         other.name == name &&
         other.memo == memo &&
         other.showE1rm == showE1rm &&
-        other.exerciseType == exerciseType;
+        other.exerciseType == exerciseType &&
+        other.custom == custom;
   }
 
   @override
-  int get hashCode => name.hashCode ^ memo.hashCode ^ showE1rm.hashCode ^ exerciseType.hashCode;
+  int get hashCode =>
+      name.hashCode ^
+      memo.hashCode ^
+      showE1rm.hashCode ^
+      exerciseType.hashCode ^
+      custom.hashCode;
 }
 
 class WorkoutListStore extends ChangeNotifier {
@@ -508,6 +518,7 @@ class WorkoutListStore extends ChangeNotifier {
           exerciseType: data.exerciseType,
           memo: data.memo,
           showE1rm: data.showE1rm,
+          custom: data.custom,
         );
         if (!workouts[data.part]!.contains(newMenu)) {
           workouts[data.part]?.add(newMenu);
@@ -575,17 +586,8 @@ class RoutineProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setWorkoutStart() {
-    Routine.workoutStart = true;
-    notifyListeners();
-  }
-
-  void setWorkoutFinish() {
-    Routine.workoutStart = false;
-    notifyListeners();
-  }
-
   void onWorkoutTimerStart() {
+    Routine.workoutStart = true;
     Routine.stopWatchTimer.onStartTimer();
     notifyListeners();
   }
@@ -596,7 +598,10 @@ class RoutineProvider extends ChangeNotifier {
   }
 
   Future<void> onDisposeWorkoutTimer() async {
-    await Routine.stopWatchTimer.dispose();
+    Routine.workoutStart = false;
+    Routine.stopWatchTimer.onStopTimer();
+    Routine.stopWatchTimer.onResetTimer();
+    // await Routine.stopWatchTimer.dispose();
   }
 
   void onStartedRestTimer() {
@@ -608,6 +613,10 @@ class RoutineProvider extends ChangeNotifier {
   void setRestTimer(bool value) {
     Routine.onRest = value;
     savePreferences();
+
+    if (!value) {
+      onDisposeRestTimer();
+    }
     notifyListeners();
   }
 
@@ -633,13 +642,6 @@ class RoutineProvider extends ChangeNotifier {
     // notifyListeners();
   }
 
-  void onStoppedRestTimer() {
-    Routine.onRestStart = false;
-    Routine.restTimer.onStopTimer();
-
-    notifyListeners();
-  }
-
   void onResetRestTimer() {
     Routine.onRestStart = false;
     Routine.restTimer.onResetTimer();
@@ -647,10 +649,11 @@ class RoutineProvider extends ChangeNotifier {
   }
 
   Future<void> onDisposeRestTimer() async {
-    onStoppedRestTimer();
-    Routine.restTimer.clearPresetTime();
-    await Routine.restTimer.dispose();
-    notifyListeners();
+    Routine.onRestStart = false;
+    Routine.restTimer.onStopTimer();
+    Routine.restTimer.onResetTimer();
+    // await Routine.restTimer.dispose();
+    // notifyListeners();
   }
 
   void setRestSnackbarState(bool value) {

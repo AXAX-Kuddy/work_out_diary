@@ -30,6 +30,22 @@ class AppDatabase extends _$AppDatabase {
   @override
   int get schemaVersion => 1;
 
+  @override
+  MigrationStrategy get migration {
+    return MigrationStrategy(
+      onCreate: (Migrator m) async {
+        await m.createAll();
+
+        for (var value in WorkoutListKeys.values) {
+          final workoutData = await getWorkoutMenusByPart(value);
+          if (workoutData.isEmpty) {
+            await insertInitialData();
+          }
+        }
+      },
+    );
+  }
+
   /// 저장된 모든 루틴 불러오기
   Future<List<Routine>> getRoutines() async {
     return await select(routines).get();
@@ -62,12 +78,13 @@ class AppDatabase extends _$AppDatabase {
     return totalDelete;
   }
 
-
   Future<List<WorkoutMenuData>> getAllWorkoutMenu() async {
     return select(workoutMenu).get();
   }
 
   Future<List<WorkoutMenuData>> getWorkoutMenusByPart(WorkoutListKeys part) {
+    print("불러옴");
+
     return (select(workoutMenu)
           ..where(
             (tbl) => tbl.part.equals(part.toString()),
@@ -75,13 +92,16 @@ class AppDatabase extends _$AppDatabase {
         .get();
   }
 
+  Future editWorkoutMenu() async {}
+
   ///운동 종목 삽입
   Future insertWorkoutMenu(Insertable<WorkoutMenuData> data) async {
+    print("데이터 삽입됨");
     into(workoutMenu).insert(data);
   }
 
   ///앱 최초 실행 시 운동목록 삽입
-  Future<void> insertInitialData(AppDatabase db) async {
+  Future<void> insertInitialData() async {
     final initialData = {
       WorkoutListKeys.leg: [
         ...LegList.get,
@@ -101,7 +121,6 @@ class AppDatabase extends _$AppDatabase {
       WorkoutListKeys.triceps: [
         ...TricepsList.get,
       ],
-      
       WorkoutListKeys.cardio: [
         ...CardioList.get,
       ],
@@ -112,7 +131,7 @@ class AppDatabase extends _$AppDatabase {
 
     for (var entry in initialData.entries) {
       for (var data in entry.value) {
-        await db.insertWorkoutMenu(data);
+        await insertWorkoutMenu(data);
       }
     }
   }
@@ -126,6 +145,7 @@ LazyDatabase _openConnection() {
     /// 데이터베이스 초기화
     /// 개발 중 데이터베이스 스키마의 변화가 생겼을 경우 사용
     // if (await file.exists()) {
+    //   print("데이터 삭제");
     //   await file.delete();
     // }
 
@@ -170,4 +190,5 @@ class WorkoutMenu extends Table {
   TextColumn get memo => text().nullable()();
   BoolColumn get showE1rm => boolean().withDefault(const Constant(false))();
   TextColumn get part => text().map(const WorkoutListKeysConverter())();
+  BoolColumn get custom => boolean().withDefault(const Constant(false))();
 }

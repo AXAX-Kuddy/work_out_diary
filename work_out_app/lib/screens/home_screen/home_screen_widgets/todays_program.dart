@@ -34,7 +34,7 @@ class TodayWorkOutCard extends StatefulWidget {
 }
 
 class _TodayWorkOutCardState extends State<TodayWorkOutCard> {
-  final database = AppDatabase();
+  late AppDatabase db;
   late provider.RoutineProvider routineProvider;
   late String _userName;
 
@@ -62,8 +62,14 @@ class _TodayWorkOutCardState extends State<TodayWorkOutCard> {
 
   @override
   void didChangeDependencies() {
-    super.didChangeDependencies();
+    db = Provider.of<AppDatabase>(context);
     _userName = provider.MainStore.userInfo[UserInfoField.userName];
+    super.didChangeDependencies();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   @override
@@ -103,7 +109,7 @@ class _TodayWorkOutCardState extends State<TodayWorkOutCard> {
           ),
           Expanded(
             child: FutureBuilder(
-              future: database.getRoutines(),
+              future: db.getRoutines(),
               builder: (
                 BuildContext context,
                 AsyncSnapshot<List<Routine>> snapshot,
@@ -229,10 +235,9 @@ class _TodayWorkOutCardState extends State<TodayWorkOutCard> {
                                                           },
                                                           onEnterTap: () {
                                                             setState(() {
-                                                              database
-                                                                  .removeRoutine(
-                                                                      routines[
-                                                                          index]);
+                                                              db.removeRoutine(
+                                                                  routines[
+                                                                      index]);
                                                             });
 
                                                             Navigator.pop(
@@ -253,7 +258,7 @@ class _TodayWorkOutCardState extends State<TodayWorkOutCard> {
                                             onTap: () {
                                               updateRoutine(
                                                 context: context,
-                                                database: database,
+                                                database: db,
                                                 routine: routines[index],
                                                 routineProvider:
                                                     routineProvider,

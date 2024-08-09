@@ -19,13 +19,13 @@ class PlateCalculator extends StatefulWidget {
 
 class _PlateCalculatorState extends State<PlateCalculator> {
   /// 최초 제시된 무게
-  late double weight;
+  late double weight = 0;
 
   /// 조정된 무게(플레이트로 계산이 불가능할 경우)
-  late double adjustedWeight;
+  late double adjustedWeight = 0;
 
   /// 최초 제시된 무게와 조정된 무게와의 차이
-  late double weightDifference;
+  late double weightDifference = 0;
 
   /// 렌더링 될 플레이트들
   List<Widget> plates = [];

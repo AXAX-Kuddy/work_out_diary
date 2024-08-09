@@ -274,6 +274,7 @@ class _AddCustomWorkoutScreenState extends State<AddCustomWorkoutScreen> {
                   showE1rm: Value(showE1rm!),
                   exerciseType: Value(exerciseType!),
                   part: target!,
+                  custom: const Value(true),
                 ),
               );
               widget.categorize();
